@@ -6,65 +6,99 @@
 <title>socool.fun</title>
 <link rel="icon" type="image/webp" href="browser%20tba%20icon.webp" />
 <style>
-  :root,body[data-theme="mono"]{--acc:#ffffff;--accT:rgba(255,255,255,.22);--orbA:#ffffff;--orbB:#aaaaaa}
-  body[data-theme="azure"]{--acc:#4da3ff;--accT:rgba(77,163,255,.22);--orbA:#2f6fe0;--orbB:#63b3ff}
-  body[data-theme="coalescent"]{--acc:#3ddbc0;--accT:rgba(61,219,192,.22);--orbA:#0e8f7f;--orbB:#63e2d0}
-  body[data-theme="orangy"]{--acc:#ffa03d;--accT:rgba(255,160,61,.22);--orbA:#e07b1f;--orbB:#ffc46b}
-  body[data-theme="lakers"]{--acc:#fdb927;--accT:rgba(253,185,39,.22);--orbA:#552583;--orbB:#fdb927}
+  :root,body[data-theme="mono"]{--acc:#ffffff;--accT:rgba(255,255,255,.2);--orbA:#ffffff;--orbB:#aaaaaa;--orbC:#666666}
+  body[data-theme="azure"]{--acc:#4da3ff;--accT:rgba(77,163,255,.22);--orbA:#2f6fe0;--orbB:#63b3ff;--orbC:#1b3d7a}
+  body[data-theme="coalescent"]{--acc:#3ddbc0;--accT:rgba(61,219,192,.22);--orbA:#0e8f7f;--orbB:#63e2d0;--orbC:#0a5a52}
+  body[data-theme="orangy"]{--acc:#ffa03d;--accT:rgba(255,160,61,.22);--orbA:#e07b1f;--orbB:#ffc46b;--orbC:#8a4a10}
+  body[data-theme="lakers"]{--acc:#fdb927;--accT:rgba(253,185,39,.22);--orbA:#552583;--orbB:#fdb927;--orbC:#7a3fa5}
+  body[data-theme="pink"]{--acc:#ff4f9a;--accT:rgba(255,79,154,.22);--orbA:#ff2d7e;--orbB:#ff8fc0;--orbC:#99104a}
+  body[data-theme="pinkblue"]{--acc:#ff4f9a;--accT:rgba(77,124,255,.22);--orbA:#4d7cff;--orbB:#ff2d7e;--orbC:#2a3fa0}
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
-  body{background:#0a0a10;color:#fff;min-height:100vh;overflow-x:hidden}
-  .bg{position:fixed;inset:0;background:#0a0a10;z-index:-2}
-  .grid-bg{position:fixed;inset:0;z-index:-1;opacity:.2;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%)}
-  #splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:#0a0a14;transition:opacity .45s;cursor:pointer}
+  body{background:#08080e;color:#fff;min-height:100vh;overflow-x:hidden}
+  canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.13;animation:drift 20s ease-in-out infinite}
+  .orb.a{width:420px;height:420px;background:var(--orbA);top:-100px;left:-60px}
+  .orb.b{width:340px;height:340px;background:var(--orbB);right:-80px;bottom:12%;animation-duration:26s}
+  .orb.c{width:300px;height:300px;background:var(--orbC);left:30%;top:52%;animation-duration:32s;animation-direction:alternate}
+  @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
+  .grid-bg{position:fixed;inset:0;z-index:0;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 70%)}
+  #splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#08080e;transition:opacity .5s;cursor:pointer}
   #splash.hide{opacity:0;pointer-events:none}
-  #splash .s-logo{font-size:clamp(38px,8vw,64px);font-weight:900;letter-spacing:6px;opacity:0;animation:rise .7s ease-out forwards}
-  #splash .s-by{font-size:16px;letter-spacing:2px;color:#ccc;opacity:0;animation:rise .7s .35s ease-out forwards}
+  #splash .word{display:flex;font-size:clamp(40px,9vw,84px);font-weight:900;letter-spacing:2px}
+  #splash .word span{opacity:0;animation:rise .6s cubic-bezier(.2,.7,.3,1.3) forwards}
+  #splash .word span:nth-child(1){animation-delay:.05s}
+  #splash .word span:nth-child(2){animation-delay:.1s}
+  #splash .word span:nth-child(3){animation-delay:.15s}
+  #splash .word span:nth-child(4){animation-delay:.2s}
+  #splash .word span:nth-child(5){animation-delay:.25s}
+  #splash .word span:nth-child(6){animation-delay:.3s}
+  #splash .word span:nth-child(7){animation-delay:.38s;color:var(--acc)}
+  #splash .word span:nth-child(8){animation-delay:.45s}
+  #splash .word span:nth-child(9){animation-delay:.5s}
+  #splash .word span:nth-child(10){animation-delay:.55s}
+  #splash .s-by{font-size:14px;letter-spacing:3px;color:#999;opacity:0;animation:rise .6s .75s forwards}
   #splash .s-by b{color:#fff}
-  #splash .s-bar{width:min(300px,60vw);height:4px;border-radius:100px;background:rgba(255,255,255,.12);overflow:hidden;opacity:0;animation:rise .5s .5s ease-out forwards}
-  #splash .s-bar i{display:block;height:100%;width:0;background:#fff;animation:fill 1.9s .2s linear forwards}
-  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  #splash .s-bar{width:min(280px,60vw);height:3px;border-radius:100px;background:rgba(255,255,255,.1);overflow:hidden;opacity:0;animation:rise .5s .55s forwards}
+  #splash .s-bar i{display:block;height:100%;width:0;background:var(--acc);animation:fill 1.9s .3s linear forwards}
+  @keyframes rise{from{opacity:0;transform:translateY(22px) scale(.95)}to{opacity:1;transform:none}}
   @keyframes fill{to{width:100%}}
-  header{text-align:center;padding:58px 16px 10px}
-  .eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:4px;color:#0a0a10;background:#fff;border-radius:100px;padding:6px 16px;margin-bottom:16px}
-  .logo{font-size:clamp(44px,9vw,84px);font-weight:900;letter-spacing:2px;color:#fff;line-height:1}
-  .tag{margin-top:10px;color:#b9b9d6;font-size:15px;letter-spacing:1px}
-  .wrap{max-width:1060px;margin:0 auto;padding:20px 16px 60px}
-  #viewHome{min-height:46vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .launch{display:flex;flex-direction:column;gap:16px;align-items:center;width:100%}
-  .lbtn{display:block;width:min(360px,86vw);text-align:center;text-decoration:none;color:#000;background:#fff;font-weight:900;font-size:20px;letter-spacing:3px;border-radius:100px;padding:22px 0;transition:.18s;cursor:pointer;border:0;animation:rise .5s both}
-  .lbtn:nth-child(2){animation-delay:.1s}.lbtn:nth-child(3){animation-delay:.2s}
-  .lbtn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 16px 50px var(--accT)}
-  .lbtn.ghosty{background:#ffffff10;color:#fff;border:1px solid #ffffff30}
-  .lbtn.ghosty:hover{border-color:var(--acc)}
-  #themepk{display:flex;align-items:center;gap:10px;margin-top:26px}
-  #themepk span{font-size:11px;letter-spacing:2px;color:#888}
-  #themepk i{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid #ffffff33;transition:.15s}
-  #themepk i:hover{transform:scale(1.15)}
-  #themepk i.on{border-color:#fff;transform:scale(1.18)}
+  .wrap{position:relative;z-index:1}
+  header{text-align:center;padding:60px 16px 8px}
+  .eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:5px;color:var(--acc);border:1px solid var(--accT);border-radius:100px;padding:7px 18px;margin-bottom:18px}
+  .logo{font-size:clamp(46px,10vw,92px);font-weight:900;letter-spacing:2px;color:#fff;line-height:1}
+  .logo u{text-decoration:none;color:var(--acc)}
+  .tagline{margin-top:14px;color:#a7a7c4;font-size:14px;letter-spacing:1px}
+  .accentbar{width:min(180px,40vw);height:3px;border-radius:100px;background:linear-gradient(90deg,transparent,var(--acc),transparent);margin:18px auto 0;opacity:.7}
+  #viewHome{min-height:52vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px 60px}
+  .launch{display:flex;flex-direction:column;gap:14px;align-items:center;width:100%}
+  .lcard{display:flex;align-items:center;gap:18px;width:min(540px,94vw);padding:20px 24px;border-radius:20px;
+    background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.1);cursor:pointer;text-decoration:none;color:#fff;
+    transition:.2s;animation:rise .55s backwards}
+  .lcard:nth-child(1){animation-delay:.05s}
+  .lcard:nth-child(2){animation-delay:.15s}
+  .lcard:nth-child(3){animation-delay:.25s}
+  .lcard:hover{transform:translateY(-3px);border-color:var(--acc);background:rgba(255,255,255,.06);
+    box-shadow:0 18px 50px rgba(0,0,0,.5),0 0 30px var(--accT)}
+  .lcard .ic{width:52px;height:52px;flex:none;border-radius:16px;background:var(--accT);display:flex;align-items:center;justify-content:center;color:var(--acc);transition:.2s}
+  .lcard:hover .ic{transform:scale(1.08)}
+  .lcard .ic svg{width:26px;height:26px}
+  .lcard .tx{flex:1;min-width:0}
+  .lcard h2{font-size:19px;font-weight:900;letter-spacing:2px}
+  .lcard p{font-size:12px;color:#9a9ab8;margin-top:3px}
+  .lcard .go{color:var(--acc);font-weight:900;font-size:18px;transition:.2s}
+  .lcard:hover .go{transform:translateX(5px)}
+  #themepk{display:flex;align-items:center;gap:10px;margin-top:30px;flex-wrap:wrap;justify-content:center}
+  #themepk span{font-size:11px;letter-spacing:3px;color:#888}
+  #themepk i{width:17px;height:17px;border-radius:50%;cursor:pointer;border:2px solid #ffffff2e;transition:.15s}
+  #themepk i:hover{transform:scale(1.2)}
+  #themepk i.on{border-color:#fff;transform:scale(1.2)}
   #lk{background:#552583;box-shadow:inset -8px 0 0 #fdb927}
-  #viewGames{display:none}
-  .toprow{display:flex;justify-content:center;margin-bottom:8px}
-  .backbtn{background:#ffffff10;color:#fff;border:1px solid #ffffff30;border-radius:100px;padding:10px 26px;font-weight:800;font-size:14px;cursor:pointer;transition:.15s}
-  .backbtn:hover{border-color:var(--acc)}
-  #search{margin:16px auto 0;display:flex;align-items:center;gap:10px;width:min(440px,90vw);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:100px;padding:12px 20px}
-  #search input{flex:1;background:none;border:0;outline:0;color:#fff;font-size:15px}
+  #pk2{background:#ff4f9a;box-shadow:inset -8px 0 0 #4d7cff}
+  #viewGames{display:none;padding:10px 16px 60px}
+  .toprow{display:flex;justify-content:center;margin-bottom:6px}
+  .backbtn{background:#ffffff10;color:#fff;border:1px solid #ffffff26;border-radius:100px;padding:10px 28px;font-weight:800;font-size:13px;cursor:pointer;transition:.15s;letter-spacing:1px}
+  .backbtn:hover{border-color:var(--acc);transform:translateY(-1px)}
+  #search{margin:16px auto 0;display:flex;align-items:center;gap:10px;width:min(440px,90vw);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:11px 20px}
+  #search input{flex:1;background:none;border:0;outline:0;color:#fff;font-size:14px}
   #search input::placeholder{color:#777}
-  .section{font-size:13px;letter-spacing:3px;color:#8b8bb0;margin:26px 6px 14px;text-transform:uppercase}
-  .section #count{color:#fff}
-  .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .section{font-size:12px;letter-spacing:4px;color:#8b8bb0;margin:28px 6px 14px;text-transform:uppercase;max-width:1060px;margin-left:auto;margin-right:auto}
+  .section #count{color:var(--acc)}
+  .games{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
   .games a.card{animation:rise .55s backwards}
   .games a.card:nth-child(2){animation-delay:.08s}
   .games a.card:nth-child(3){animation-delay:.16s}
-  a.card{display:block;text-decoration:none;color:#fff;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px 20px;transition:.18s;position:relative;overflow:hidden}
-  a.card:hover{transform:translateY(-4px);border-color:var(--acc);box-shadow:0 14px 34px rgba(0,0,0,.6)}
-  a.card .emoji{font-size:40px}
+  a.card{display:block;text-decoration:none;color:#fff;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:22px 20px;transition:.18s;position:relative;overflow:hidden}
+  a.card:hover{transform:translateY(-4px);border-color:var(--acc);box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 24px var(--accT)}
   a.card img.icon{width:72px;height:72px;border-radius:18px;object-fit:cover;display:block}
-  a.card h2{font-size:19px;margin:10px 0 4px}
+  a.card h2{font-size:19px;margin:12px 0 4px}
   a.card p{font-size:13px;color:#a9a9c9;min-height:36px}
-  a.card .play{display:inline-block;margin-top:12px;font-size:13px;font-weight:800;letter-spacing:1px;background:#fff;color:#000;border-radius:100px;padding:8px 20px}
-  a.card.hot{border-color:#fff}
+  a.card .play{display:inline-block;margin-top:12px;font-size:12px;font-weight:800;letter-spacing:1px;background:#fff;color:#000;border-radius:100px;padding:8px 20px;transition:.15s}
+  a.card:hover .play{background:var(--acc);color:#000}
+  a.card.hot{border-color:#ffffff2e}
   a.card.hot:after{content:'HOT';position:absolute;top:12px;right:12px;font-size:10px;font-weight:900;letter-spacing:1px;background:#fff;color:#000;border-radius:100px;padding:4px 10px}
-  footer{text-align:center;color:#666;font-size:12px;padding:0 0 40px}
+  footer{text-align:center;color:#666;font-size:12px;padding:10px 0 44px}
+  footer b{color:#999}
   #player{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;background:#000}
   #player.open{display:flex}
   #playerbar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#0d0d15;border-bottom:1px solid #ffffff1c}
@@ -72,40 +106,81 @@
   #close{margin-left:auto;background:#fff;color:#000;border:0;border-radius:100px;padding:8px 22px;font-weight:800;cursor:pointer;font-size:13px}
   #fs{background:none;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:100px;padding:8px 18px;font-weight:800;cursor:pointer;font-size:13px}
   #frame{flex:1;border:0;width:100%;background:#000}
+  @keyframes nl{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<div class="bg"></div><div class="grid-bg"></div>
-<div id="splash"><div class="s-logo">socool.fun</div><div class="s-by">made by <b>@euroeth</b> on ig</div><div class="s-bar"><i></i></div></div>
+<canvas id="fx"></canvas>
+<div class="orbs"><i class="orb a"></i><i class="orb b"></i><i class="orb c"></i></div>
+<div class="grid-bg"></div>
+<div id="splash">
+  <div class="word"><span>s</span><span>o</span><span>c</span><span>o</span><span>o</span><span>l</span><span>.</span><span>f</span><span>u</span><span>n</span></div>
+  <div class="s-by">made by <b>@euroeth</b> on ig</div>
+  <div class="s-bar"><i></i></div>
+</div>
 <header>
   <div><span class="eyebrow">SOCOOL.FUN</span></div>
-  <div class="logo">socool.fun</div>
-  <div class="tag">pick where you're going</div>
+  <div class="logo">socool<u>.fun</u></div>
+  <div class="tagline">free unblocked games · encrypted chat · zero downloads</div>
+  <div class="accentbar"></div>
 </header>
+<div id="annbar" style="display:none;position:relative;z-index:2;max-width:min(760px,94vw);margin:16px auto 0;background:rgba(255,255,255,.05);border:1px solid var(--accT);border-left:4px solid var(--acc);border-radius:14px;padding:12px 18px;font-size:14px">
+  <b style="letter-spacing:3px;font-size:10px;color:var(--acc)">ANNOUNCEMENT</b>
+  <div id="anntext" style="margin-top:4px;font-weight:600"></div>
+  <button id="annx" style="margin-top:10px;background:#ffffff14;color:#fff;border:1px solid #ffffff26;border-radius:100px;padding:6px 16px;font-weight:800;cursor:pointer;font-size:11px">DISMISS</button>
+</div>
 <div id="viewHome" class="wrap">
   <div class="launch">
-    <button class="lbtn" id="btnGames">GAMES</button>
-    <a class="lbtn ghosty" href="chat.html">CHAT</a>
-    <a class="lbtn ghosty" href="https://tqig.space" target="_blank" rel="noopener">MY OTHER SITE ↗</a>
+    <button class="lcard" id="btnGames">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="6"/><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"/></svg></span>
+      <span class="tx"><h2>GAMES</h2><p>unblocked browser games — nothing to install</p></span>
+      <span class="go">▸</span>
+    </button>
+    <a class="lcard" href="chat.html">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+      <span class="tx"><h2>CHAT</h2><p>end-to-end encrypted · friends, groups, voice notes</p></span>
+      <span class="go">▸</span>
+    </a>
+    <a class="lcard" href="https://tqig.space" target="_blank" rel="noopener">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></span>
+      <span class="tx"><h2>MY OTHER SITE</h2><p>tqig.space — the main hub</p></span>
+      <span class="go">↗</span>
+    </a>
   </div>
-  <div id="themepk"><span>THEME</span><i data-t="mono" style="background:#fff"></i><i data-t="azure" style="background:#4da3ff"></i><i data-t="coalescent" style="background:#3ddbc0"></i><i data-t="orangy" style="background:#ffa03d"></i><i data-t="lakers" id="lk"></i></div>
+  <div id="themepk"><span>THEME</span><i data-t="mono" style="background:#fff"></i><i data-t="azure" style="background:#4da3ff"></i><i data-t="coalescent" style="background:#3ddbc0"></i><i data-t="orangy" style="background:#ffa03d"></i><i data-t="lakers" id="lk"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
 </div>
 <div id="viewGames" class="wrap">
   <div class="toprow"><button class="backbtn" id="btnHome">← back</button></div>
   <div id="search">🔎 <input id="q" type="text" placeholder="search games…" autocomplete="off" /></div>
-  <div class="section">🎮 pick your game · <span id="count"></span></div>
+  <div class="section">pick your game · <span id="count"></span></div>
   <div class="games">
     <a class="card hot" href="bitlife.html"><img class="icon" src="bitlife.webp" alt="BitLife" /><h2>BitLife</h2><p>Live a whole life. Choices matter.</p><span class="play">PLAY ▸</span></a>
     <a class="card hot" href="arena.html"><img class="icon" src="penalty-challenge-logo.webp" alt="Arena" /><h2>Arena</h2><p>Enter the arena. Last one standing.</p><span class="play">PLAY ▸</span></a>
     <a class="card hot" href="baxaball.html"><img class="icon" src="basketball-stars-2026-m240x240.webp" alt="Basketball Stars" /><h2>Basketball Stars</h2><p>Hoop dreams. Run the court.</p><span class="play">PLAY ▸</span></a>
   </div>
 </div>
-<footer>socool.fun · runs 100% in your browser</footer>
+<footer>socool.fun · runs 100% in your browser · made by <b>@euroeth</b> on ig</footer>
+<div id="notifm" style="display:none;position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:16px">
+  <div style="width:min(420px,94vw);background:#101018;border:1px solid #ffffff2a;border-radius:20px;padding:28px;text-align:center;display:flex;flex-direction:column;gap:14px;animation:nl .25s ease">
+    <div style="font-size:11px;letter-spacing:4px;color:var(--acc);font-weight:900">SERVER NOTIFICATION</div>
+    <div id="notiftext" style="font-size:17px;font-weight:700;line-height:1.5"></div>
+    <button id="notifok" style="align-self:center;background:#fff;color:#000;border:0;border-radius:100px;padding:11px 34px;font-weight:900;cursor:pointer">OK</button>
+  </div>
+</div>
+<div id="banscr" style="display:none;position:fixed;inset:0;z-index:400;background:#05050c;flex-direction:column;gap:20px;align-items:center;justify-content:center;text-align:center;padding:20px">
+  <div style="font-weight:900;font-size:clamp(28px,6vw,44px);letter-spacing:1px;line-height:1.4">YOU'VE BEEN BANNED<br>OFF OF SOCOOL.FUN</div>
+  <div style="color:#a9a9c4;font-size:16px;line-height:2.2">message me on my socials for an unban:<br>
+    <a href="https://www.instagram.com/euroeth/" target="_blank" rel="noopener" style="color:#fff;font-weight:800;font-size:18px;text-decoration:none">@euroeth on ig</a><br>
+    <a href="https://www.tiktok.com/@tqig" target="_blank" rel="noopener" style="color:#fff;font-weight:800;font-size:18px;text-decoration:none">@tqig on tiktok</a></div>
+</div>
 <div id="player"><div id="playerbar"><span id="ptitle"></span><button id="fs">⛶ FULLSCREEN</button><button id="close">✕ CLOSE</button></div><iframe id="frame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe></div>
+<script defer src="vendor/firebase-app-compat.js"></script>
+<script defer src="vendor/firebase-auth-compat.js"></script>
+<script defer src="vendor/firebase-firestore-compat.js"></script>
 <script>
 (function(){const s=document.getElementById('splash');if(!s)return;let gone=false;
 const go=()=>{if(gone)return;gone=true;s.classList.add('hide');setTimeout(()=>s.remove(),500)};
-setTimeout(go,2100);s.onclick=go})();
+setTimeout(go,2300);s.onclick=go})();
 (function(){try{const t=localStorage.sc_theme||'mono';document.body.dataset.theme=t;
 document.querySelectorAll('#themepk i').forEach(i=>{i.classList.toggle('on',i.dataset.t===t);
 i.onclick=()=>{document.body.dataset.theme=i.dataset.t;try{localStorage.sc_theme=i.dataset.t}catch(e){}
@@ -123,6 +198,44 @@ document.getElementById('close').onclick=()=>{p.classList.remove('open');f.src='
 const upd=()=>{let v=0;cards.forEach(a=>{const hit=a.querySelector('h2').textContent.toLowerCase().includes(q.value.trim().toLowerCase());a.style.display=hit?'':'none';if(hit)v++});n.textContent=v+' shown'};
 q.addEventListener('input',upd);upd})();
 (function(){document.getElementById('fs').onclick=()=>{const f=document.getElementById('frame');if(f.requestFullscreen)f.requestFullscreen()}})();
+(function(){const c=document.getElementById('fx'),x=c.getContext('2d');
+  let w,h,dots;const reset=()=>{w=c.width=innerWidth;h=c.height=innerHeight;
+    dots=Array.from({length:42},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.7+.3,s:Math.random()*.35+.06,a:Math.random()*.35+.1}))};
+  reset();addEventListener('resize',reset);
+  (function draw(){x.clearRect(0,0,w,h);dots.forEach(d=>{d.y-=d.s;if(d.y<0)d.y=h;
+    x.beginPath();x.fillStyle='rgba(255,255,255,'+d.a+')';x.arc(d.x,d.y,d.r,0,6.28);x.fill()});requestAnimationFrame(draw)})()})();
+(function(){
+  document.getElementById('annx').onclick=()=>document.getElementById('annbar').style.display='none';
+  document.getElementById('notifok').onclick=()=>document.getElementById('notifm').style.display='none';
+  if(typeof firebase==='undefined')return;
+  try{
+    firebase.initializeApp({apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"});
+    const DB=firebase.firestore();
+    const chime=()=>{try{const a=new (window.AudioContext||window.webkitAudioContext)();
+      const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=660;g.gain.value=.18;
+      o.connect(g);g.connect(a.destination);o.start();setTimeout(()=>{o.stop();a.close()},260)}catch(e){}};
+    firebase.auth().signInAnonymously().then(()=>{
+      const me=firebase.auth().currentUser.uid;
+      DB.collection('bans').doc(me).get().then(b=>{
+        if(b.exists){document.querySelectorAll('#splash,header,#annbar,#viewHome,#viewGames,footer,#player').forEach(e=>e.style.display='none');
+          document.getElementById('banscr').style.display='flex'}}).catch(()=>{});
+      DB.collection('ann').orderBy('ts','desc').limit(1).onSnapshot(s=>{
+        if(s.empty){document.getElementById('annbar').style.display='none';return}
+        const d=s.docs[0].data();
+        document.getElementById('annbar').style.display='block';
+        document.getElementById('anntext').textContent=d.text||'';
+      },()=>{});
+      let lastN=+(localStorage.sc_lastN||0);
+      if(!lastN){localStorage.sc_lastN=Date.now();lastN=+localStorage.sc_lastN}
+      DB.collection('notifs').orderBy('ts','desc').limit(1).onSnapshot(s=>{
+        if(s.empty)return;const d=s.docs[0].data();
+        if(d.ts>lastN){localStorage.sc_lastN=d.ts;
+          document.getElementById('notiftext').textContent=d.text||'';
+          document.getElementById('notifm').style.display='flex';chime()}
+      },()=>{});
+    }).catch(()=>{});
+  }catch(e){}
+})();
 </script>
 </body>
 </html>

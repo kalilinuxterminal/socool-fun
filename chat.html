@@ -10,6 +10,8 @@
   body[data-theme="coalescent"]{--acc:#3ddbc0;--accT:rgba(61,219,192,.22);--orbA:#0e8f7f;--orbB:#63e2d0}
   body[data-theme="orangy"]{--acc:#ffa03d;--accT:rgba(255,160,61,.22);--orbA:#e07b1f;--orbB:#ffc46b}
   body[data-theme="lakers"]{--acc:#fdb927;--accT:rgba(253,185,39,.22);--orbA:#552583;--orbB:#fdb927}
+  body[data-theme="pink"]{--acc:#ff4f9a;--accT:rgba(255,79,154,.22);--orbA:#ff2d7e;--orbB:#ff8fc0}
+  body[data-theme="pinkblue"]{--acc:#ff4f9a;--accT:rgba(77,124,255,.22);--orbA:#4d7cff;--orbB:#ff2d7e}
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif}
   body{background:#05050c;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 12px;overflow-x:hidden}
   canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
@@ -85,6 +87,7 @@
   #themepk i{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid #ffffff33;transition:.15s}
   #themepk i:hover{transform:scale(1.15)}
   #themepk i.on{border-color:#fff;transform:scale(1.18)}
+  #pk2{background:#ff4f9a;box-shadow:inset -8px 0 0 #4d7cff}
   #lk{background:#552583;box-shadow:inset -8px 0 0 #fdb927}
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:60;display:none;align-items:center;justify-content:center;padding:16px}
   .modal.open{display:flex}
@@ -174,6 +177,11 @@
   <div id="unbres" style="display:flex;flex-direction:column;gap:6px"></div>
   <div id="abans" style="display:flex;flex-direction:column;gap:6px"></div>
   <div class="asec" id="secMods">MODS</div><div id="amods" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="asec" id="secCast">BROADCAST</div>
+  <div id="castbox" style="display:flex;flex-direction:column;gap:8px">
+    <div class="row"><input id="annq" maxlength="200" placeholder="announcement (site banner)" /><button id="annb" class="ghost">POST</button><button id="annc" class="ghost">CLEAR</button></div>
+    <div class="row"><input id="notq" maxlength="200" placeholder="popup notification (all users)" /><button id="notb" class="ghost">SEND</button></div>
+  </div>
   <div class="asec" id="secMutes">MUTED</div><div id="amutes" style="display:flex;flex-direction:column;gap:6px"></div>
   <div class="asec" id="secUsers">USERS</div><div id="ausers" style="display:flex;flex-direction:column;gap:6px"></div>
 </div></div>
@@ -183,7 +191,7 @@
 <div id="settings" class="modal"><div class="mbox" style="max-width:420px">
   <div class="row" style="justify-content:space-between;align-items:center"><b>SETTINGS</b><button id="setx" class="ghost">CLOSE</button></div>
   <div class="asec">THEME</div>
-  <div id="themepk"><span>THEME</span><i data-t="mono" style="background:#fff"></i><i data-t="azure" style="background:#4da3ff"></i><i data-t="coalescent" style="background:#3ddbc0"></i><i data-t="orangy" style="background:#ffa03d"></i><i data-t="lakers" id="lk"></i></div>
+  <div id="themepk"><span>THEME</span><i data-t="mono" style="background:#fff"></i><i data-t="azure" style="background:#4da3ff"></i><i data-t="coalescent" style="background:#3ddbc0"></i><i data-t="orangy" style="background:#ffa03d"></i><i data-t="lakers" id="lk"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
   <div class="asec">STATUS</div>
   <div class="row" id="presrow" style="align-items:center"><span class="note">VISIBILITY</span><button id="pon" class="ghost">ONLINE</button><button id="poff" class="ghost">INVISIBLE</button></div>
   <div class="asec">SOUND</div>
@@ -191,6 +199,11 @@
   <div class="asec">MORE</div>
   <div class="note" style="opacity:.4">read receipts — coming soon</div>
   <div class="note" style="opacity:.4">message scheduling — coming soon</div>
+</div></div>
+<div id="notifm2" class="modal"><div class="mbox" style="max-width:400px;text-align:center">
+  <div style="font-size:11px;letter-spacing:4px;color:var(--acc);font-weight:900">SERVER NOTIFICATION</div>
+  <div id="notiftext2" style="font-weight:700;font-size:16px;line-height:1.5"></div>
+  <button id="notifok2" style="align-self:center">OK</button>
 </div></div>
 <script defer src="vendor/firebase-app-compat.js"></script>
 <script defer src="vendor/firebase-auth-compat.js"></script>
@@ -441,6 +454,21 @@ function start(p){
   DB.collection('users').doc(ME).get().then(d=>{if(d.exists){BLOCKED=d.data().blocked||[];
     CLOSED=(d.data().closed||[]).map(x=>typeof x==='string'?{c:x,a:0}:x)}}).catch(()=>{});
   DB.collection('mutes').doc(ME).onSnapshot(d=>{MUTED=d.exists},()=>{});
+  DB.collection('ann').orderBy('ts','desc').limit(1).onSnapshot(s=>{
+    if(s.empty)return;const d=s.docs[0].data();
+    const seen=+(localStorage.sc_annSeen||0);
+    if(d.ts>seen){localStorage.sc_annSeen=d.ts;toast('ANNOUNCEMENT: '+(d.text||''))}
+  },()=>{});
+  (function(){
+    let nlast=+(localStorage.sc_notifSeen||0);
+    if(!nlast){localStorage.sc_notifSeen=Date.now();nlast=+localStorage.sc_notifSeen}
+    DB.collection('notifs').orderBy('ts','desc').limit(1).onSnapshot(s=>{
+      if(s.empty)return;const d=s.docs[0].data();
+      if(d.ts>nlast){localStorage.sc_notifSeen=d.ts;
+        $('notiftext2').textContent=d.text||'';$('notifm2').classList.add('open');beep()}
+    },()=>{});
+  })();
+  $('notifok2').onclick=()=>$('notifm2').classList.remove('open');
   DB.collection('mods').doc(ME).get().then(d=>{ISMOD=d.exists;
     if(ISMOD){$('adminb').textContent='MOD';$('adminb').style.display='block';$('adminb').onclick=openAdmin}}).catch(()=>{});
   const flash=(t,okk)=>{toast(t,!okk);if(okk)$('newpanel').style.display='none'};
@@ -1064,10 +1092,16 @@ function openAdmin(){
     if(!b||!b.exists)btn.disabled=true;
     btn.onclick=()=>doUnban(uid).then(()=>{toast('unbanned');$('unbq').value='';R.textContent=''}).catch(e=>toast(e.message||e,true));
     chip.appendChild(s);chip.appendChild(btn);R.appendChild(chip)};
+  $('annb').onclick=async()=>{const t=$('annq').value.trim();if(!t)return;
+    try{await DB.collection('ann').add({text:t,ts:Date.now()});$('annq').value='';toast('announcement posted')}catch(e){toast(e.message||e,true)}};
+  $('annc').onclick=async()=>{try{const s=await DB.collection('ann').get();
+    await Promise.all(s.docs.map(d=>d.ref.delete()));toast('announcement cleared')}catch(e){toast(e.message||e,true)}};
+  $('notb').onclick=async()=>{const t=$('notq').value.trim();if(!t)return;
+    try{await DB.collection('notifs').add({text:t,ts:Date.now()});$('notq').value='';toast('notification sent to everyone')}catch(e){toast(e.message||e,true)}};
 }
 function renderA(){
   const owner=ME===ADMIN_UID;
-  ['secReports','secBans','secMods','areports','abans','amods','unbanrow','unbres'].forEach(i=>{$(i).style.display=owner?'':'none'});
+  ['secReports','secBans','secMods','secCast','areports','abans','amods','castbox','unbanrow','unbres'].forEach(i=>{$(i).style.display=owner?'':'none'});
   const mk=(l,f)=>{const b=document.createElement('button');b.textContent=l;
     b.onclick=()=>f().catch(e=>toast(e.message||e,true));return b};
   if(owner){
