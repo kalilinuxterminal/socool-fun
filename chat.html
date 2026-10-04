@@ -6,48 +6,66 @@
 <title>Chat — socool.fun</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif}
-  body{background:#0a0a10;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 12px}
-  h1{font-size:24px;font-weight:900;letter-spacing:1px}
-  h1 span{color:#888;font-size:13px;font-weight:400}
-  #app{width:min(860px,96vw);display:grid;grid-template-columns:250px 1fr;gap:12px;margin-top:12px;min-height:60vh}
-  .pane{background:#101018;border:1px solid #ffffff1e;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:50vh}
+  body{background:#05050c;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 12px;overflow-x:hidden}
+  canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;animation:drift 18s ease-in-out infinite}
+  .orb.a{width:380px;height:380px;background:#6d5cff;top:-80px;left:-40px}
+  .orb.b{width:320px;height:320px;background:#00e5ff;right:-60px;bottom:10%;animation-duration:22s}
+  @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-24px)}}
+  .wrap{position:relative;z-index:1;width:min(920px,96vw);display:flex;flex-direction:column;align-items:center}
+  h1{font-size:28px;font-weight:900;letter-spacing:1px}
+  h1 span{color:#9aa3d0;font-size:13px;font-weight:400}
+  #app{width:100%;display:grid;grid-template-columns:270px 1fr;gap:12px;margin-top:14px;min-height:62vh}
+  .pane{background:rgba(16,16,24,.78);border:1px solid #ffffff22;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:52vh;backdrop-filter:blur(10px);transition:.2s border-color,.2s box-shadow}
+  .pane:hover{border-color:#ffffff44;box-shadow:0 12px 40px #6d5cff22}
   .row{display:flex;gap:8px}
-  input{flex:1;background:#ffffff10;border:1px solid #ffffff2a;color:#fff;border-radius:10px;padding:10px;font-size:14px;outline:0;min-width:0}
-  button{background:#fff;color:#000;border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;font-size:13px;white-space:nowrap}
+  input{flex:1;background:#ffffff10;border:1px solid #ffffff2a;color:#fff;border-radius:12px;padding:11px;font-size:14px;outline:0;min-width:0;transition:.15s}
+  input:focus{border-color:#7af0ff;box-shadow:0 0 0 4px #7af0ff22}
+  button{background:#fff;color:#000;border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s}
+  button:hover{transform:translateY(-1px);box-shadow:0 8px 20px #ffffff33}
   button.ghost{background:#ffffff14;color:#fff;border:1px solid #ffffff2a}
-  .item{padding:10px;border-radius:10px;background:#ffffff08;cursor:pointer;font-size:14px}
-  .item:hover{background:#ffffff14}
-  .item.act{background:#ffffff1e}
+  .item{padding:10px;border-radius:12px;background:#ffffff08;cursor:pointer;font-size:14px;transition:.15s}
+  .item:hover{background:#ffffff16;transform:translateX(3px)}
+  .item.act{background:#ffffff20;box-shadow:inset 0 0 0 1px #7af0ff66}
   .item small{color:#888;display:block;font-size:11px}
   #msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;max-height:46vh;min-height:200px}
-  .m{max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px;word-break:break-word}
+  .m{max-width:80%;padding:8px 12px;border-radius:14px;font-size:14px;word-break:break-word;animation:pop .18s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .m.me{align-self:flex-end;background:#fff;color:#000}
   .m.them{align-self:flex-start;background:#ffffff16}
-  .m small{display:block;font-size:10px;opacity:.6}
-  #setup{width:min(440px,94vw);background:#101018;border:1px solid #ffffff22;border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:12px;text-align:center}
+  .m.blocked{opacity:.55;font-style:italic}
+  #setup{width:min(440px,94vw);background:rgba(16,16,24,.86);border:1px solid #ffffff22;border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:12px;text-align:center;backdrop-filter:blur(12px);margin-top:18px}
   #setup input{text-align:center;font-size:16px}
-  .note{font-size:11px;color:#777}
-  #mycode{font-size:15px;background:#ffffff0d;border:1px dashed #ffffff3a;border-radius:10px;padding:10px;cursor:pointer}
-  #setup button:disabled{opacity:.55}
-  #serr{color:#f66;min-height:16px;font-size:12px}
-  a.home{color:#777;font-size:12px;text-decoration:none;margin-top:6px}
+  .note{font-size:12px;color:#8b90b0}
+  #myname{font-size:15px;background:#ffffff0d;border:1px dashed #7af0ff55;border-radius:12px;padding:10px;cursor:pointer;transition:.15s}
+  #myname:hover{border-color:#7af0ff;background:#7af0ff14}
+  #setup button:disabled{opacity:.55;transform:none;box-shadow:none}
+  #serr,#aerr{color:#ff6b8a;min-height:16px;font-size:12px}
+  a.home{color:#7af0ff;font-size:13px;text-decoration:none;margin-top:14px;font-weight:700}
+  a.home:hover{text-decoration:underline}
+  .other{margin-top:8px;font-size:12px;color:#9aa3d0}
+  .other a{color:#7af0ff;font-weight:800}
   @media(max-width:640px){#app{grid-template-columns:1fr}#listpane.hide{display:none}}
 </style>
 </head>
 <body>
-<h1>💬 CHAT <span>· end-to-end encrypted</span></h1>
+<canvas id="fx"></canvas>
+<div class="orbs"><i class="orb a"></i><i class="orb b"></i></div>
+<div class="wrap">
+<h1>💬 CHAT <span>· add by display name · keep it clean</span></h1>
 <div id="setup">
-  <div style="font-weight:900;font-size:18px">pick your name + code</div>
-  <div class="note">friends add you with your code. keys stay in THIS browser — new device = new keys.</div>
-  <input id="nm" maxlength="16" placeholder="display name" />
-  <input id="cd" maxlength="12" placeholder="friend code (e.g. tqig77)" />
+  <div style="font-weight:900;font-size:18px">pick a display name</div>
+  <div class="note">friends add you with this name. no friend code. keys stay in this browser.</div>
+  <input id="nm" maxlength="16" placeholder="display name" autocomplete="off" />
   <button id="go" disabled>connecting…</button>
   <div class="note" id="serr"></div>
 </div>
 <div id="app" style="display:none">
   <div class="pane" id="listpane">
-    <div id="mycode" title="tap to copy">…</div>
-    <div class="row"><input id="add" maxlength="12" placeholder="friend code" /><button id="addb">ADD</button></div>
+    <div id="myname" title="tap to copy">…</div>
+    <div class="row"><input id="add" maxlength="16" placeholder="their display name" /><button id="addb">ADD</button></div>
+    <div id="aerr"></div>
     <div id="reqs"></div>
     <div id="chats" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto"></div>
   </div>
@@ -55,21 +73,53 @@
     <div id="ctitle" style="font-weight:900">pick a chat</div>
     <div id="msgs"></div>
     <div class="row"><input id="box" maxlength="500" placeholder="message…" /><button id="send">SEND</button></div>
+    <div class="note" id="merr"></div>
   </div>
 </div>
-<a class="home" href="index.html">← socool.fun</a>
+<a class="home" href="index.html" target="_top">← socool.fun</a>
+<div class="other">our other site: <a href="https://tqig.space" target="_blank" rel="noopener">https://tqig.space</a></div>
+</div>
 <script defer src="vendor/firebase-app-compat.js"></script>
 <script defer src="vendor/firebase-auth-compat.js"></script>
 <script defer src="vendor/firebase-firestore-compat.js"></script>
 <script>
-// ===== PASTE YOUR FIREBASE CONFIG HERE (console.firebase.google.com → project settings) =====
+if(window.top!==window.self){try{window.top.location.replace(location.href)}catch(e){}}
 const CONFIG={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
-// ============================================================================================
-let DB=null,ME=null,KEY=null,OPEN=null,UNSUB=null;
+let DB=null,ME=null,KEY=null,OPEN=null,UNSUB=null,MEP=null;
 const $=id=>document.getElementById(id);
 const b64=a=>btoa(String.fromCharCode(...a));
 const unb=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 function ok(){return CONFIG.apiKey!=='PASTE'}
+function normName(s){return (s||'').trim().toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,16)}
+function variants(s){
+  const maps=[
+    {'$':'s','0':'o','1':'i','!':'i','|':'i','3':'e','4':'a','@':'a','5':'s','7':'t','+':'t','8':'b','9':'g','2':'z'},
+    {'$':'g','0':'o','1':'i','!':'i','|':'i','3':'e','4':'a','@':'a','5':'s','7':'t','+':'t','8':'b','9':'g','2':'z'}
+  ];
+  const out=[];
+  const src=(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'');
+  for(const M of maps){
+    let t='';
+    for(const ch of src){if(M[ch])t+=M[ch];else if(/[a-z]/.test(ch))t+=ch}
+    t=t.replace(/(.)\1{2,}/g,'$1$1');
+    out.push(t,t.replace(/l/g,'i'));
+  }
+  return [...new Set(out)];
+}
+const BAD_SUB=['nigger','nigga','nigg','faggot','fagot','hitler','nazi','kike','chink','spic','retard','whore','whroe','slut','porn','fuck','fck','fuk','fvck','shit','bitch','cunt','dick','cock','pussy','rape','molest','kkk'];
+const BAD_TOKEN=new Set(['nga','ncr','nig','kys','ass','sex','cum','hoe','fag']);
+function isClean(text){
+  const raw=(text||'').trim();
+  if(!raw)return true;
+  const tokens=raw.toLowerCase().split(/[^a-z0-9$|!@]+/).filter(Boolean);
+  for(const t of tokens){
+    for(const v of variants(t)){if(BAD_TOKEN.has(t)||BAD_TOKEN.has(v))return false}
+  }
+  for(const v of variants(raw)){
+    for(const w of BAD_SUB){if(v.includes(w))return false}
+  }
+  return true;
+}
 async function genKeys(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
   return{pub:await crypto.subtle.exportKey('jwk',kp.publicKey),priv:await crypto.subtle.exportKey('jwk',kp.privateKey)}}
 async function sharedKey(theirJwk){const mine=await crypto.subtle.importKey('jwk',JSON.parse(localStorage.sc_priv),'ECDH',{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);
@@ -80,48 +130,100 @@ async function enc(key,t){const iv=crypto.getRandomValues(new Uint8Array(12));
   return{iv:b64(iv),ct:b64(ct)}}
 async function dec(key,m){try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb(m.iv)},key,unb(m.ct));
   return new TextDecoder().decode(pt)}catch(e){return'🔒 undecryptable (keys changed)'}}
+async function claimName(nm){
+  const key=normName(nm);
+  if(key.length<3)throw new Error('name needs 3+ letters or numbers');
+  if(!isClean(nm)||!isClean(key))throw new Error('that name is not allowed');
+  await DB.runTransaction(async tx=>{
+    const codeRef=DB.collection('codes').doc(key);
+    const codeDoc=await tx.get(codeRef);
+    if(codeDoc.exists&&codeDoc.data().uid!==ME)throw new Error('name taken, pick another');
+    tx.set(codeRef,{uid:ME});
+  });
+  try{await DB.collection('names').doc(key).set({uid:ME,name:nm.trim().slice(0,16)})}catch(e){}
+  return key;
+}
+async function lookupUser(q){
+  const key=normName(q);
+  if(!key)return null;
+  try{
+    const byName=await DB.collection('names').doc(key).get();
+    if(byName.exists)return byName.data().uid;
+  }catch(e){}
+  const byCode=await DB.collection('codes').doc(key).get();
+  if(byCode.exists)return byCode.data().uid;
+  try{
+    const snap=await DB.collection('users').where('nameLower','==',key).limit(1).get();
+    if(!snap.empty)return snap.docs[0].id;
+  }catch(e){}
+  return null;
+}
 async function init(){
   if(typeof firebase==='undefined'){$('setup').style.display='flex';$('serr').textContent='could not reach the chat servers from this network.';return}
   if(!ok()){$('setup').style.display='flex';$('serr').textContent='chat not connected yet — owner is wiring it up.';return}
   firebase.initializeApp(CONFIG);DB=firebase.firestore();
   let me=null;
   try{
-  await firebase.auth().signInAnonymously();ME=firebase.auth().currentUser.uid;
-  me=await DB.collection('users').doc(ME).get();
+    await firebase.auth().signInAnonymously();ME=firebase.auth().currentUser.uid;
+    me=await DB.collection('users').doc(ME).get();
   }catch(e){$('serr').textContent='blocked: '+e.message;return}
   $('go').disabled=false;$('go').textContent='START ▸';
-  if(me.exists&&localStorage.sc_priv){start(JSON.parse(localStorage.sc_name||'null')||me.data());return}
+  if(me.exists&&localStorage.sc_priv){
+    const p=JSON.parse(localStorage.sc_name||'null')||me.data();
+    if(p&&p.name&&isClean(p.name)){start(p);return}
+  }
   $('go').onclick=async()=>{
-    const nm=$('nm').value.trim().slice(0,16),cd=$('cd').value.trim().toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);
-    if(!nm||cd.length<3){$('serr').textContent='need a name + code (3+ letters/numbers)';return}
-    const taken=await DB.collection('codes').doc(cd).get();
-    if(taken.exists){$('serr').textContent='code taken, pick another';return}
-    const k=await genKeys();
-    localStorage.sc_priv=JSON.stringify(k.priv);
-    const profile={name:nm,code:cd,pub:k.pub};
-    localStorage.sc_name=JSON.stringify(profile);
-    await DB.collection('users').doc(ME).set(profile);
-    await DB.collection('codes').doc(cd).set({uid:ME});
-    start(profile)};
+    $('serr').textContent='';
+    const nm=$('nm').value.trim().slice(0,16);
+    if(!nm){$('serr').textContent='need a display name';return}
+    if(!isClean(nm)){$('serr').textContent='that name is not allowed';return}
+    try{
+      const key=await claimName(nm);
+      let pub=null;
+      if(localStorage.sc_priv){
+        pub=(me&&me.exists&&me.data().pub)||(JSON.parse(localStorage.sc_name||'null')||{}).pub||null;
+      }
+      if(!localStorage.sc_priv||!pub){
+        const k=await genKeys();
+        localStorage.sc_priv=JSON.stringify(k.priv);
+        pub=k.pub;
+      }
+      const profile={name:nm,nameLower:key,pub};
+      localStorage.sc_name=JSON.stringify(profile);
+      await DB.collection('users').doc(ME).set(profile,{merge:true});
+      start(profile);
+    }catch(err){$('serr').textContent=err.message||'could not save name'}
+  };
 }
 function start(p){
+  MEP=p;
   $('setup').style.display='none';$('app').style.display='grid';
-  $('mycode').textContent='your code: '+p.code+' (tap to copy)';
-  $('mycode').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(p.code)};
+  $('myname').textContent='your name: '+p.name+' (tap to copy)';
+  $('myname').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(p.name)};
+  claimName(p.name).catch(()=>{});
+  if(p.name&&!p.nameLower){DB.collection('users').doc(ME).set({nameLower:normName(p.name)},{merge:true}).catch(()=>{})}
   $('addb').onclick=async()=>{
-    const cd=$('add').value.trim().toLowerCase().replace(/[^a-z0-9]/g,'');if(!cd)return;
-    const c=await DB.collection('codes').doc(cd).get();
-    if(!c.exists){alert('no one has that code');return}
-    const to=c.data().uid;if(to===ME){alert('that is you lol');return}
+    $('aerr').textContent='';
+    const q=$('add').value.trim();
+    if(!q)return;
+    const to=await lookupUser(q);
+    if(!to){$('aerr').textContent='nobody has that name';return}
+    if(to===ME){$('aerr').textContent='that is you lol';return}
     const rev=await DB.collection('requests').doc(to+'_'+ME).get();
-    if(rev.exists&&rev.data().status==='pending'){alert('they already added you — check requests below');return}
+    if(rev.exists&&rev.data().status==='pending'){$('aerr').textContent='they already added you — check requests';return}
+    const existing=await DB.collection('requests').doc(ME+'_'+to).get();
+    if(existing.exists&&existing.data().status==='pending'){$('aerr').textContent='request already sent';return}
     const meDoc=await DB.collection('users').doc(ME).get();
     await DB.collection('requests').doc(ME+'_'+to).set({from:ME,to:to,fromName:p.name,fromPubKey:meDoc.data().pub,status:'pending',ts:Date.now()});
-    $('add').value='';alert('request sent!')};
+    $('add').value='';$('aerr').textContent='';alert('request sent!');
+  };
   DB.collection('requests').where('to','==',ME).where('status','==','pending').onSnapshot(s=>{
-    const R=$('reqs');R.innerHTML=s.empty?'':'<div style="font-size:11px;color:#888">REQUESTS</div>';
+    const R=$('reqs');R.textContent='';
+    if(!s.empty){const lab=document.createElement('div');lab.style.cssText='font-size:11px;color:#888';lab.textContent='REQUESTS';R.appendChild(lab)}
     s.forEach(d=>{const r=d.data();const el=document.createElement('div');el.className='item';
-      el.innerHTML='<b>'+r.fromName+'</b> wants to chat<small>accept = exchange encrypted keys</small>';
+      const b=document.createElement('b');b.textContent=r.fromName||'someone';
+      const sm=document.createElement('small');sm.textContent='accept to chat';
+      el.appendChild(b);el.appendChild(sm);
       const row=document.createElement('div');row.className='row';row.style.marginTop='6px';
       const okB=document.createElement('button');okB.textContent='ACCEPT';
       okB.onclick=async()=>{const cid=[ME,r.from].sort().join('_');
@@ -130,13 +232,17 @@ function start(p){
         await DB.collection('requests').doc(d.id).update({status:'accepted'})};
       const no=document.createElement('button');no.textContent='NO';no.className='ghost';
       no.onclick=()=>DB.collection('requests').doc(d.id).update({status:'declined'});
-      row.appendChild(okB);row.appendChild(no);el.appendChild(row);R.appendChild(el)})});
+      row.appendChild(okB);row.appendChild(no);el.appendChild(row);R.appendChild(el)});
+  });
   DB.collection('chats').where('members','array-contains',ME).orderBy('updated','desc').onSnapshot(s=>{
-    const C=$('chats');C.innerHTML='';
+    const C=$('chats');C.textContent='';
     s.forEach(d=>{const c=d.data();const other=c.members.find(u=>u!==ME);
       const el=document.createElement('div');el.className='item'+(OPEN===d.id?' act':'');
-      el.innerHTML='<b>'+(c.names?c.names[other]:'chat')+'</b><small>🔒 encrypted</small>';
-      el.onclick=()=>openChat(d.id,other,c);C.appendChild(el)})});
+      const b=document.createElement('b');b.textContent=(c.names&&c.names[other])||'chat';
+      const sm=document.createElement('small');sm.textContent='🔒 encrypted';
+      el.appendChild(b);el.appendChild(sm);
+      el.onclick=()=>openChat(d.id,other,c);C.appendChild(el)});
+  });
   $('send').onclick=send;$('box').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
 }
 async function myKey(theirPub){if(!KEY||KEY._for!==JSON.stringify(theirPub))KEY=Object.assign(await sharedKey(theirPub),{_for:JSON.stringify(theirPub)});return KEY}
@@ -148,15 +254,30 @@ async function openChat(cid,other,meta){OPEN=cid;CHATMETA={other:other,pubs:meta
   if(UNSUB)UNSUB();
   const key=await myKey(meta.pubs[other]);
   UNSUB=DB.collection('chats').doc(cid).collection('msgs').orderBy('ts').onSnapshot(async s=>{
-    const M=$('msgs');M.innerHTML='';
+    const M=$('msgs');M.textContent='';
     for(const d of s.docs){const m=d.data();const el=document.createElement('div');
-      el.className='m '+(m.from===ME?'me':'them');el.textContent=await dec(key,m);M.appendChild(el)}
+      const txt=await dec(key,m);
+      el.className='m '+(m.from===ME?'me':'them')+(isClean(txt)?'':' blocked');
+      el.textContent=isClean(txt)?txt:'blocked';
+      M.appendChild(el)}
     M.scrollTop=M.scrollHeight})}
-async function send(){const t=$('box').value.trim();if(!t||!OPEN)return;$('box').value='';
+async function send(){
+  $('merr').textContent='';
+  const t=$('box').value.trim();if(!t||!OPEN)return;
+  if(!isClean(t)){$('merr').textContent='that message is not allowed';return}
+  $('box').value='';
   const key=await myKey(CHATMETA.pubs[CHATMETA.other]);
   const e=await enc(key,t);
   await DB.collection('chats').doc(OPEN).collection('msgs').add({from:ME,iv:e.iv,ct:e.ct,ts:Date.now()});
-  await DB.collection('chats').doc(OPEN).update({updated:Date.now()})}
+  await DB.collection('chats').doc(OPEN).update({updated:Date.now()});
+}
+(function(){
+  const c=document.getElementById('fx'),x=c.getContext('2d');
+  let w,h,dots;
+  const reset=()=>{w=c.width=innerWidth;h=c.height=innerHeight;dots=Array.from({length:36},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6+.3,s:Math.random()*.35+.08,a:Math.random()*.4+.12}))};
+  reset();addEventListener('resize',reset);
+  (function draw(){x.clearRect(0,0,w,h);dots.forEach(d=>{d.y-=d.s;if(d.y<0)d.y=h;x.beginPath();x.fillStyle='rgba(255,255,255,'+d.a+')';x.arc(d.x,d.y,d.r,0,6.28);x.fill()});requestAnimationFrame(draw)})();
+})();
 if(document.readyState==='loading')addEventListener('DOMContentLoaded',init);else init();
 </script>
 </body>
