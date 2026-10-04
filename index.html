@@ -6,19 +6,28 @@
 <title>socool.fun — free unblocked games</title>
 <meta property="og:title" content="socool.fun" />
 <meta property="og:description" content="free unblocked games. no downloads." />
-<link rel="icon" type="image/webp" href="bitlife.webp" />
+<link rel="icon" type="image/webp" href="browser%20tba%20icon.webp" />
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
   body{background:#0a0a14;color:#fff;min-height:100vh;overflow-x:hidden}
   .bg{position:fixed;inset:0;background:#0a0a10;z-index:-2}
   .grid-bg{position:fixed;inset:0;z-index:-1;opacity:.2;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%)}
   header{text-align:center;padding:52px 16px 10px}
-  .logo{font-size:clamp(44px,9vw,84px);font-weight:900;letter-spacing:2px;color:#fff}
-  .tag{margin-top:8px;color:#b9b9d6;font-size:15px;letter-spacing:1px}
+  .eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:4px;color:#0a0a10;background:#fff;border-radius:100px;padding:6px 16px;margin-bottom:16px}
+  .logo{font-size:clamp(44px,9vw,84px);font-weight:900;letter-spacing:2px;color:#fff;line-height:1}
+  .tag{margin-top:10px;color:#b9b9d6;font-size:15px;letter-spacing:1px}
   .tag b{color:#fff}
+  #search{margin:22px auto 0;display:flex;align-items:center;gap:10px;width:min(440px,90vw);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:100px;padding:12px 20px}
+  #search input{flex:1;background:none;border:0;outline:0;color:#fff;font-size:15px}
+  #search input::placeholder{color:#777}
   .wrap{max-width:1060px;margin:0 auto;padding:30px 16px 60px}
   .section{font-size:13px;letter-spacing:3px;color:#8b8bb0;margin:26px 6px 14px;text-transform:uppercase}
+  .section #count{color:#fff}
   .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .games a.card{animation:rise .55s backwards}
+  .games a.card:nth-child(2){animation-delay:.08s}
+  .games a.card:nth-child(3){animation-delay:.16s}
+  @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
   a.card{display:block;text-decoration:none;color:#fff;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px 20px;transition:.18s;position:relative;overflow:hidden}
   a.card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.4);box-shadow:0 14px 34px rgba(0,0,0,.6)}
   a.card .emoji{font-size:40px}
@@ -35,6 +44,7 @@
   #playerbar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#0d0d15;border-bottom:1px solid #ffffff1c}
   #ptitle{font-weight:800;letter-spacing:1px;font-size:14px}
   #close{margin-left:auto;background:#fff;color:#000;border:0;border-radius:100px;padding:8px 22px;font-weight:800;cursor:pointer;font-size:13px}
+  #fs{background:none;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:100px;padding:8px 18px;font-weight:800;cursor:pointer;font-size:13px}
   #frame{flex:1;border:0;width:100%;background:#000}
   #splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:#0a0a14;transition:opacity .45s;cursor:pointer}
   #splash.hide{opacity:0;pointer-events:none}
@@ -51,11 +61,13 @@
 <div class="bg"></div><div class="grid-bg"></div>
 <div id="splash"><div class="s-logo">socool.fun</div><div class="s-by">made by <b>@euroeth</b> on instagram</div><div class="s-bar"><i></i></div></div>
 <header>
+  <div><span class="eyebrow">FREE UNBLOCKED GAMES</span></div>
   <div class="logo">socool.fun</div>
-  <div class="tag">free unblocked games · <b>no downloads</b> · works on chromebook</div>
+  <div class="tag">no downloads · works on chromebook</div>
+  <div id="search">🔎 <input id="q" type="text" placeholder="search games…" autocomplete="off" /></div>
 </header>
 <div class="wrap">
-  <div class="section">🎮 pick your game</div>
+  <div class="section">🎮 pick your game · <span id="count"></span></div>
   <div class="games">
     <a class="card hot" href="bitlife.html"><img class="icon" src="bitlife.webp" alt="BitLife" /><h2>BitLife</h2><p>Live a whole life. Choices matter.</p><span class="play">PLAY ▸</span></a>
     <a class="card hot" href="arena.html"><img class="icon" src="penalty-challenge-logo.webp" alt="Arena" /><h2>Arena</h2><p>Enter the arena. Last one standing.</p><span class="play">PLAY ▸</span></a>
@@ -63,7 +75,7 @@
   </div>
 </div>
 <footer>socool.fun · all games run 100% in your browser · <a href="https://tqig.space">tqig.space</a></footer>
-<div id="player"><div id="playerbar"><span id="ptitle"></span><button id="close">✕ CLOSE</button></div><iframe id="frame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe></div>
+<div id="player"><div id="playerbar"><span id="ptitle"></span><button id="fs">⛶ FULLSCREEN</button><button id="close">✕ CLOSE</button></div><iframe id="frame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe></div>
 <script>
 (function(){const s=document.getElementById('splash');if(!s)return;let gone=false;
 const go=()=>{if(gone)return;gone=true;s.classList.add('hide');setTimeout(()=>s.remove(),500)};
@@ -71,7 +83,11 @@ setTimeout(go,2100);s.onclick=go})();
 (function(){const p=document.getElementById('player'),f=document.getElementById('frame'),t=document.getElementById('ptitle');
 document.querySelectorAll('a.card').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();
   t.textContent=a.querySelector('h2').textContent;f.src=a.getAttribute('href');p.classList.add('open')}));
-document.getElementById('close').onclick=()=>{p.classList.remove('open');f.src='about:blank'}})();
+document.getElementById('close').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();p.classList.remove('open');f.src='about:blank'}})();
+(function(){const q=document.getElementById('q'),cards=[...document.querySelectorAll('a.card')],n=document.getElementById('count');
+const upd=()=>{let v=0;cards.forEach(a=>{const hit=a.querySelector('h2').textContent.toLowerCase().includes(q.value.trim().toLowerCase());a.style.display=hit?'':'none';if(hit)v++});n.textContent=v+' shown'};
+q.addEventListener('input',upd);upd})();
+(function(){document.getElementById('fs').onclick=()=>{const f=document.getElementById('frame');if(f.requestFullscreen)f.requestFullscreen()}})();
 </script>
 </body>
 </html>
