@@ -94,12 +94,19 @@
   .aitem .btns{display:flex;gap:6px;flex-wrap:wrap}
   .aitem .btns button{padding:5px 10px;font-size:11px}
   #adminb{display:none}
-  @media(max-width:640px){#app{grid-template-columns:1fr;height:auto;min-height:0}#listpane.hide{display:none}#backb{display:inline-block}#chats{max-height:30vh}#msgs{max-height:54vh}}
+  #toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:92vw}
+  .toast{background:#fff;color:#000;font-weight:800;font-size:13px;border-radius:100px;padding:10px 22px;box-shadow:0 10px 40px #000a;animation:tin .25s ease;max-width:92vw;text-align:center}
+  .toast.warn{background:#14141c;color:#fff;border:1px solid #ffffff3a}
+  @keyframes tin{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+  @media(max-width:640px){#app{grid-template-columns:1fr;height:auto;min-height:0}#listpane.hide{display:none}#backb{display:inline-block}#chats{max-height:30vh}#msgs{max-height:54vh}
+    .mbox{padding:12px;border-radius:14px}.aitem{font-size:11px}.aitem .btns button{font-size:11px;padding:5px 8px}
+    #cmenu{right:auto;left:50%;transform:translateX(-50%);min-width:210px}}
 </style>
 </head>
 <body>
 <canvas id="fx"></canvas>
 <div class="orbs"><i class="orb a"></i><i class="orb b"></i></div>
+<div id="toasts"></div>
 <div class="wrap">
 <h1>CHAT <span>· add by display name · keep it clean</span></h1>
 <div id="setup">
@@ -116,9 +123,12 @@
       <button id="plusb" class="ghost" style="padding:9px 14px">+</button>
     </div>
     <div id="newpanel" style="display:none;flex-direction:column;gap:8px">
+      <div class="row" id="presrow" style="align-items:center"><span class="note">STATUS</span><button id="pon" class="ghost">ONLINE</button><button id="poff" class="ghost">INVISIBLE</button></div>
       <div class="row"><input id="add" maxlength="16" placeholder="friend's display name" /><button id="addb" class="ghost">ADD</button></div>
       <div class="row"><input id="gnm" maxlength="24" placeholder="new group name" /><button id="gaddb" class="ghost">CREATE</button></div>
       <div class="row"><input id="jnm" maxlength="12" placeholder="join code" /><button id="joinb" class="ghost">JOIN</button></div>
+      <div class="asec">FRIENDS</div>
+      <div id="friends" style="display:flex;flex-direction:column;gap:6px"></div>
       <div class="asec">BLOCKED</div>
       <div id="blocked" style="display:flex;flex-direction:column;gap:6px"></div>
     </div>
@@ -156,9 +166,14 @@
 <div id="fwd" class="modal"><div class="mbox"><b>Forward to…</b><div id="fwdlist" style="display:flex;flex-direction:column;gap:6px"></div><button id="fwdx" class="ghost">CANCEL</button></div></div>
 <div id="adminmodal" class="modal"><div class="mbox">
   <div class="row" style="justify-content:space-between;align-items:center"><b>ADMIN</b><button id="adminx" class="ghost">CLOSE</button></div>
-  <div class="asec">OPEN REPORTS</div><div id="areports" style="display:flex;flex-direction:column;gap:6px"></div>
-  <div class="asec">BANNED</div><div id="abans" style="display:flex;flex-direction:column;gap:6px"></div>
-  <div class="asec">USERS</div><div id="ausers" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="asec" id="secReports">OPEN REPORTS</div><div id="areports" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="asec" id="secBans">BANNED</div><div id="abans" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="asec" id="secMods">MODS</div><div id="amods" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="asec" id="secMutes">MUTED</div><div id="amutes" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="asec" id="secUsers">USERS</div><div id="ausers" style="display:flex;flex-direction:column;gap:6px"></div>
+</div></div>
+<div id="ask" class="modal"><div class="mbox" style="max-width:380px"><b id="asktext"></b>
+  <div class="row" style="justify-content:flex-end;margin-top:8px"><button id="askno" class="ghost">NO</button><button id="askyes">YES</button></div>
 </div></div>
 <script defer src="vendor/firebase-app-compat.js"></script>
 <script defer src="vendor/firebase-auth-compat.js"></script>
@@ -171,6 +186,8 @@ let DB=null,ME=null,OPEN=null,UNSUB=null,UNSUBMETA=null,MEP=null;
 const KEYS=new Map();let OURLS=[];const PRESENCE=new Map();
 let REC=null,RECS=[],RECTO=null,typingSent=false,typingTimer=null;
 let DECMAP={},REPLYTO=null,CHATCACHE=[],BLOCKED=[],fwdText='',adminWired=false;
+let MUTED=false,ISMOD=false,USERSL=[],MUTESL=[],MODSL=[],REPORTSL=[],BANSL=[],DELETED=[],GHOST=false;
+let SENDTS=[],askYes=null;
 const REACTS=['+1','!','?','lol'];
 const $=id=>document.getElementById(id);
 const b64=a=>btoa(String.fromCharCode(...a));
@@ -297,12 +314,22 @@ function genCode(){const cs='abcdefghjkmnpqrstuvwxyz23456789';let s='';
   for(let i=0;i<6;i++)s+=cs[Math.floor(Math.random()*cs.length)];return s}
 async function getPres(uid){
   const c=PRESENCE.get(uid);
-  if(c&&Date.now()-c.at<15000)return c.on;
+  if(c&&Date.now()-c.at<15000)return c;
   try{const d=await DB.collection('users').doc(uid).get();
-    const on=d.exists&&d.data().last&&(Date.now()-d.data().last<50000);
-    PRESENCE.set(uid,{on:on,at:Date.now()});return on}catch(e){return c?c.on:false}
+    const last=d.exists?d.data().last:0;
+    const on=!!(last&&(Date.now()-last<50000));
+    const v={on:on,at:Date.now(),last:last};PRESENCE.set(uid,v);return v}catch(e){return c||{on:false,at:Date.now(),last:0}}
 }
 function isBlocked(uid){return BLOCKED.some(b=>b.u===uid)}
+function toast(t,warn){const d=document.createElement('div');d.className='toast'+(warn?' warn':'');d.textContent=t;
+  $('toasts').appendChild(d);setTimeout(()=>{d.style.transition='opacity .3s';d.style.opacity='0';setTimeout(()=>d.remove(),320)},2600)}
+function ask(t,fn){$('asktext').textContent=t;askYes=fn;$('ask').classList.add('open')}
+function ago(ts){if(!ts)return'';const s=(Date.now()-ts)/1000;
+  if(s<60)return Math.floor(s)+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
+function rateOK(){const now=Date.now();SENDTS=SENDTS.filter(t=>now-t<60000);
+  if(SENDTS.filter(t=>now-t<5000).length>=5||SENDTS.length>=30)return false;
+  SENDTS.push(now);return true}
 (function(){try{const t=localStorage.sc_theme||'mono';document.body.dataset.theme=t;
 document.querySelectorAll('#themepk i').forEach(i=>{i.classList.toggle('on',i.dataset.t===t);
 i.onclick=()=>{document.body.dataset.theme=i.dataset.t;try{localStorage.sc_theme=i.dataset.t}catch(e){}
@@ -324,8 +351,9 @@ async function init(){
   }catch(e){$('setup').style.display='flex';$('serr').textContent='blocked: '+e.message;return}
   try{
     const ban=await DB.collection('bans').doc(ME).get();
-    if(ban.exists){$('setup').style.display='flex';$('serr').textContent='you are banned from this chat.';
-      $('go').style.display='none';$('nm').style.display='none';return}
+    if(ban.exists){$('setup').style.display='flex';$('app').style.display='none';
+      $('setup').innerHTML='<div style="font-weight:900;font-size:24px;letter-spacing:1px;line-height:1.4">YOU\'VE BEEN BANNED<br>OFF OF SOCOOL.FUN</div><div class="note" style="font-size:15px;line-height:2.2">message me on my socials for an unban:<br><a href="https://www.instagram.com/euroeth/" target="_blank" rel="noopener" style="color:#fff;font-weight:800;font-size:17px">@euroeth on ig</a><br><a href="https://www.tiktok.com/@tqig" target="_blank" rel="noopener" style="color:#fff;font-weight:800;font-size:17px">@tqig on tiktok</a></div>';
+      return}
   }catch(e){}
   $('go').disabled=false;$('go').textContent='START ▸';
   if(me.exists&&validPriv()){
@@ -369,12 +397,20 @@ function start(p){
     if(open)renderBlocked()};
   claimName(p.name).catch(()=>{});
   if(p.name&&!p.nameLower){DB.collection('users').doc(ME).set({nameLower:normName(p.name)},{merge:true}).catch(()=>{})}
-  const beat=()=>DB.collection('users').doc(ME).set({last:Date.now()},{merge:true}).catch(()=>{});
+  GHOST=(localStorage.sc_ghost==='1');
+  const presUI=()=>{$('pon').className=GHOST?'ghost':'';$('poff').className=GHOST?'':'ghost'};
+  $('pon').onclick=()=>{GHOST=false;localStorage.sc_ghost='0';presUI();toast('you are visible')};
+  $('poff').onclick=()=>{GHOST=true;localStorage.sc_ghost='1';presUI();toast('you are invisible')};
+  presUI();
+  $('askyes').onclick=()=>{$('ask').classList.remove('open');if(askYes)askYes();askYes=null};
+  $('askno').onclick=()=>{$('ask').classList.remove('open');askYes=null};
+  const beat=()=>{if(GHOST)return;DB.collection('users').doc(ME).set({last:Date.now()},{merge:true}).catch(()=>{})};
   beat();setInterval(beat,20000);
-  DB.collection('users').doc(ME).get().then(d=>{if(d.exists)BLOCKED=d.data().blocked||[]}).catch(()=>{});
-  const flash=(t,okk)=>{$('aerr').className=okk?'okmsg':'';$('aerr').textContent=t;
-    if(okk)$('newpanel').style.display='none';
-    setTimeout(()=>{if($('aerr').textContent===t){$('aerr').textContent='';$('aerr').className=''}},2600)};
+  DB.collection('users').doc(ME).get().then(d=>{if(d.exists){BLOCKED=d.data().blocked||[];DELETED=d.data().deleted||[]}}).catch(()=>{});
+  DB.collection('mutes').doc(ME).onSnapshot(d=>{MUTED=d.exists},()=>{});
+  DB.collection('mods').doc(ME).get().then(d=>{ISMOD=d.exists;
+    if(ISMOD){$('adminb').textContent='MOD';$('adminb').style.display='block';$('adminb').onclick=openAdmin}}).catch(()=>{});
+  const flash=(t,okk)=>{toast(t,!okk);if(okk)$('newpanel').style.display='none'};
   $('addb').onclick=async()=>{
     $('aerr').textContent='';$('aerr').className='';
     const q=$('add').value.trim();
@@ -388,6 +424,8 @@ function start(p){
     const existing=await DB.collection('requests').doc(ME+'_'+to).get().catch(()=>null);
     if(existing&&existing.exists&&existing.data().status==='pending'){$('aerr').textContent='request already sent';return}
     await DB.collection('requests').doc(ME+'_'+to).set({from:ME,to:to,fromName:p.name,fromPubKey:p.pub,status:'pending',ts:Date.now()});
+    const cid=[ME,to].sort().join('_');DELETED=DELETED.filter(x=>x!==cid);
+    DB.collection('users').doc(ME).set({deleted:DELETED},{merge:true}).catch(()=>{});
     $('add').value='';flash('request sent',true);
   };
   $('gaddb').onclick=async()=>{
@@ -400,8 +438,11 @@ function start(p){
       while(!isClean(code)&&tries++<8)code=genCode();
       const ref=await DB.collection('chats').add({group:true,name:n,owner:ME,joinCode:code,
         members:[ME],names:{[ME]:p.name},pubs:{[ME]:p.pub},updated:Date.now()});
-      await DB.collection('gcodes').doc(code).set({gid:ref.id,ts:Date.now()});
-      $('gnm').value='';flash('group created — code: '+code.toUpperCase(),true);
+      let codeOK=true;
+      try{await DB.collection('gcodes').doc(code).set({gid:ref.id,ts:Date.now()})}catch(e2){codeOK=false}
+      $('gnm').value='';
+      if(codeOK)flash('group created — code: '+code.toUpperCase(),true);
+      else flash('group created — but the join code failed. republish the rules in firebase console',false);
     }catch(e){$('aerr').textContent='could not create group: '+(e.message||e)}
   };
   $('joinb').onclick=async()=>{
@@ -442,9 +483,11 @@ function start(p){
             const cid=[ME,r.from].sort().join('_');
             await DB.collection('chats').doc(cid).set({members:[ME,r.from],names:{[ME]:p.name,[r.from]:r.fromName},
               pubs:{[ME]:p.pub,[r.from]:r.fromPubKey},updated:Date.now()},{merge:true});
+            DELETED=DELETED.filter(x=>x!==cid);
+            DB.collection('users').doc(ME).set({deleted:DELETED},{merge:true}).catch(()=>{});
           }
           await DB.collection('requests').doc(d.id).update({status:'accepted'});
-        }catch(e){alert('accept failed: '+(e.message||e))}
+        }catch(e){toast('accept failed: '+(e.message||e),true)}
       };
       const no=document.createElement('button');no.textContent='NO';no.className='ghost';
       no.onclick=()=>DB.collection('requests').doc(d.id).update({status:'declined'});
@@ -454,7 +497,7 @@ function start(p){
     const C=$('chats');C.textContent='';
     const docs=[...s.docs].sort((a,b)=>((b.data().updated||0)-(a.data().updated||0)));
     CHATCACHE=docs.map(d=>({id:d.id,data:d.data()}));
-    const vis=CHATCACHE.filter(c=>c.data.group||!isBlocked(c.data.members.find(u=>u!==ME)));
+    const vis=CHATCACHE.filter(c=>!DELETED.includes(c.id)&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
     if(!vis.length){const d=document.createElement('div');d.className='note';d.textContent='no chats yet — add someone above';C.appendChild(d)}
     vis.forEach(({id,data:c})=>{const other=c.members.find(u=>u!==ME);
       const el=document.createElement('div');el.className='item'+(OPEN===id?' act':'');
@@ -464,8 +507,9 @@ function start(p){
       el.appendChild(b);el.appendChild(sm);
       if(!c.group){const dot=document.createElement('span');dot.className='dot';
         el.insertBefore(dot,sm);
-        getPres(other).then(on=>{dot.className='dot'+(on?' on':'')});}
+        getPres(other).then(p=>{dot.className='dot'+(p.on?' on':'')});}
       el.onclick=()=>openChat(id,c);C.appendChild(el)});
+    renderFriends();
   },err=>{const C=$('chats');C.textContent='';const d=document.createElement('div');d.className='note';
     d.textContent='chat list error: '+err.code;C.appendChild(d)});
   $('send').onclick=send;
@@ -484,6 +528,21 @@ function start(p){
   $('fwdx').onclick=()=>{$('fwd').classList.remove('open')};
   if(ME===ADMIN_UID){$('adminb').style.display='block';$('adminb').onclick=openAdmin}
 }
+function renderFriends(){
+  const F=$('friends');if(!F)return;F.textContent='';
+  const fr=CHATCACHE.filter(c=>!c.data.group&&!DELETED.includes(c.id)&&!isBlocked(c.data.members.find(u=>u!==ME)));
+  if(!fr.length){const d=document.createElement('div');d.className='note';d.textContent='no friends yet — add someone';F.appendChild(d);return}
+  fr.forEach(c=>{const other=c.data.members.find(u=>u!==ME);
+    const it=document.createElement('div');it.className='chip';
+    const l=document.createElement('span');l.style.flex='1';l.style.minWidth='0';
+    const dot=document.createElement('span');dot.className='dot';
+    const nm=document.createElement('b');nm.textContent=(c.data.names||{})[other]||'chat';
+    const seen=document.createElement('small');seen.style.cssText='color:#888;font-size:10px;display:block';
+    l.appendChild(dot);l.appendChild(nm);l.appendChild(seen);
+    getPres(other).then(p=>{dot.className='dot'+(p.on?' on':'');seen.textContent=p.on?'online':(p.last?('seen '+ago(p.last)):'unknown')});
+    const m=document.createElement('button');m.textContent='MSG';
+    m.onclick=()=>{$('newpanel').style.display='none';$('plusb').textContent='+';openChat(c.id,c.data)};
+    it.appendChild(l);it.appendChild(m);F.appendChild(it)})}
 let CHATMETA=null;
 function onType(){
   if(!OPEN)return;
@@ -505,7 +564,7 @@ async function openChat(cid,meta){
   document.querySelectorAll('#chats .item').forEach(e=>e.classList.remove('act'));
   $('ctitle').textContent=meta.group?(meta.name||'group'):((meta.names&&meta.names[other])||'chat');
   $('hdot').style.display=meta.group?'none':'inline-block';
-  if(!meta.group){getPres(other).then(on=>{$('hdot').className='dot'+(on?' on':'')})}
+  if(!meta.group){getPres(other).then(p=>{$('hdot').className='dot'+(p.on?' on':'')})}
   $('invrow').style.display=meta.group?'flex':'none';
   $('ghostb').style.display='inline-block';
   $('cmenub').style.display='inline-block';
@@ -557,19 +616,25 @@ function buildMenu(meta){
     b.onclick=fn;M.appendChild(b)};
   if(!meta.group){
     const other=meta.members.find(u=>u!==ME);
-    add(isBlocked(other)?'UNBLOCK THIS USER':'BLOCK THIS USER',async()=>{
+    add(isBlocked(other)?'UNBLOCK THIS USER':'BLOCK THIS USER',()=>{
       if(isBlocked(other)){BLOCKED=BLOCKED.filter(x=>x.u!==other);
+        DB.collection('users').doc(ME).set({blocked:BLOCKED},{merge:true}).catch(()=>{});
+        $('cmenu').style.display='none';toast('unblocked');return}
+      ask('block them? their chats and requests are hidden for you',async()=>{
+        BLOCKED.push({u:other,n:((meta.names||{})[other])||'user'});
         await DB.collection('users').doc(ME).set({blocked:BLOCKED},{merge:true}).catch(()=>{});
-        $('cmenu').style.display='none';return}
-      if(!confirm('block them? their chats and requests are hidden for you'))return;
-      BLOCKED.push({u:other,n:((meta.names||{})[other])||'user'});
-      await DB.collection('users').doc(ME).set({blocked:BLOCKED},{merge:true}).catch(()=>{});
-      $('cmenu').style.display='none';resetChatUI();
+        $('cmenu').style.display='none';resetChatUI();toast('blocked')});
     });
-    add('DELETE CHAT',()=>{if(confirm('delete this chat and all messages for everyone?'))deleteChat(OPEN,meta,true)},true);
+    add('DELETE CHAT',()=>{
+      const cid=OPEN;
+      DELETED.push(cid);
+      DB.collection('users').doc(ME).set({deleted:DELETED},{merge:true}).catch(()=>{});
+      $('cmenu').style.display='none';resetChatUI();
+      toast('chat removed — add them again anytime');
+    },true);
   }else{
-    add('LEAVE GROUP',()=>{if(confirm('leave this group?'))leaveGroup()},true);
-    if(meta.owner===ME)add('DELETE GROUP',()=>{if(confirm('delete this group for everyone?'))deleteChat(OPEN,meta,true)},true);
+    add('LEAVE GROUP',()=>ask('leave this group?',()=>leaveGroup()),true);
+    if(meta.owner===ME)add('DELETE GROUP',()=>ask('delete this group for everyone?',()=>deleteChat(OPEN,meta,true)),true);
   }
 }
 async function deleteChat(cid,meta,force){
@@ -579,7 +644,7 @@ async function deleteChat(cid,meta,force){
     if(meta.group&&meta.joinCode){await DB.collection('gcodes').doc(meta.joinCode).delete().catch(()=>{})}
     await DB.collection('chats').doc(cid).delete();
     resetChatUI();
-  }catch(e){alert('delete failed: '+(e.message||e))}
+  }catch(e){toast('delete failed: '+(e.message||e),true)}
 }
 async function leaveGroup(){
   const meta=CHATMETA.meta;if(!meta||!meta.group)return;
@@ -592,7 +657,7 @@ async function leaveGroup(){
     if(meta.owner===ME)upd.owner=rest[0];
     await DB.collection('chats').doc(OPEN).update(upd);
     resetChatUI();
-  }catch(e){alert('leave failed: '+(e.message||e))}
+  }catch(e){toast('leave failed: '+(e.message||e),true)}
 }
 function renderBlocked(){
   const B=$('blocked');if(!B)return;B.textContent='';
@@ -631,12 +696,12 @@ function renderMembers(meta){
     chip.appendChild(nm);
     if(uid!==ME){
       const k=document.createElement('button');k.textContent='KICK';
-      k.onclick=async()=>{if(!confirm('kick this member?'))return;
+      k.onclick=()=>ask('kick this member?',async()=>{
         try{await DB.collection('chats').doc(OPEN).update({members:firebase.firestore.FieldValue.arrayRemove(uid),
           ['names.'+uid]:firebase.firestore.FieldValue.delete(),
           ['pubs.'+uid]:firebase.firestore.FieldValue.delete(),
           ['typing.'+uid]:firebase.firestore.FieldValue.delete()})}
-        catch(e){alert('kick failed: '+(e.message||e))}};
+        catch(e){toast('kick failed: '+(e.message||e),true)}});
       chip.appendChild(k);
     }
     L.appendChild(chip);
@@ -660,6 +725,8 @@ async function renderMsg(d,M){
   if(!mine&&isBlocked(m.from))return;
   const el=document.createElement('div');el.className='m '+(mine?'me':'them');
   if(m.type==='img'||m.type==='voice'){
+    if(!(m.kw&&m.kw[ME])){el.className+=' blocked';el.textContent='[sent before you joined]';
+      DECMAP[d.id]='[old]';M.appendChild(el);return}
     const dataUrl=await hybridDecrypt(meta,m,m.from);
     if(m.type==='img'){const img=document.createElement('img');img.src=dataUrl;el.appendChild(img)}
     else{const au=document.createElement('audio');au.controls=true;au.src=dataUrl;el.appendChild(au)}
@@ -667,7 +734,9 @@ async function renderMsg(d,M){
   }else{
     let txt;
     if(m.rcpt){
-      const slot=m.rcpt[ME];if(!slot)throw new Error('no copy for you');
+      const slot=m.rcpt[ME];
+      if(!slot){el.className+=' blocked';el.textContent='[sent before you joined]';
+        DECMAP[d.id]='[old]';M.appendChild(el);return}
       const k=await memberKey(meta,m.from);
       txt=await dec(k,slot);
     }else if(m.iv){
@@ -756,16 +825,16 @@ function openFwd(text){
   $('fwd').classList.add('open');
 }
 async function doReport(d,m){
-  if(!confirm('report this message? the message text will be shared with the site owner'))return;
   try{
     await DB.collection('reports').add({from:ME,fromName:MEP.name,chatId:OPEN,msgId:d.id,
       reportedUid:m.from,reportedName:((CHATMETA.meta.names||{})[m.from])||'?',
       text:DECMAP[d.id]||'[media]',ts:Date.now(),status:'open'});
-    $('merr').className='okmsg';$('merr').textContent='reported';
-    setTimeout(()=>{if($('merr').textContent==='reported'){$('merr').textContent='';$('merr').className=''}},2600);
-  }catch(e){$('merr').textContent='report failed: '+(e.message||e)}
+    toast('reported — the owner has been notified');
+  }catch(e){toast('report failed: '+(e.message||e),true)}
 }
 async function sendTo(cid,meta,t,reply){
+  if(MUTED)throw new Error('you are muted');
+  if(!rateOK())throw new Error('slow down — you are sending too fast');
   if(!isClean(t))throw new Error('that message is not allowed');
   let doc;
   if(meta.group){
@@ -801,6 +870,8 @@ async function sendImage(){
   const f=$('file').files[0];$('file').value='';
   if(!f)return;
   if(!OPEN){$('merr').textContent='open a chat first';return}
+  if(MUTED){$('merr').textContent='you are muted';return}
+  if(!rateOK()){$('merr').textContent='slow down';return}
   $('merr').textContent='';
   try{
     const bmp=await createImageBitmap(f);
@@ -827,6 +898,9 @@ async function sendImage(){
 }
 async function toggleMic(){
   if(REC&&REC.state==='recording'){REC.stop();return}
+  if(MUTED){$('merr').textContent='you are muted';return}
+  if(!OPEN){$('merr').textContent='open a chat first';return}
+  if(!rateOK()){$('merr').textContent='slow down';return}
   $('merr').textContent='';
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -865,52 +939,97 @@ async function invite(){
     const ex=await DB.collection('requests').doc(rid).get().catch(()=>null);
     if(ex&&ex.exists&&ex.data().status==='pending'){$('merr').textContent='already invited';return}
     await DB.collection('requests').doc(rid).set({from:ME,to:to,type:'group',gid:OPEN,gname:CHATMETA.meta.name,fromName:MEP.name,status:'pending',ts:Date.now()});
-    $('inv').value='';$('merr').className='okmsg';$('merr').textContent='invited';
-    setTimeout(()=>{if($('merr').textContent==='invited'){$('merr').textContent='';$('merr').className=''}},2600);
+    $('inv').value='';toast('invited');
   }catch(e){$('merr').textContent='invite failed: '+(e.message||e)}
+}
+const doBan=(uid,name)=>DB.collection('bans').doc(uid).set({name:name||'?',by:ME,ts:Date.now()});
+const doUnban=uid=>DB.collection('bans').doc(uid).delete();
+const doMute=(uid,name)=>DB.collection('mutes').doc(uid).set({name:name||'?',by:ME,ts:Date.now()});
+const doUnmute=uid=>DB.collection('mutes').doc(uid).delete();
+const doMod=(uid,name)=>DB.collection('mods').doc(uid).set({name:name||'?',by:ME,ts:Date.now()});
+const doUnmod=uid=>DB.collection('mods').doc(uid).delete();
+async function adminMsg(uid,name){
+  try{
+    const cid=[ME,uid].sort().join('_');
+    let cd=await DB.collection('chats').doc(cid).get();
+    if(!cd.exists){
+      const their=await DB.collection('users').doc(uid).get();
+      const tpub=their.exists?their.data().pub:null;
+      if(!tpub){toast('their key is missing',true);return}
+      await DB.collection('chats').doc(cid).set({members:[ME,uid],names:{[ME]:MEP.name,[uid]:name||'user'},
+        pubs:{[ME]:MEP.pub,[uid]:tpub},updated:Date.now()});
+      cd=await DB.collection('chats').doc(cid).get();
+    }
+    DELETED=DELETED.filter(x=>x!==cid);
+    DB.collection('users').doc(ME).set({deleted:DELETED},{merge:true}).catch(()=>{});
+    $('adminmodal').classList.remove('open');
+    openChat(cid,cd.data());
+  }catch(e){toast('could not open chat: '+(e.message||e),true)}
 }
 function openAdmin(){
   $('adminmodal').classList.add('open');
   $('adminx').onclick=()=>$('adminmodal').classList.remove('open');
-  if(adminWired)return;adminWired=true;
-  DB.collection('reports').where('status','==','open').onSnapshot(s=>{
+  if(adminWired){renderA();return}
+  adminWired=true;
+  DB.collection('reports').where('status','==','open').onSnapshot(s=>{REPORTSL=s.docs.map(d=>({id:d.id,data:d.data()}));renderA()},()=>{});
+  DB.collection('bans').onSnapshot(s=>{BANSL=s.docs.map(d=>({id:d.id,data:d.data()}));renderA()},()=>{});
+  DB.collection('mods').onSnapshot(s=>{MODSL=s.docs.map(d=>({id:d.id,data:d.data()}));renderA()},()=>{});
+  DB.collection('mutes').onSnapshot(s=>{MUTESL=s.docs.map(d=>({id:d.id,data:d.data()}));renderA()},()=>{});
+  DB.collection('users').limit(80).onSnapshot(s=>{USERSL=s.docs.map(d=>({id:d.id,data:d.data()}));renderA()},()=>{});
+}
+function renderA(){
+  const owner=ME===ADMIN_UID;
+  ['secReports','secBans','secMods','areports','abans','amods'].forEach(i=>{$(i).style.display=owner?'':'none'});
+  const mk=(l,f)=>{const b=document.createElement('button');b.textContent=l;
+    b.onclick=()=>f().catch(e=>toast(e.message||e,true));return b};
+  if(owner){
     const R=$('areports');R.textContent='';
-    if(s.empty){const d=document.createElement('div');d.className='note';d.textContent='no open reports';R.appendChild(d);return}
-    s.forEach(d=>{const r=d.data();
+    if(!REPORTSL.length){const d=document.createElement('div');d.className='note';d.textContent='no open reports';R.appendChild(d)}
+    REPORTSL.forEach(({id,data:r})=>{
       const it=document.createElement('div');it.className='aitem';
       const t1=document.createElement('div');
       t1.textContent='"'+(r.text||'')+'" — reported: '+(r.reportedName||'?')+' · by: '+(r.fromName||'?');
       const btns=document.createElement('div');btns.className='btns';
-      const mk=(l,f)=>{const b=document.createElement('button');b.textContent=l;b.onclick=f;btns.appendChild(b)};
-      mk('BAN REPORTED',()=>DB.collection('bans').doc(r.reportedUid).set({name:r.reportedName,by:ME,ts:Date.now()}).catch(e=>alert(e.message)));
-      mk('BAN REPORTER',()=>DB.collection('bans').doc(r.from).set({name:r.fromName,by:ME,ts:Date.now()}).catch(e=>alert(e.message)));
-      mk('DELETE MSG',()=>DB.collection('chats').doc(r.chatId).collection('msgs').doc(r.msgId).delete().catch(e=>alert(e.message)));
-      mk('DISMISS',()=>DB.collection('reports').doc(d.id).update({status:'dismissed'}).catch(e=>alert(e.message)));
+      btns.appendChild(mk('BAN REPORTED',()=>doBan(r.reportedUid,r.reportedName)));
+      btns.appendChild(mk('BAN REPORTER',()=>doBan(r.from,r.fromName)));
+      btns.appendChild(mk('DELETE MSG',()=>DB.collection('chats').doc(r.chatId).collection('msgs').doc(r.msgId).delete()));
+      btns.appendChild(mk('DISMISS',()=>DB.collection('reports').doc(id).update({status:'dismissed'})));
+      btns.appendChild(mk('MSG REPORTED',()=>adminMsg(r.reportedUid,r.reportedName)));
+      btns.appendChild(mk('MSG REPORTER',()=>adminMsg(r.from,r.fromName)));
       it.appendChild(t1);it.appendChild(btns);R.appendChild(it)});
-  },err=>$('areports').textContent='reports error: '+err.code);
-  DB.collection('bans').onSnapshot(s=>{
     const B=$('abans');B.textContent='';
-    if(s.empty){const d=document.createElement('div');d.className='note';d.textContent='nobody banned';B.appendChild(d);return}
-    s.forEach(d=>{const r=d.data();
-      const it=document.createElement('div');it.className='aitem';
-      const t1=document.createElement('div');t1.textContent=(r.name||'?');
-      const btns=document.createElement('div');btns.className='btns';
-      const b=document.createElement('button');b.textContent='UNBAN';
-      b.onclick=()=>DB.collection('bans').doc(d.id).delete().catch(e=>alert(e.message));
-      btns.appendChild(b);it.appendChild(t1);it.appendChild(btns);B.appendChild(it)});
-  },err=>$('abans').textContent='bans error: '+err.code);
-  DB.collection('users').limit(60).onSnapshot(s=>{
-    const U=$('ausers');U.textContent='';
-    s.forEach(d=>{const r=d.data();if(d.id===ME)return;
-      const it=document.createElement('div');it.className='aitem';
-      const t1=document.createElement('div');
-      const on=r.last&&(Date.now()-r.last<50000);
-      t1.textContent=(r.name||'?')+(on?' · online':'');
-      const btns=document.createElement('div');btns.className='btns';
-      const b=document.createElement('button');b.textContent='BAN';
-      b.onclick=()=>DB.collection('bans').doc(d.id).set({name:r.name||'?',by:ME,ts:Date.now()}).catch(e=>alert(e.message));
-      btns.appendChild(b);it.appendChild(t1);it.appendChild(btns);U.appendChild(it)});
-  },err=>$('ausers').textContent='users error: '+err.code);
+    if(!BANSL.length){const d=document.createElement('div');d.className='note';d.textContent='nobody banned';B.appendChild(d)}
+    BANSL.forEach(({id,data:r})=>{const it=document.createElement('div');it.className='aitem';
+      const row=document.createElement('div');row.className='row';row.style.alignItems='center';
+      const t1=document.createElement('span');t1.style.flex='1';t1.textContent=r.name||id;
+      row.appendChild(t1);row.appendChild(mk('UNBAN',()=>doUnban(id)));it.appendChild(row);B.appendChild(it)});
+    const MD=$('amods');MD.textContent='';
+    if(!MODSL.length){const d=document.createElement('div');d.className='note';d.textContent='no mods';MD.appendChild(d)}
+    MODSL.forEach(({id,data:r})=>{const it=document.createElement('div');it.className='aitem';
+      const row=document.createElement('div');row.className='row';row.style.alignItems='center';
+      const t1=document.createElement('span');t1.style.flex='1';t1.textContent=r.name||id;
+      row.appendChild(t1);row.appendChild(mk('REMOVE MOD',()=>doUnmod(id)));it.appendChild(row);MD.appendChild(it)});
+  }
+  const MU=$('amutes');MU.textContent='';
+  if(!MUTESL.length){const d=document.createElement('div');d.className='note';d.textContent='nobody muted';MU.appendChild(d)}
+  MUTESL.forEach(({id,data:r})=>{const it=document.createElement('div');it.className='aitem';
+    const row=document.createElement('div');row.className='row';row.style.alignItems='center';
+    const t1=document.createElement('span');t1.style.flex='1';t1.textContent=(r.name||id)+(owner?'':' · by mod');
+    row.appendChild(t1);row.appendChild(mk('UNMUTE',()=>doUnmute(id)));it.appendChild(row);MU.appendChild(it)});
+  const U=$('ausers');U.textContent='';
+  USERSL.filter(u=>u.id!==ME).forEach(({id,data:r})=>{
+    const it=document.createElement('div');it.className='aitem';
+    const row=document.createElement('div');row.className='row';row.style.alignItems='center';
+    const on=r.last&&(Date.now()-r.last<50000);
+    const t1=document.createElement('span');t1.style.flex='1';t1.textContent=(r.name||'?')+(on?' · online':'');
+    row.appendChild(t1);
+    const banned=BANSL.some(b=>b.id===id),muted=MUTESL.some(m=>m.id===id),mod=MODSL.some(m=>m.id===id);
+    row.appendChild(mk(muted?'UNMUTE':'MUTE',()=>muted?doUnmute(id):doMute(id,r.name)));
+    if(owner){
+      row.appendChild(mk(banned?'UNBAN':'BAN',()=>banned?doUnban(id):doBan(id,r.name)));
+      row.appendChild(mk(mod?'UNMOD':'MOD',()=>mod?doUnmod(id):doMod(id,r.name)));
+    }
+    it.appendChild(row);U.appendChild(it)});
 }
 (function(){
   const c=document.getElementById('fx'),x=c.getContext('2d');
