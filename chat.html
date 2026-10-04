@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Chat — socool.fun</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif}
+  body{background:#0a0a10;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 12px}
+  h1{font-size:24px;font-weight:900;letter-spacing:1px}
+  h1 span{color:#888;font-size:13px;font-weight:400}
+  #app{width:min(860px,96vw);display:grid;grid-template-columns:250px 1fr;gap:12px;margin-top:12px;min-height:60vh}
+  .pane{background:#101018;border:1px solid #ffffff1e;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:50vh}
+  .row{display:flex;gap:8px}
+  input{flex:1;background:#ffffff10;border:1px solid #ffffff2a;color:#fff;border-radius:10px;padding:10px;font-size:14px;outline:0;min-width:0}
+  button{background:#fff;color:#000;border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;font-size:13px;white-space:nowrap}
+  button.ghost{background:#ffffff14;color:#fff;border:1px solid #ffffff2a}
+  .item{padding:10px;border-radius:10px;background:#ffffff08;cursor:pointer;font-size:14px}
+  .item:hover{background:#ffffff14}
+  .item.act{background:#ffffff1e}
+  .item small{color:#888;display:block;font-size:11px}
+  #msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;max-height:46vh;min-height:200px}
+  .m{max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px;word-break:break-word}
+  .m.me{align-self:flex-end;background:#fff;color:#000}
+  .m.them{align-self:flex-start;background:#ffffff16}
+  .m small{display:block;font-size:10px;opacity:.6}
+  #setup{width:min(440px,94vw);background:#101018;border:1px solid #ffffff22;border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:12px;text-align:center}
+  #setup input{text-align:center;font-size:16px}
+  .note{font-size:11px;color:#777}
+  #mycode{font-size:15px;background:#ffffff0d;border:1px dashed #ffffff3a;border-radius:10px;padding:10px;cursor:pointer}
+  a.home{color:#777;font-size:12px;text-decoration:none;margin-top:6px}
+  @media(max-width:640px){#app{grid-template-columns:1fr}#listpane.hide{display:none}}
+</style>
+</head>
+<body>
+<h1>💬 CHAT <span>· end-to-end encrypted</span></h1>
+<div id="setup" style="display:none">
+  <div style="font-weight:900;font-size:18px">pick your name + code</div>
+  <div class="note">friends add you with your code. keys stay in THIS browser — new device = new keys.</div>
+  <input id="nm" maxlength="16" placeholder="display name" />
+  <input id="cd" maxlength="12" placeholder="friend code (e.g. tqig77)" />
+  <button id="go">START ▸</button>
+  <div class="note" id="serr"></div>
+</div>
+<div id="app" style="display:none">
+  <div class="pane" id="listpane">
+    <div id="mycode" title="tap to copy">…</div>
+    <div class="row"><input id="add" maxlength="12" placeholder="friend code" /><button id="addb">ADD</button></div>
+    <div id="reqs"></div>
+    <div id="chats" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto"></div>
+  </div>
+  <div class="pane">
+    <div id="ctitle" style="font-weight:900">pick a chat</div>
+    <div id="msgs"></div>
+    <div class="row"><input id="box" maxlength="500" placeholder="message…" /><button id="send">SEND</button></div>
+  </div>
+</div>
+<a class="home" href="index.html">← socool.fun</a>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script>
+// ===== PASTE YOUR FIREBASE CONFIG HERE (console.firebase.google.com → project settings) =====
+const CONFIG={apiKey:"PASTE",authDomain:"PASTE",projectId:"PASTE",appId:"PASTE"};
+// ============================================================================================
+let DB=null,ME=null,KEY=null,OPEN=null,UNSUB=null;
+const $=id=>document.getElementById(id);
+const b64=a=>btoa(String.fromCharCode(...a));
+const unb=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+function ok(){return CONFIG.apiKey!=='PASTE'}
+async function genKeys(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
+  return{pub:await crypto.subtle.exportKey('jwk',kp.publicKey),priv:await crypto.subtle.exportKey('jwk',kp.privateKey)}}
+async function sharedKey(theirJwk){const mine=await crypto.subtle.importKey('jwk',JSON.parse(localStorage.sc_priv),'ECDH',{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);
+  const theirs=await crypto.subtle.importKey('jwk',theirJwk,{name:'ECDH',namedCurve:'P-256'},true,[]);
+  return crypto.subtle.deriveKey({name:'ECDH',public:theirs},mine,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function enc(key,t){const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(t)));
+  return{iv:b64(iv),ct:b64(ct)}}
+async function dec(key,m){try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb(m.iv)},key,unb(m.ct));
+  return new TextDecoder().decode(pt)}catch(e){return'🔒 undecryptable (keys changed)'}}
+async function init(){
+  if(!ok()){$('setup').style.display='flex';$('serr').textContent='chat not connected yet — owner is wiring it up.';return}
+  firebase.initializeApp(CONFIG);DB=firebase.firestore();
+  await firebase.auth().signInAnonymously();ME=firebase.auth().currentUser.uid;
+  const me=await DB.collection('users').doc(ME).get();
+  if(me.exists&&localStorage.sc_priv){start(JSON.parse(localStorage.sc_name||'null')||me.data());return}
+  $('setup').style.display='flex';
+  $('go').onclick=async()=>{
+    const nm=$('nm').value.trim().slice(0,16),cd=$('cd').value.trim().toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);
+    if(!nm||cd.length<3){$('serr').textContent='need a name + code (3+ letters/numbers)';return}
+    const taken=await DB.collection('codes').doc(cd).get();
+    if(taken.exists){$('serr').textContent='code taken, pick another';return}
+    const k=await genKeys();
+    localStorage.sc_priv=JSON.stringify(k.priv);
+    const profile={name:nm,code:cd,pub:k.pub};
+    localStorage.sc_name=JSON.stringify(profile);
+    await DB.collection('users').doc(ME).set(profile);
+    await DB.collection('codes').doc(cd).set({uid:ME});
+    start(profile)};
+}
+function start(p){
+  $('setup').style.display='none';$('app').style.display='grid';
+  $('mycode').textContent='your code: '+p.code+' (tap to copy)';
+  $('mycode').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(p.code)};
+  $('addb').onclick=async()=>{
+    const cd=$('add').value.trim().toLowerCase().replace(/[^a-z0-9]/g,'');if(!cd)return;
+    const c=await DB.collection('codes').doc(cd).get();
+    if(!c.exists){alert('no one has that code');return}
+    const to=c.data().uid;if(to===ME){alert('that is you lol');return}
+    const rev=await DB.collection('requests').doc(to+'_'+ME).get();
+    if(rev.exists&&rev.data().status==='pending'){alert('they already added you — check requests below');return}
+    const meDoc=await DB.collection('users').doc(ME).get();
+    await DB.collection('requests').doc(ME+'_'+to).set({from:ME,to:to,fromName:p.name,fromPubKey:meDoc.data().pub,status:'pending',ts:Date.now()});
+    $('add').value='';alert('request sent!')};
+  DB.collection('requests').where('to','==',ME).where('status','==','pending').onSnapshot(s=>{
+    const R=$('reqs');R.innerHTML=s.empty?'':'<div style="font-size:11px;color:#888">REQUESTS</div>';
+    s.forEach(d=>{const r=d.data();const el=document.createElement('div');el.className='item';
+      el.innerHTML='<b>'+r.fromName+'</b> wants to chat<small>accept = exchange encrypted keys</small>';
+      const row=document.createElement('div');row.className='row';row.style.marginTop='6px';
+      const okB=document.createElement('button');okB.textContent='ACCEPT';
+      okB.onclick=async()=>{const cid=[ME,r.from].sort().join('_');
+        await DB.collection('chats').doc(cid).set({members:[ME,r.from],names:{[ME]:p.name,[r.from]:r.fromName},
+          pubs:{[ME]:(await DB.collection('users').doc(ME).get()).data().pub,[r.from]:r.fromPubKey},updated:Date.now()},{merge:true});
+        await DB.collection('requests').doc(d.id).update({status:'accepted'})};
+      const no=document.createElement('button');no.textContent='NO';no.className='ghost';
+      no.onclick=()=>DB.collection('requests').doc(d.id).update({status:'declined'});
+      row.appendChild(okB);row.appendChild(no);el.appendChild(row);R.appendChild(el)})});
+  DB.collection('chats').where('members','array-contains',ME).orderBy('updated','desc').onSnapshot(s=>{
+    const C=$('chats');C.innerHTML='';
+    s.forEach(d=>{const c=d.data();const other=c.members.find(u=>u!==ME);
+      const el=document.createElement('div');el.className='item'+(OPEN===d.id?' act':'');
+      el.innerHTML='<b>'+(c.names?c.names[other]:'chat')+'</b><small>🔒 encrypted</small>';
+      el.onclick=()=>openChat(d.id,other,c);C.appendChild(el)})});
+  $('send').onclick=send;$('box').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+}
+async function myKey(theirPub){if(!KEY||KEY._for!==JSON.stringify(theirPub))KEY=Object.assign(await sharedKey(theirPub),{_for:JSON.stringify(theirPub)});return KEY}
+let CHATMETA=null;
+async function openChat(cid,other,meta){OPEN=cid;CHATMETA={other:other,pubs:meta.pubs};
+  [...document.querySelectorAll('#chats .item')].forEach(e=>e.classList.remove('act'));
+  $('ctitle').textContent=meta.names?meta.names[other]:'chat';
+  if(innerWidth<640)$('listpane').classList.add('hide');
+  if(UNSUB)UNSUB();
+  const key=await myKey(meta.pubs[other]);
+  UNSUB=DB.collection('chats').doc(cid).collection('msgs').orderBy('ts').onSnapshot(async s=>{
+    const M=$('msgs');M.innerHTML='';
+    for(const d of s.docs){const m=d.data();const el=document.createElement('div');
+      el.className='m '+(m.from===ME?'me':'them');el.textContent=await dec(key,m);M.appendChild(el)}
+    M.scrollTop=M.scrollHeight})}
+async function send(){const t=$('box').value.trim();if(!t||!OPEN)return;$('box').value='';
+  const key=await myKey(CHATMETA.pubs[CHATMETA.other]);
+  const e=await enc(key,t);
+  await DB.collection('chats').doc(OPEN).collection('msgs').add({from:ME,iv:e.iv,ct:e.ct,ts:Date.now()});
+  await DB.collection('chats').doc(OPEN).update({updated:Date.now()})}
+init();
+</script>
+</body>
+</html>
