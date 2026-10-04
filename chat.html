@@ -6,56 +6,65 @@
 <title>Chat — socool.fun</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif}
-  body{background:#05050c;color:#fff;min-height:vh;display:flex;flex-direction:column;align-items:center;padding:18px 12px;overflow-x:hidden}
+  body{background:#05050c;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 12px;overflow-x:hidden}
   canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
   .orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-  .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;animation:drift 18s ease-in-out infinite}
-  .orb.a{width:380px;height:380px;background:#6d5cff;top:-80px;left:-40px}
-  .orb.b{width:320px;height:320px;background:#00e5ff;right:-60px;bottom:10%;animation-duration:22s}
+  .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.14;animation:drift 18s ease-in-out infinite}
+  .orb.a{width:380px;height:380px;background:#fff;top:-80px;left:-40px}
+  .orb.b{width:320px;height:320px;background:#aaa;right:-60px;bottom:10%;animation-duration:22s}
   @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-24px)}}
   .wrap{position:relative;z-index:1;width:min(920px,96vw);display:flex;flex-direction:column;align-items:center}
   h1{font-size:28px;font-weight:900;letter-spacing:1px}
-  h1 span{color:#9aa3d0;font-size:13px;font-weight:400}
+  h1 span{color:#888;font-size:13px;font-weight:400}
   #app{width:100%;display:grid;grid-template-columns:270px 1fr;gap:12px;margin-top:14px;align-items:start}
-  .pane{background:rgba(16,16,24,.78);border:1px solid #ffffff22;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;backdrop-filter:blur(10px);transition:.2s border-color,.2s box-shadow}
-  .pane:hover{border-color:#ffffff44;box-shadow:0 12px 40px #6d5cff22}
+  .pane{background:rgba(12,12,16,.82);border:1px solid #ffffff22;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;backdrop-filter:blur(10px);transition:.2s border-color,.2s box-shadow}
+  .pane:hover{border-color:#ffffff44;box-shadow:0 12px 40px #ffffff10}
   .row{display:flex;gap:8px}
   input{flex:1;background:#ffffff10;border:1px solid #ffffff2a;color:#fff;border-radius:12px;padding:11px;font-size:14px;outline:0;min-width:0;transition:.15s}
-  input:focus{border-color:#7af0ff;box-shadow:0 0 0 4px #7af0ff22}
+  input:focus{border-color:#fff;box-shadow:0 0 0 4px #ffffff18}
   button{background:#fff;color:#000;border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s}
-  button:hover{transform:translateY(-1px);box-shadow:0 8px 20px #ffffff33}
+  button:hover{transform:translateY(-1px);box-shadow:0 8px 20px #ffffff26}
   button.ghost{background:#ffffff14;color:#fff;border:1px solid #ffffff2a}
+  button.ghost:hover{background:#ffffff26}
   .item{padding:10px;border-radius:12px;background:#ffffff08;cursor:pointer;font-size:14px;transition:.15s}
   .item:hover{background:#ffffff16;transform:translateX(3px)}
-  .item.act{background:#ffffff20;box-shadow:inset 0 0 0 1px #7af0ff66}
+  .item.act{background:#ffffff20;box-shadow:inset 0 0 0 1px #ffffff55}
   .item small{color:#888;display:block;font-size:11px}
-  #meName{font-size:12px;color:#9aa3d0;background:#ffffff0d;border:1px solid #ffffff26;border-radius:12px;padding:9px 12px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-left:8px;vertical-align:middle;background:#333}
+  .dot.on{background:#fff;box-shadow:0 0 8px #fff}
+  #meName{font-size:12px;color:#999;background:#ffffff0d;border:1px solid #ffffff26;border-radius:12px;padding:9px 12px}
   #meName b{color:#fff;font-size:14px}
   #msgs{display:flex;flex-direction:column;gap:8px}
-  .m{max-width:80%;padding:8px 12px;border-radius:14px;font-size:14px;word-break:break-word;animation:pop .18s ease}
+  .m{max-width:80%;padding:8px 12px;border-radius:14px;font-size:14px;word-break:break-word;animation:pop .18s ease;cursor:pointer}
   @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .m.me{align-self:flex-end;background:#fff;color:#000}
   .m.them{align-self:flex-start;background:#ffffff16}
   .m.blocked{opacity:.55;font-style:italic}
   .sender{font-size:10px;opacity:.55;display:block;margin-bottom:2px;font-weight:800;letter-spacing:.5px}
-  .m img{max-width:220px;border-radius:10px;display:block;margin-top:4px;cursor:pointer}
-  .m .file{display:flex;flex-direction:column;gap:4px;font-size:13px}
-  .m a{color:#7af0ff;font-weight:700;text-decoration:none;font-size:12px}
-  .m.me a{color:#000;font-weight:800}
-  #setup{width:min(440px,94vw);background:rgba(16,16,24,.86);border:1px solid #ffffff22;border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:12px;text-align:center;backdrop-filter:blur(12px);margin-top:18px}
+  .m img{max-width:220px;border-radius:10px;display:block;margin-top:4px}
+  .m audio{width:230px;margin-top:4px;display:block}
+  .rx{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+  .rx span{font-size:11px;font-weight:800;border:1px solid #ffffff33;border-radius:100px;padding:2px 8px;opacity:.9}
+  .m.me .rx span{border-color:#00000033}
+  .rbar{display:flex;gap:4px;margin-top:4px}
+  .rbar button{padding:4px 10px;font-size:12px;border-radius:100px}
+  #setup{width:min(440px,94vw);background:rgba(12,12,16,.9);border:1px solid #ffffff22;border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:12px;text-align:center;backdrop-filter:blur(12px);margin-top:18px}
   #setup input{text-align:center;font-size:16px}
   .note{font-size:12px;color:#8b90b0}
   #setup button:disabled{opacity:.55;transform:none;box-shadow:none}
-  #serr,#aerr,#merr{min-height:16px;font-size:12px}
-  #serr,#aerr,#merr{color:#ff6b8a}
-  .okmsg{color:#7dffa8!important}
-  .csub{font-size:11px;color:#7f86a8;min-height:14px;margin-top:-4px}
+  #serr,#aerr,#merr{min-height:16px;font-size:12px;color:#ff6b8a}
+  .okmsg{color:#fff!important;font-weight:800}
+  .csub{font-size:11px;color:#888;min-height:14px;margin-top:-4px}
+  #typing{font-size:11px;color:#aaa;min-height:14px;font-style:italic}
   #backb{display:none;padding:8px 12px}
-  a.home{color:#7af0ff;font-size:13px;text-decoration:none;margin-top:14px;font-weight:700}
+  #ghostb{display:none;padding:6px 10px;font-size:11px}
+  .chip{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#ffffff08;border-radius:10px;padding:6px 10px;font-size:13px}
+  .chip button{padding:4px 10px;font-size:11px;background:#fff;color:#000}
+  a.home{color:#fff;font-size:13px;text-decoration:none;margin-top:14px;font-weight:700}
   a.home:hover{text-decoration:underline}
-  .other{margin-top:4px;font-size:12px;color:#9aa3d0}
-  .other a{color:#7af0ff;font-weight:800}
-  #invrow{display:none}
+  .other{margin-top:4px;font-size:12px;color:#888}
+  .other a{color:#fff;font-weight:800}
+  #invrow,#ownrow,#memlist{display:none}
   @media(max-width:640px){#app{grid-template-columns:1fr}#listpane.hide{display:none}#backb{display:inline-block}}
 </style>
 </head>
@@ -66,7 +75,7 @@
 <h1>CHAT <span>· add by display name · keep it clean</span></h1>
 <div id="setup">
   <div style="font-weight:900;font-size:18px">pick a display name</div>
-  <div class="note">friends add you with this name. no friend code. keys stay in this browser.</div>
+  <div class="note">friends add you with this name. keys stay in this browser.</div>
   <input id="nm" maxlength="16" placeholder="display name" autocomplete="off" />
   <button id="go" disabled>connecting…</button>
   <div class="note" id="serr"></div>
@@ -76,33 +85,38 @@
     <div id="meName">…</div>
     <div class="row"><input id="add" maxlength="16" placeholder="their display name" /><button id="addb">ADD</button></div>
     <div class="row"><input id="gnm" maxlength="24" placeholder="group name" /><button id="gaddb" class="ghost">NEW GROUP</button></div>
+    <div class="row"><input id="jnm" maxlength="12" placeholder="join code" /><button id="joinb" class="ghost">JOIN</button></div>
     <div id="aerr"></div>
     <div id="reqs"></div>
     <div style="font-size:11px;color:#888">CHATS</div>
     <div id="chats" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
   <div class="pane">
-    <div class="row" style="align-items:center"><button id="backb" class="ghost">←</button><div id="ctitle" style="font-weight:900">pick a chat</div></div>
+    <div class="row" style="align-items:center"><button id="backb" class="ghost">←</button><div id="ctitle" style="font-weight:900">pick a chat</div><span class="dot" id="hdot" style="display:none"></span><button id="ghostb" class="ghost">burn: off</button></div>
     <div class="csub" id="csub"></div>
+    <div id="typing"></div>
     <div class="row" id="invrow"><input id="inv" maxlength="16" placeholder="display name to invite" /><button id="invb" class="ghost">INVITE</button></div>
+    <div class="row" id="ownrow"><input id="rnm" maxlength="24" placeholder="rename group" /><button id="rnb" class="ghost">RENAME</button></div>
+    <div id="memlist" style="flex-direction:column;gap:6px"></div>
     <div id="msgs"></div>
-    <div class="row"><input id="box" maxlength="500" placeholder="message…" /><button id="att" class="ghost">ATTACH</button><button id="send">SEND</button></div>
+    <div class="row"><input id="box" maxlength="500" placeholder="message…" /><button id="mic" class="ghost">MIC</button><button id="att" class="ghost">IMG</button><button id="send">SEND</button></div>
     <div class="note" id="merr"></div>
   </div>
 </div>
-<input type="file" id="file" style="display:none" />
+<input type="file" id="file" accept="image/*" style="display:none" />
 <a class="home" href="index.html" target="_top">← socool.fun</a>
 <div class="other">our other site: <a href="https://tqig.space" target="_blank" rel="noopener">https://tqig.space</a></div>
 </div>
 <script defer src="vendor/firebase-app-compat.js"></script>
 <script defer src="vendor/firebase-auth-compat.js"></script>
 <script defer src="vendor/firebase-firestore-compat.js"></script>
-<script defer src="vendor/firebase-storage-compat.js"></script>
 <script>
 if(window.top!==window.self){try{window.top.location.replace(location.href)}catch(e){}}
-const CONFIG={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",storageBucket:"socool-c1fd1.firebasestorage.app",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
-let DB=null,ST=null,ME=null,OPEN=null,UNSUB=null,MEP=null;
-const KEYS=new Map();let OURLS=[];
+const CONFIG={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
+let DB=null,ME=null,OPEN=null,UNSUB=null,UNSUBMETA=null,MEP=null;
+const KEYS=new Map();let OURLS=[];const PRESENCE=new Map();
+let REC=null,RECS=[],RECTO=null,typingSent=false,typingTimer=null;
+const REACTS=['+1','!','?','lol'];
 const $=id=>document.getElementById(id);
 const b64=a=>btoa(String.fromCharCode(...a));
 const unb=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
@@ -137,22 +151,35 @@ function isClean(text){
   }
   return true;
 }
+function asJwk(v){
+  if(typeof v==='string'){try{v=JSON.parse(v)}catch(e){return null}}
+  return (v&&typeof v==='object'&&v.x&&v.y)?v:null;
+}
+function validPriv(){try{const p=JSON.parse(localStorage.sc_priv||'null');return (p&&p.d&&p.x&&p.y)?p:null}catch(e){return null}}
 async function genKeys(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
   return{pub:await crypto.subtle.exportKey('jwk',kp.publicKey),priv:await crypto.subtle.exportKey('jwk',kp.privateKey)}}
-async function sharedKey(theirJwk){const mine=await crypto.subtle.importKey('jwk',JSON.parse(localStorage.sc_priv),'ECDH',{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);
-  const theirs=await crypto.subtle.importKey('jwk',theirJwk,{name:'ECDH',namedCurve:'P-256'},true,[]);
-  return crypto.subtle.deriveKey({name:'ECDH',public:theirs},mine,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function sharedKey(theirRaw){
+  const j=asJwk(theirRaw);
+  if(!j)throw new Error('their key is missing or corrupted');
+  const mine=validPriv();
+  if(!mine)throw new Error('your key is missing — re-register on this browser');
+  const mk=await crypto.subtle.importKey('jwk',mine,'ECDH',{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);
+  const theirs=await crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,[]);
+  return crypto.subtle.deriveKey({name:'ECDH',public:theirs},mk,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
 async function keyFor(uid,pub){
-  if(!pub)throw new Error('missing key for '+(uid===ME?'you':'them'));
-  const ck=uid+'|'+pub.x+'|'+pub.y;
+  const j=asJwk(pub);
+  if(!j)throw new Error('bad key data for '+(uid===ME?'you':'them'));
+  const ck=uid+'|'+j.x+'|'+j.y;
   if(KEYS.has(ck))return KEYS.get(ck);
-  const k=await sharedKey(pub);KEYS.set(ck,k);return k;
+  const k=await sharedKey(j);KEYS.set(ck,k);return k;
 }
 async function pubOf(uid,meta){
-  if(meta.pubs&&meta.pubs[uid])return meta.pubs[uid];
+  let j=asJwk(meta.pubs&&meta.pubs[uid]);
+  if(j)return j;
   const d=await DB.collection('users').doc(uid).get().catch(()=>null);
-  if(d&&d.exists&&d.data().pub){meta.pubs=meta.pubs||{};meta.pubs[uid]=d.data().pub;return d.data().pub}
-  throw new Error('their key is not available yet');
+  if(d&&d.exists){j=asJwk(d.data().pub);
+    if(j){meta.pubs=meta.pubs||{};meta.pubs[uid]=j;return j}}
+  throw new Error('their key is not available yet — they may need to re-register');
 }
 async function enc(key,t){const iv=crypto.getRandomValues(new Uint8Array(12));
   const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(t)));
@@ -163,6 +190,26 @@ async function encBytes(key,u8){const iv=crypto.getRandomValues(new Uint8Array(1
   const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,u8));
   return{iv:b64(iv),ct:b64(ct)}}
 async function decBytes(key,m){return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb(m.iv)},key,unb(m.ct)))}
+async function memberKey(meta,uid){
+  const pub=uid===ME?(MEP&&MEP.pub):meta.pubs&&meta.pubs[uid]?meta.pubs[uid]:await pubOf(uid,meta);
+  return keyFor(uid,pub);
+}
+async function hybridEncrypt(meta,plain,members){
+  const fk=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+  const data=await enc(fk,plain);
+  const raw=new Uint8Array(await crypto.subtle.exportKey('raw',fk));
+  const kw={};
+  for(const uid of members){const k=await memberKey(meta,uid);kw[uid]=await encBytes(k,raw)}
+  return{data:data,kw:kw};
+}
+async function hybridDecrypt(meta,m,fromUid){
+  const slot=m.kw&&m.kw[ME];
+  if(!slot)throw new Error('no copy for you');
+  const wrap=await memberKey(meta,fromUid);
+  const rawKey=await decBytes(wrap,slot);
+  const fk=await crypto.subtle.importKey('raw',rawKey,{name:'AES-GCM'},false,['decrypt']);
+  return await dec(fk,m.data);
+}
 async function claimName(nm){
   const key=normName(nm);
   if(key.length<3)throw new Error('name needs 3+ letters or numbers');
@@ -191,8 +238,17 @@ async function lookupUser(q){
   }catch(e){}
   return null;
 }
+function genCode(){const cs='abcdefghjkmnpqrstuvwxyz23456789';let s='';
+  for(let i=0;i<6;i++)s+=cs[Math.floor(Math.random()*cs.length)];return s}
+async function getPres(uid){
+  const c=PRESENCE.get(uid);
+  if(c&&Date.now()-c.at<15000)return c.on;
+  try{const d=await DB.collection('users').doc(uid).get();
+    const on=d.exists&&d.data().last&&(Date.now()-d.data().last<50000);
+    PRESENCE.set(uid,{on:on,at:Date.now()});return on}catch(e){return c?c.on:false}
+}
 (function(){try{const p=JSON.parse(localStorage.sc_name||'null');
-  if(p&&p.name&&localStorage.sc_priv){document.getElementById('setup').style.display='none';
+  if(p&&p.name&&validPriv()){document.getElementById('setup').style.display='none';
     document.getElementById('app').style.display='grid';
     document.getElementById('meName').innerHTML='signed in as <b></b>';
     document.getElementById('meName').querySelector('b').textContent=p.name;
@@ -201,16 +257,16 @@ async function init(){
   if(typeof firebase==='undefined'){$('setup').style.display='flex';$('serr').textContent='could not reach the chat servers from this network.';return}
   if(!ok()){$('setup').style.display='flex';$('serr').textContent='chat not connected yet — owner is wiring it up.';return}
   firebase.initializeApp(CONFIG);DB=firebase.firestore();
-  try{ST=firebase.storage()}catch(e){ST=null}
   let me=null;
   try{
     await firebase.auth().signInAnonymously();ME=firebase.auth().currentUser.uid;
     me=await DB.collection('users').doc(ME).get();
   }catch(e){$('setup').style.display='flex';$('serr').textContent='blocked: '+e.message;return}
   $('go').disabled=false;$('go').textContent='START ▸';
-  if(me.exists&&localStorage.sc_priv){
+  if(me.exists&&validPriv()){
     const p=JSON.parse(localStorage.sc_name||'null')||me.data();
-    if(p&&p.name&&isClean(p.name)){start(p);return}
+    if(p&&p.name&&isClean(p.name)&&asJwk(p.pub)){start(p);return}
+    if(p&&p.name&&isClean(p.name)&&!asJwk(p.pub)&&asJwk(me.data().pub)){start(me.data());return}
   }
   $('setup').style.display='flex';
   $('go').onclick=async()=>{
@@ -220,16 +276,13 @@ async function init(){
     if(!isClean(nm)){$('serr').textContent='that name is not allowed';return}
     try{
       const key=await claimName(nm);
-      let pub=null;
-      if(localStorage.sc_priv){
-        pub=(me&&me.exists&&me.data().pub)||(JSON.parse(localStorage.sc_name||'null')||{}).pub||null;
-      }
-      if(!localStorage.sc_priv||!pub){
+      let pub=(me&&me.exists&&asJwk(me.data().pub))||asJwk((JSON.parse(localStorage.sc_name||'null')||{}).pub);
+      if(!validPriv()||!pub){
         const k=await genKeys();
         localStorage.sc_priv=JSON.stringify(k.priv);
         pub=k.pub;
       }
-      const profile={name:nm,nameLower:key,pub};
+      const profile={name:nm,nameLower:key,pub:pub};
       localStorage.sc_name=JSON.stringify(profile);
       await DB.collection('users').doc(ME).set(profile,{merge:true});
       start(profile);
@@ -237,6 +290,9 @@ async function init(){
   };
 }
 function start(p){
+  if(!asJwk(p.pub)||!validPriv()){
+    alert('your keys were broken — they have been refreshed. old chats will stay locked.');
+  }
   MEP=p;
   $('setup').style.display='none';$('app').style.display='grid';
   $('meName').innerHTML='signed in as <b></b>';$('meName').querySelector('b').textContent=p.name;
@@ -244,6 +300,8 @@ function start(p){
   $('backb').onclick=()=>{$('listpane').classList.remove('hide')};
   claimName(p.name).catch(()=>{});
   if(p.name&&!p.nameLower){DB.collection('users').doc(ME).set({nameLower:normName(p.name)},{merge:true}).catch(()=>{})}
+  const beat=()=>DB.collection('users').doc(ME).set({last:Date.now()},{merge:true}).catch(()=>{});
+  beat();setInterval(beat,20000);
   const flash=(t,okk)=>{$('aerr').className=okk?'okmsg':'';$('aerr').textContent=t;
     setTimeout(()=>{if($('aerr').textContent===t){$('aerr').textContent='';$('aerr').className=''}},2600)};
   $('addb').onclick=async()=>{
@@ -253,12 +311,11 @@ function start(p){
     const to=await lookupUser(q);
     if(!to){$('aerr').textContent='nobody has that name';return}
     if(to===ME){$('aerr').textContent='that is you';return}
-    const rev=await DB.collection('requests').doc(to+'_'+ME).get();
-    if(rev.exists&&rev.data().status==='pending'){$('aerr').textContent='they already added you — check requests';return}
-    const existing=await DB.collection('requests').doc(ME+'_'+to).get();
-    if(existing.exists&&existing.data().status==='pending'){$('aerr').textContent='request already sent';return}
-    const meDoc=await DB.collection('users').doc(ME).get();
-    await DB.collection('requests').doc(ME+'_'+to).set({from:ME,to:to,fromName:p.name,fromPubKey:meDoc.data().pub,status:'pending',ts:Date.now()});
+    const rev=await DB.collection('requests').doc(to+'_'+ME).get().catch(()=>null);
+    if(rev&&rev.exists&&rev.data().status==='pending'){$('aerr').textContent='they already added you — check requests';return}
+    const existing=await DB.collection('requests').doc(ME+'_'+to).get().catch(()=>null);
+    if(existing&&existing.exists&&existing.data().status==='pending'){$('aerr').textContent='request already sent';return}
+    await DB.collection('requests').doc(ME+'_'+to).set({from:ME,to:to,fromName:p.name,fromPubKey:p.pub,status:'pending',ts:Date.now()});
     $('add').value='';flash('request sent',true);
   };
   $('gaddb').onclick=async()=>{
@@ -267,9 +324,30 @@ function start(p){
     if(n.length<3){$('aerr').textContent='group name needs 3+ chars';return}
     if(!isClean(n)){$('aerr').textContent='that name is not allowed';return}
     try{
-      await DB.collection('chats').add({group:true,name:n,members:[ME],names:{[ME]:p.name},pubs:{[ME]:p.pub},updated:Date.now()});
-      $('gnm').value='';flash('group created — open it and invite people',true);
+      let code=genCode();let tries=0;
+      while(!isClean(code)&&tries++<8)code=genCode();
+      const ref=await DB.collection('chats').add({group:true,name:n,owner:ME,joinCode:code,
+        members:[ME],names:{[ME]:p.name},pubs:{[ME]:p.pub},updated:Date.now()});
+      await DB.collection('gcodes').doc(code).set({gid:ref.id,ts:Date.now()});
+      $('gnm').value='';flash('group created — code: '+code,true);
     }catch(e){$('aerr').textContent='could not create group: '+(e.message||e)}
+  };
+  $('joinb').onclick=async()=>{
+    $('aerr').textContent='';$('aerr').className='';
+    const code=normName($('jnm').value);
+    if(code.length<4){$('aerr').textContent='enter a join code';return}
+    try{
+      const g=await DB.collection('gcodes').doc(code).get();
+      if(!g.exists){$('aerr').textContent='no group with that code';return}
+      const gid=g.data().gid;
+      const cd=await DB.collection('chats').doc(gid).get();
+      if(!cd.exists){$('aerr').textContent='group missing';return}
+      const meta=cd.data();
+      if(meta.members.includes(ME)){$('aerr').textContent='already in that group';return}
+      await DB.collection('chats').doc(gid).update({members:firebase.firestore.FieldValue.arrayUnion(ME),
+        ['names.'+ME]:p.name,['pubs.'+ME]:p.pub,updated:Date.now()});
+      $('jnm').value='';flash('joined '+(meta.name||'group'),true);
+    }catch(e){$('aerr').textContent='join failed: '+(e.message||e)}
   };
   DB.collection('requests').where('to','==',ME).where('status','==','pending').onSnapshot(s=>{
     const R=$('reqs');R.textContent='';
@@ -284,14 +362,12 @@ function start(p){
       okB.onclick=async()=>{
         try{
           if(r.type==='group'){
-            const myPub=(await DB.collection('users').doc(ME).get()).data().pub;
             await DB.collection('chats').doc(r.gid).update({members:firebase.firestore.FieldValue.arrayUnion(ME),
-              ['names.'+ME]:p.name,['pubs.'+ME]:myPub,updated:Date.now()});
+              ['names.'+ME]:p.name,['pubs.'+ME]:p.pub,updated:Date.now()});
           }else{
             const cid=[ME,r.from].sort().join('_');
-            const myPub=(await DB.collection('users').doc(ME).get()).data().pub;
             await DB.collection('chats').doc(cid).set({members:[ME,r.from],names:{[ME]:p.name,[r.from]:r.fromName},
-              pubs:{[ME]:myPub,[r.from]:r.fromPubKey},updated:Date.now()},{merge:true});
+              pubs:{[ME]:p.pub,[r.from]:r.fromPubKey},updated:Date.now()},{merge:true});
           }
           await DB.collection('requests').doc(d.id).update({status:'accepted'});
         }catch(e){alert('accept failed: '+(e.message||e))}
@@ -308,38 +384,71 @@ function start(p){
       const el=document.createElement('div');el.className='item'+(OPEN===d.id?' act':'');
       const b=document.createElement('b');b.textContent=c.group?(c.name||'group'):((c.names&&c.names[other])||'chat');
       const sm=document.createElement('small');
-      sm.textContent=c.group?('group · '+c.members.length+' members'):'end-to-end encrypted';
+      sm.textContent=c.group?('group · '+c.members.length+' · code '+((c.joinCode||'------').toUpperCase())):'end-to-end encrypted';
       el.appendChild(b);el.appendChild(sm);
+      if(!c.group){const dot=document.createElement('span');dot.className='dot';
+        el.insertBefore(dot,sm);
+        getPres(other).then(on=>{dot.className='dot'+(on?' on':'')});}
       el.onclick=()=>openChat(d.id,c);C.appendChild(el)});
   },err=>{const C=$('chats');C.textContent='';const d=document.createElement('div');d.className='note';
     d.textContent='chat list error: '+err.code;C.appendChild(d)});
   $('send').onclick=send;
   $('box').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+  $('box').addEventListener('input',onType);
   $('att').onclick=()=>$('file').click();
-  $('file').onchange=attach;
+  $('file').onchange=sendImage;
+  $('mic').onclick=toggleMic;
   $('invb').onclick=invite;
   $('inv').addEventListener('keydown',e=>{if(e.key==='Enter')invite()});
+  $('rnb').onclick=renameGroup;
+  $('ghostb').onclick=toggleGhost;
 }
 let CHATMETA=null;
+function onType(){
+  if(!OPEN)return;
+  if(!typingSent){typingSent=true;
+    DB.collection('chats').doc(OPEN).update({['typing.'+ME]:Date.now()}).catch(()=>{});
+    setTimeout(()=>typingSent=false,2000)}
+  clearTimeout(typingTimer);
+  typingTimer=setTimeout(()=>{DB.collection('chats').doc(OPEN).update({['typing.'+ME]:firebase.firestore.FieldValue.delete()}).catch(()=>{})},3000);
+}
+function clearTyping(){
+  if(!OPEN)return;
+  clearTimeout(typingTimer);typingSent=false;
+  DB.collection('chats').doc(OPEN).update({['typing.'+ME]:firebase.firestore.FieldValue.delete()}).catch(()=>{});
+}
 async function openChat(cid,meta){
   OPEN=cid;CHATMETA={meta:meta};
   const other=meta.group?null:meta.members.find(u=>u!==ME);
   CHATMETA.other=other;
-  [...document.querySelectorAll('#chats .item')].forEach(e=>e.classList.remove('act'));
   document.querySelectorAll('#chats .item').forEach(e=>e.classList.remove('act'));
   $('ctitle').textContent=meta.group?(meta.name||'group'):((meta.names&&meta.names[other])||'chat');
-  $('csub').textContent=meta.group?(meta.members.length+' members · end-to-end encrypted'):'end-to-end encrypted';
+  $('hdot').style.display=meta.group?'none':'inline-block';
+  if(!meta.group){getPres(other).then(on=>{$('hdot').className='dot'+(on?' on':'')})}
   $('invrow').style.display=meta.group?'flex':'none';
+  $('ghostb').style.display='inline-block';
+  renderMeta(meta);
   if(innerWidth<640)$('listpane').classList.add('hide');
-  if(UNSUB)UNSUB();
+  if(UNSUB)UNSUB();if(UNSUBMETA)UNSUBMETA();
+  UNSUBMETA=DB.collection('chats').doc(cid).onSnapshot(d=>{
+    if(!d.exists)return;
+    CHATMETA.meta=d.data();
+    renderMeta(d.data());
+  },err=>{});
   try{
     if(!meta.group){await keyFor(other,await pubOf(other,meta))}
     UNSUB=DB.collection('chats').doc(cid).collection('msgs').orderBy('ts').onSnapshot(async s=>{
       const M=$('msgs');
       OURLS.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}});OURLS=[];
       M.textContent='';
-      for(const d of s.docs){
-        try{await renderMsg(d.data(),M)}catch(e){
+      let docs=s.docs;
+      if(CHATMETA.meta&&CHATMETA.meta.ghost){
+        const cut=Date.now()-600000;
+        s.docs.forEach(d=>{if((d.data().ts||0)<cut)d.ref.delete().catch(()=>{})});
+        docs=docs.filter(d=>(d.data().ts||0)>=cut);
+      }
+      for(const d of docs){
+        try{await renderMsg(d,M)}catch(e){
           const el=document.createElement('div');el.className='m them';el.textContent='[could not show a message]';M.appendChild(el)}
       }
       const last=M.lastElementChild;if(last)last.scrollIntoView({block:'nearest'});
@@ -349,44 +458,106 @@ async function openChat(cid,meta){
     n.textContent='could not open chat: '+(e.message||e);$('msgs').appendChild(n);
   }
 }
-async function memberKey(meta,uid){return keyFor(uid,uid===ME?MEP.pub:await pubOf(uid,meta))}
-async function renderMsg(m,M){
-  const mine=m.from===ME,meta=CHATMETA.meta;
+function renderMeta(meta){
+  if(!meta)return;
+  $('ctitle').textContent=meta.group?(meta.name||'group'):((meta.names&&meta.names[CHATMETA.other])||'chat');
+  $('csub').textContent=meta.group
+    ?(meta.members.length+' members · code '+((meta.joinCode||'------').toUpperCase())+(meta.ghost?' · burning':''))
+    :('end-to-end encrypted'+(meta.ghost?' · burning':''));
+  $('ghostb').textContent='burn: '+(meta.ghost?'on':'off');
+  const t=meta.typing||{};
+  const now=Date.now();
+  const names=[];
+  for(const uid in t){if(uid!==ME&&now-t[uid]<4500){
+    names.push((meta.names&&meta.names[uid])||'someone')}}
+  $('typing').textContent=names.length?(names.join(', ')+(names.length>1?' are':' is')+' typing…'):'';
+  const isOwner=meta.group&&meta.owner===ME;
+  $('ownrow').style.display=isOwner?'flex':'none';
+  $('memlist').style.display=isOwner?'flex':'none';
+  if(isOwner)renderMembers(meta);
+}
+function renderMembers(meta){
+  const L=$('memlist');L.textContent='';
+  meta.members.forEach(uid=>{
+    const chip=document.createElement('div');chip.className='chip';
+    const nm=document.createElement('span');
+    nm.textContent=(meta.names&&meta.names[uid])||'member'+(uid===meta.owner?' · owner':'');
+    chip.appendChild(nm);
+    if(uid!==ME){
+      const k=document.createElement('button');k.textContent='KICK';
+      k.onclick=async()=>{if(!confirm('kick this member?'))return;
+        try{await DB.collection('chats').doc(OPEN).update({members:firebase.firestore.FieldValue.arrayRemove(uid),
+          ['names.'+uid]:firebase.firestore.FieldValue.delete(),
+          ['pubs.'+uid]:firebase.firestore.FieldValue.delete(),
+          ['typing.'+uid]:firebase.firestore.FieldValue.delete()})}
+        catch(e){alert('kick failed: '+(e.message||e))}};
+      chip.appendChild(k);
+    }
+    L.appendChild(chip);
+  });
+}
+async function renameGroup(){
+  const n=$('rnm').value.trim().slice(0,24);
+  if(!OPEN||!CHATMETA.meta.group)return;
+  if(n.length<3){$('merr').textContent='name needs 3+ chars';return}
+  if(!isClean(n)){$('merr').textContent='that name is not allowed';return}
+  try{await DB.collection('chats').doc(OPEN).update({name:n});$('rnm').value='';$('merr').textContent=''}
+  catch(e){$('merr').textContent='rename failed: '+(e.message||e)}
+}
+async function toggleGhost(){
+  if(!OPEN)return;
+  try{await DB.collection('chats').doc(OPEN).update({ghost:!(CHATMETA.meta&&CHATMETA.meta.ghost)})}
+  catch(e){$('merr').textContent='toggle failed: '+(e.message||e)}
+}
+async function renderMsg(d,M){
+  const m=d.data(),meta=CHATMETA.meta,mine=m.from===ME;
   const el=document.createElement('div');el.className='m '+(mine?'me':'them');
-  if(meta.group&&!mine){
-    const s=document.createElement('span');s.className='sender';
-    s.textContent=(meta.names&&meta.names[m.from])||'member';el.appendChild(s);
+  if(m.type==='img'||m.type==='voice'){
+    const dataUrl=await hybridDecrypt(meta,m,m.from);
+    if(m.type==='img'){const img=document.createElement('img');img.src=dataUrl;el.appendChild(img)}
+    else{const au=document.createElement('audio');au.controls=true;au.src=dataUrl;el.appendChild(au)}
+  }else{
+    let txt;
+    if(m.rcpt){
+      const slot=m.rcpt[ME];if(!slot)throw new Error('no copy for you');
+      const k=await memberKey(meta,m.from);
+      txt=await dec(k,slot);
+    }else if(m.iv){
+      const k=await memberKey(meta,m.from);
+      txt=await dec(k,m);
+    }else throw new Error('bad message');
+    if(meta.group&&!mine){
+      const s=document.createElement('span');s.className='sender';
+      s.textContent=(meta.names&&meta.names[m.from])||'member';el.appendChild(s);
+    }
+    const clean=isClean(txt);
+    el.className+=clean?'':' blocked';
+    el.textContent=clean?txt:'blocked';
   }
-  if(m.type==='file'){
-    const slot=m.fk&&m.fk[ME];
-    if(!slot)throw new Error('no key for you');
-    const wrapKey=await memberKey(meta,m.from);
-    const rawKey=await decBytes(wrapKey,slot);
-    const fileKey=await crypto.subtle.importKey('raw',rawKey,{name:'AES-GCM'},false,['decrypt']);
-    let cipher;
-    if(ST){const url=await ST.ref().child(m.path).getDownloadURL();cipher=await (await fetch(url)).arrayBuffer()}
-    else{throw new Error('storage unavailable')}
-    const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb(m.fiv)},fileKey,cipher);
-    const isImg=/\.(png|jpe?g|gif|webp|bmp)$/i.test(m.fname||'');
-    const mime=isImg?'image/'+((m.fname.split('.').pop()||'png').toLowerCase().replace('jpg','jpeg')):'application/octet-stream';
-    const url=URL.createObjectURL(new Blob([plain],{type:mime}));OURLS.push(url);
-    const box=document.createElement('div');box.className='file';
-    if(isImg){const img=document.createElement('img');img.src=url;img.onclick=()=>window.open(url,'_blank');box.appendChild(img)}
-    const a=document.createElement('a');a.href=url;a.download=m.fname||'file';a.textContent='DOWNLOAD '+(m.fname||'file')+' ('+Math.round((m.fsize||plain.byteLength)/1024)+'KB)';
-    box.appendChild(a);el.appendChild(box);M.appendChild(el);return;
+  const rx=m.reactions||{};
+  const counts={};
+  for(const uid in rx){const c=rx[uid];counts[c]=(counts[c]||0)+1}
+  const keys=Object.keys(counts);
+  if(keys.length){
+    const row=document.createElement('div');row.className='rx';
+    keys.forEach(c=>{const sp=document.createElement('span');sp.textContent=c+' ×'+counts[c];row.appendChild(sp)});
+    el.appendChild(row);
   }
-  let txt;
-  if(m.rcpt){
-    const slot=m.rcpt[ME];if(!slot)throw new Error('no copy for you');
-    const k=await memberKey(meta,m.from);
-    txt=await dec(k,slot);
-  }else if(m.iv){
-    const k=await memberKey(meta,m.from);
-    txt=await dec(k,m);
-  }else throw new Error('bad message');
-  const clean=isClean(txt);
-  el.className+=clean?'':' blocked';
-  el.textContent=clean?txt:'blocked';
+  el.onclick=()=>{
+    const ex=el.querySelector('.rbar');
+    if(ex){ex.remove();return}
+    document.querySelectorAll('.rbar').forEach(b=>b.remove());
+    const bar=document.createElement('div');bar.className='rbar';
+    REACTS.forEach(c=>{const b=document.createElement('button');b.textContent=c;
+      b.onclick=async ev=>{ev.stopPropagation();bar.remove();
+        try{
+          const cur=(await DB.collection('chats').doc(OPEN).collection('msgs').doc(d.id).get()).data().reactions||{};
+          if(cur[ME]===c)await DB.collection('chats').doc(OPEN).collection('msgs').doc(d.id).update({['reactions.'+ME]:firebase.firestore.FieldValue.delete()});
+          else await DB.collection('chats').doc(OPEN).collection('msgs').doc(d.id).update({['reactions.'+ME]:c});
+        }catch(e){$('merr').textContent='react failed: '+(e.message||e)}};
+      bar.appendChild(b)});
+    el.appendChild(bar);
+  };
   M.appendChild(el);
 }
 async function send(){
@@ -396,6 +567,7 @@ async function send(){
   if(!OPEN){$('merr').textContent='open a chat first';return}
   if(!isClean(t)){$('merr').textContent='that message is not allowed';return}
   $('box').value='';
+  clearTyping();
   try{
     const meta=CHATMETA.meta;
     if(meta.group){
@@ -413,32 +585,60 @@ async function send(){
     await DB.collection('chats').doc(OPEN).update({updated:Date.now()});
   }catch(e){$('merr').textContent='send failed: '+(e.message||e)}
 }
-async function attach(){
+async function sendImage(){
   const f=$('file').files[0];$('file').value='';
   if(!f)return;
   if(!OPEN){$('merr').textContent='open a chat first';return}
-  if(f.size>8*1024*1024){$('merr').textContent='file too big (max 8MB)';return}
   $('merr').textContent='';
   try{
-    if(!ST)throw new Error('storage unavailable');
-    const meta=CHATMETA.meta;
-    const buf=new Uint8Array(await f.arrayBuffer());
-    const fk=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
-    const fiv=crypto.getRandomValues(new Uint8Array(12));
-    const body=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:fiv},fk,buf));
-    const raw=new Uint8Array(await crypto.subtle.exportKey('raw',fk));
-    const members=meta.group?meta.members:[ME,CHATMETA.other];
-    const wraps={};
-    for(const uid of members){
-      const k=await memberKey(meta,uid);
-      wraps[uid]=await encBytes(k,raw);
+    const bmp=await createImageBitmap(f);
+    const max=1280;let w=bmp.width,h=bmp.height;
+    if(Math.max(w,h)>max){const s=max/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}
+    const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+    cv.getContext('2d').drawImage(bmp,0,0,w,h);
+    let url=cv.toDataURL('image/jpeg',.72);
+    if(url.length>700000)url=cv.toDataURL('image/jpeg',.42);
+    if(url.length>720000){
+      const s2=Math.min(1,960/Math.max(bmp.width,bmp.height));
+      const cv2=document.createElement('canvas');
+      cv2.width=Math.max(1,Math.round(bmp.width*s2));cv2.height=Math.max(1,Math.round(bmp.height*s2));
+      cv2.getContext('2d').drawImage(bmp,0,0,cv2.width,cv2.height);
+      url=cv2.toDataURL('image/jpeg',.42);
     }
-    const path='chats/'+OPEN+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,10);
-    await ST.ref().child(path).put(body);
-    const fname=(isClean(f.name)?f.name:'[file]').slice(0,40);
-    await DB.collection('chats').doc(OPEN).collection('msgs').add({from:ME,type:'file',fname:fname,fsize:f.size,fiv:b64(fiv),path:path,fk:wraps,ts:Date.now()});
+    if(url.length>720000)throw new Error('image too large even after compression');
+    const meta=CHATMETA.meta;
+    const members=meta.group?meta.members:[ME,CHATMETA.other];
+    const hy=await hybridEncrypt(meta,url,members);
+    await DB.collection('chats').doc(OPEN).collection('msgs').add({from:ME,type:'img',...hy,ts:Date.now()});
     await DB.collection('chats').doc(OPEN).update({updated:Date.now()});
-  }catch(e){$('merr').textContent='attach failed: '+(e.message||e)}
+  }catch(e){$('merr').textContent='image failed: '+(e.message||e)}
+}
+async function toggleMic(){
+  if(REC&&REC.state==='recording'){REC.stop();return}
+  $('merr').textContent='';
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    RECS=[];REC=new MediaRecorder(stream);
+    REC.ondataavailable=e=>RECS.push(e.data);
+    REC.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());clearTimeout(RECTO);
+      $('mic').textContent='MIC';$('mic').className='ghost';
+      const blob=new Blob(RECS,{type:REC?REC.mimeType:'audio/webm'});REC=null;
+      if(blob.size<1000)return;
+      if(blob.size>500*1024){$('merr').textContent='voice note too long (max ~30s)';return}
+      if(!OPEN){$('merr').textContent='open a chat first';return}
+      try{
+        const b64data=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(blob)});
+        const meta=CHATMETA.meta;
+        const members=meta.group?meta.members:[ME,CHATMETA.other];
+        const hy=await hybridEncrypt(meta,b64data,members);
+        await DB.collection('chats').doc(OPEN).collection('msgs').add({from:ME,type:'voice',...hy,ts:Date.now()});
+        await DB.collection('chats').doc(OPEN).update({updated:Date.now()});
+      }catch(e){$('merr').textContent='voice failed: '+(e.message||e)}
+    };
+    REC.start();$('mic').textContent='STOP';$('mic').className='';
+    RECTO=setTimeout(()=>{if(REC&&REC.state==='recording')REC.stop()},45000);
+  }catch(e){$('merr').textContent='mic blocked: '+(e.message||e)}
 }
 async function invite(){
   $('merr').textContent='';
@@ -450,8 +650,8 @@ async function invite(){
     if(to===ME){$('merr').textContent='that is you';return}
     if(CHATMETA.meta.members.includes(to)){$('merr').textContent='already in the group';return}
     const rid=ME+'_'+to+'_'+OPEN;
-    const ex=await DB.collection('requests').doc(rid).get();
-    if(ex.exists&&ex.data().status==='pending'){$('merr').textContent='already invited';return}
+    const ex=await DB.collection('requests').doc(rid).get().catch(()=>null);
+    if(ex&&ex.exists&&ex.data().status==='pending'){$('merr').textContent='already invited';return}
     await DB.collection('requests').doc(rid).set({from:ME,to:to,type:'group',gid:OPEN,gname:CHATMETA.meta.name,fromName:MEP.name,status:'pending',ts:Date.now()});
     $('inv').value='';$('merr').className='okmsg';$('merr').textContent='invited';
     setTimeout(()=>{if($('merr').textContent==='invited'){$('merr').textContent='';$('merr').className=''}},2600);
