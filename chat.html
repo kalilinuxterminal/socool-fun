@@ -120,10 +120,10 @@
   <div class="pane" id="listpane">
     <div class="row" style="align-items:center;gap:8px">
       <div id="meName" title="click for your id">…</div>
+      <button id="setb" class="ghost" style="padding:9px 12px">SET</button>
       <button id="plusb" class="ghost" style="padding:9px 14px">+</button>
     </div>
     <div id="newpanel" style="display:none;flex-direction:column;gap:8px">
-      <div class="row" id="presrow" style="align-items:center"><span class="note">STATUS</span><button id="pon" class="ghost">ONLINE</button><button id="poff" class="ghost">INVISIBLE</button></div>
       <div class="row"><input id="add" maxlength="16" placeholder="friend's display name" /><button id="addb" class="ghost">ADD</button></div>
       <div class="row"><input id="gnm" maxlength="24" placeholder="new group name" /><button id="gaddb" class="ghost">CREATE</button></div>
       <div class="row"><input id="jnm" maxlength="12" placeholder="join code" /><button id="joinb" class="ghost">JOIN</button></div>
@@ -134,10 +134,10 @@
     </div>
     <div id="aerr"></div>
     <div id="reqs"></div>
+    <input id="csearch" placeholder="search chats…" autocomplete="off" style="font-size:13px;padding:8px 12px" />
     <div style="font-size:11px;color:#888">CHATS</div>
     <div id="chats" style="display:flex;flex-direction:column;gap:8px;flex:1;overflow-y:auto;min-height:0"></div>
     <button id="adminb" class="ghost">ADMIN</button>
-    <div id="themepk"><span>THEME</span><i data-t="mono" style="background:#fff"></i><i data-t="azure" style="background:#4da3ff"></i><i data-t="coalescent" style="background:#3ddbc0"></i><i data-t="orangy" style="background:#ffa03d"></i><i data-t="lakers" id="lk"></i></div>
   </div>
   <div class="pane">
     <div class="row" style="align-items:center;position:relative">
@@ -167,7 +167,10 @@
 <div id="adminmodal" class="modal"><div class="mbox">
   <div class="row" style="justify-content:space-between;align-items:center"><b>ADMIN</b><button id="adminx" class="ghost">CLOSE</button></div>
   <div class="asec" id="secReports">OPEN REPORTS</div><div id="areports" style="display:flex;flex-direction:column;gap:6px"></div>
-  <div class="asec" id="secBans">BANNED</div><div id="abans" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="asec" id="secBans">BANNED</div>
+  <div class="row" id="unbanrow"><input id="unbq" maxlength="16" placeholder="unban by display name" /><button id="unbb" class="ghost">FIND</button></div>
+  <div id="unbres" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div id="abans" style="display:flex;flex-direction:column;gap:6px"></div>
   <div class="asec" id="secMods">MODS</div><div id="amods" style="display:flex;flex-direction:column;gap:6px"></div>
   <div class="asec" id="secMutes">MUTED</div><div id="amutes" style="display:flex;flex-direction:column;gap:6px"></div>
   <div class="asec" id="secUsers">USERS</div><div id="ausers" style="display:flex;flex-direction:column;gap:6px"></div>
@@ -175,18 +178,30 @@
 <div id="ask" class="modal"><div class="mbox" style="max-width:380px"><b id="asktext"></b>
   <div class="row" style="justify-content:flex-end;margin-top:8px"><button id="askno" class="ghost">NO</button><button id="askyes">YES</button></div>
 </div></div>
+<div id="settings" class="modal"><div class="mbox" style="max-width:420px">
+  <div class="row" style="justify-content:space-between;align-items:center"><b>SETTINGS</b><button id="setx" class="ghost">CLOSE</button></div>
+  <div class="asec">THEME</div>
+  <div id="themepk"><span>THEME</span><i data-t="mono" style="background:#fff"></i><i data-t="azure" style="background:#4da3ff"></i><i data-t="coalescent" style="background:#3ddbc0"></i><i data-t="orangy" style="background:#ffa03d"></i><i data-t="lakers" id="lk"></i></div>
+  <div class="asec">STATUS</div>
+  <div class="row" id="presrow" style="align-items:center"><span class="note">VISIBILITY</span><button id="pon" class="ghost">ONLINE</button><button id="poff" class="ghost">INVISIBLE</button></div>
+  <div class="asec">SOUND</div>
+  <button id="sndb" class="ghost" style="text-align:left"></button>
+  <div class="asec">MORE</div>
+  <div class="note" style="opacity:.4">read receipts — coming soon</div>
+  <div class="note" style="opacity:.4">message scheduling — coming soon</div>
+</div></div>
 <script defer src="vendor/firebase-app-compat.js"></script>
 <script defer src="vendor/firebase-auth-compat.js"></script>
 <script defer src="vendor/firebase-firestore-compat.js"></script>
 <script>
 if(window.top!==window.self){try{window.top.location.replace(location.href)}catch(e){}}
 const CONFIG={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
-const ADMIN_UID="x";
+const ADMIN_UID="IUI4cyKJTFOtXyQ2x52IdE6aBFI3";
 let DB=null,ME=null,OPEN=null,UNSUB=null,UNSUBMETA=null,MEP=null;
 const KEYS=new Map();let OURLS=[];const PRESENCE=new Map();
 let REC=null,RECS=[],RECTO=null,typingSent=false,typingTimer=null;
 let DECMAP={},REPLYTO=null,CHATCACHE=[],BLOCKED=[],fwdText='',adminWired=false;
-let MUTED=false,ISMOD=false,USERSL=[],MUTESL=[],MODSL=[],REPORTSL=[],BANSL=[],DELETED=[],GHOST=false;
+let MUTED=false,ISMOD=false,USERSL=[],MUTESL=[],MODSL=[],REPORTSL=[],BANSL=[],CLOSED=[],GHOST=false,CS='';
 let SENDTS=[],askYes=null;
 const REACTS=['+1','!','?','lol'];
 const $=id=>document.getElementById(id);
@@ -330,6 +345,15 @@ function ago(ts){if(!ts)return'';const s=(Date.now()-ts)/1000;
 function rateOK(){const now=Date.now();SENDTS=SENDTS.filter(t=>now-t<60000);
   if(SENDTS.filter(t=>now-t<5000).length>=5||SENDTS.length>=30)return false;
   SENDTS.push(now);return true}
+function isClosed(cid){return CLOSED.some(x=>x.c===cid)}
+function unclose(cid){const n=CLOSED.filter(x=>x.c!==cid);if(n.length!==CLOSED.length){CLOSED=n;
+  DB.collection('users').doc(ME).set({closed:CLOSED},{merge:true}).catch(()=>{})}}
+function chatName(c){const other=c.data.members.find(u=>u!==ME);
+  return c.data.group?(c.data.name||'group'):((c.data.names||{})[other]||'chat')}
+let SNDON=localStorage.sc_snd!=='0';
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();
+  const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=880;g.gain.value=.06;
+  o.connect(g);g.connect(a.destination);o.start();setTimeout(()=>{o.stop();a.close()},90)}catch(e){}}
 (function(){try{const t=localStorage.sc_theme||'mono';document.body.dataset.theme=t;
 document.querySelectorAll('#themepk i').forEach(i=>{i.classList.toggle('on',i.dataset.t===t);
 i.onclick=()=>{document.body.dataset.theme=i.dataset.t;try{localStorage.sc_theme=i.dataset.t}catch(e){}
@@ -404,9 +428,15 @@ function start(p){
   presUI();
   $('askyes').onclick=()=>{$('ask').classList.remove('open');if(askYes)askYes();askYes=null};
   $('askno').onclick=()=>{$('ask').classList.remove('open');askYes=null};
+  $('setb').onclick=()=>$('settings').classList.add('open');
+  $('setx').onclick=()=>$('settings').classList.remove('open');
+  const sndUI=()=>{$('sndb').textContent='message sound: '+(SNDON?'on':'off')};
+  sndUI();
+  $('sndb').onclick=()=>{SNDON=!SNDON;localStorage.sc_snd=SNDON?'1':'0';sndUI();if(SNDON)beep()};
   const beat=()=>{if(GHOST)return;DB.collection('users').doc(ME).set({last:Date.now()},{merge:true}).catch(()=>{})};
   beat();setInterval(beat,20000);
-  DB.collection('users').doc(ME).get().then(d=>{if(d.exists){BLOCKED=d.data().blocked||[];DELETED=d.data().deleted||[]}}).catch(()=>{});
+  DB.collection('users').doc(ME).get().then(d=>{if(d.exists){BLOCKED=d.data().blocked||[];
+    CLOSED=(d.data().closed||[]).map(x=>typeof x==='string'?{c:x,a:0}:x)}}).catch(()=>{});
   DB.collection('mutes').doc(ME).onSnapshot(d=>{MUTED=d.exists},()=>{});
   DB.collection('mods').doc(ME).get().then(d=>{ISMOD=d.exists;
     if(ISMOD){$('adminb').textContent='MOD';$('adminb').style.display='block';$('adminb').onclick=openAdmin}}).catch(()=>{});
@@ -423,9 +453,13 @@ function start(p){
     if(rev&&rev.exists&&rev.data().status==='pending'){$('aerr').textContent='they already added you — check requests';return}
     const existing=await DB.collection('requests').doc(ME+'_'+to).get().catch(()=>null);
     if(existing&&existing.exists&&existing.data().status==='pending'){$('aerr').textContent='request already sent';return}
+    const cid=[ME,to].sort().join('_');
+    const ex=await DB.collection('chats').doc(cid).get().catch(()=>null);
+    if(ex&&ex.exists){const bb=ex.data().blockedBy||[];
+      if(bb.includes(to)&&!bb.includes(ME)){$('aerr').textContent='Cannot add user at this time';return}
+      if(bb.includes(ME))DB.collection('chats').doc(cid).update({blockedBy:firebase.firestore.FieldValue.arrayRemove(ME)}).catch(()=>{})}
+    unclose(cid);
     await DB.collection('requests').doc(ME+'_'+to).set({from:ME,to:to,fromName:p.name,fromPubKey:p.pub,status:'pending',ts:Date.now()});
-    const cid=[ME,to].sort().join('_');DELETED=DELETED.filter(x=>x!==cid);
-    DB.collection('users').doc(ME).set({deleted:DELETED},{merge:true}).catch(()=>{});
     $('add').value='';flash('request sent',true);
   };
   $('gaddb').onclick=async()=>{
@@ -483,8 +517,7 @@ function start(p){
             const cid=[ME,r.from].sort().join('_');
             await DB.collection('chats').doc(cid).set({members:[ME,r.from],names:{[ME]:p.name,[r.from]:r.fromName},
               pubs:{[ME]:p.pub,[r.from]:r.fromPubKey},updated:Date.now()},{merge:true});
-            DELETED=DELETED.filter(x=>x!==cid);
-            DB.collection('users').doc(ME).set({deleted:DELETED},{merge:true}).catch(()=>{});
+            unclose(cid);
           }
           await DB.collection('requests').doc(d.id).update({status:'accepted'});
         }catch(e){toast('accept failed: '+(e.message||e),true)}
@@ -494,24 +527,16 @@ function start(p){
       row.appendChild(okB);row.appendChild(no);el.appendChild(row);R.appendChild(el)});
   },err=>{});
   DB.collection('chats').where('members','array-contains',ME).onSnapshot(s=>{
-    const C=$('chats');C.textContent='';
     const docs=[...s.docs].sort((a,b)=>((b.data().updated||0)-(a.data().updated||0)));
     CHATCACHE=docs.map(d=>({id:d.id,data:d.data()}));
-    const vis=CHATCACHE.filter(c=>!DELETED.includes(c.id)&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
-    if(!vis.length){const d=document.createElement('div');d.className='note';d.textContent='no chats yet — add someone above';C.appendChild(d)}
-    vis.forEach(({id,data:c})=>{const other=c.members.find(u=>u!==ME);
-      const el=document.createElement('div');el.className='item'+(OPEN===id?' act':'');
-      const b=document.createElement('b');b.textContent=c.group?(c.name||'group'):((c.names&&c.names[other])||'chat');
-      const sm=document.createElement('small');
-      sm.textContent=c.group?('group · '+c.members.length+' · code '+((c.joinCode||'------').toUpperCase())):'end-to-end encrypted';
-      el.appendChild(b);el.appendChild(sm);
-      if(!c.group){const dot=document.createElement('span');dot.className='dot';
-        el.insertBefore(dot,sm);
-        getPres(other).then(p=>{dot.className='dot'+(p.on?' on':'')});}
-      el.onclick=()=>openChat(id,c);C.appendChild(el)});
-    renderFriends();
+    let reopened=false;
+    CLOSED=CLOSED.filter(x=>{const c=CHATCACHE.find(k=>k.id===x.c);
+      if(c&&(c.data.updated||0)>(x.a||0)){reopened=true;return false}return true});
+    if(reopened)DB.collection('users').doc(ME).set({closed:CLOSED},{merge:true}).catch(()=>{});
+    renderChats();
   },err=>{const C=$('chats');C.textContent='';const d=document.createElement('div');d.className='note';
     d.textContent='chat list error: '+err.code;C.appendChild(d)});
+  $('csearch').addEventListener('input',e=>{CS=e.target.value;renderChats()});
   $('send').onclick=send;
   $('box').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
   $('box').addEventListener('input',onType);
@@ -528,9 +553,31 @@ function start(p){
   $('fwdx').onclick=()=>{$('fwd').classList.remove('open')};
   if(ME===ADMIN_UID){$('adminb').style.display='block';$('adminb').onclick=openAdmin}
 }
+function renderChats(){
+  const C=$('chats');C.textContent='';
+  const q=(CS||'').trim().toLowerCase();
+  const live=CHATCACHE.filter(c=>!isClosed(c.id)&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
+  const shut=CHATCACHE.filter(c=>isClosed(c.id)&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
+  const list=q?live.concat(shut).filter(c=>chatName(c).toLowerCase().includes(q)):live;
+  if(!list.length){const d=document.createElement('div');d.className='note';
+    d.textContent=q?'nothing found':'no chats yet — add someone above';C.appendChild(d)}
+  list.forEach(({id,data:c})=>{
+    const closed=isClosed(id);
+    const el=document.createElement('div');el.className='item'+(OPEN===id?' act':'');
+    const b=document.createElement('b');b.textContent=chatName({id,data:c});
+    const sm=document.createElement('small');
+    sm.textContent=closed?'closed — tap to reopen':(c.group?('group · '+c.members.length+' · code '+((c.joinCode||'------').toUpperCase())):'end-to-end encrypted');
+    el.appendChild(b);el.appendChild(sm);
+    if(!c.group&&!closed){const dot=document.createElement('span');dot.className='dot';
+      el.insertBefore(dot,sm);
+      getPres(c.members.find(u=>u!==ME)).then(p=>{dot.className='dot'+(p.on?' on':'')})}
+    el.onclick=()=>{if(closed)unclose(id);openChat(id,c)};
+    C.appendChild(el)});
+  renderFriends();
+}
 function renderFriends(){
   const F=$('friends');if(!F)return;F.textContent='';
-  const fr=CHATCACHE.filter(c=>!c.data.group&&!DELETED.includes(c.id)&&!isBlocked(c.data.members.find(u=>u!==ME)));
+  const fr=CHATCACHE.filter(c=>!c.data.group&&!isBlocked(c.data.members.find(u=>u!==ME)));
   if(!fr.length){const d=document.createElement('div');d.className='note';d.textContent='no friends yet — add someone';F.appendChild(d);return}
   fr.forEach(c=>{const other=c.data.members.find(u=>u!==ME);
     const it=document.createElement('div');it.className='chip';
@@ -541,7 +588,7 @@ function renderFriends(){
     l.appendChild(dot);l.appendChild(nm);l.appendChild(seen);
     getPres(other).then(p=>{dot.className='dot'+(p.on?' on':'');seen.textContent=p.on?'online':(p.last?('seen '+ago(p.last)):'unknown')});
     const m=document.createElement('button');m.textContent='MSG';
-    m.onclick=()=>{$('newpanel').style.display='none';$('plusb').textContent='+';openChat(c.id,c.data)};
+    m.onclick=()=>{unclose(c.id);$('newpanel').style.display='none';$('plusb').textContent='+';openChat(c.id,c.data)};
     it.appendChild(l);it.appendChild(m);F.appendChild(it)})}
 let CHATMETA=null;
 function onType(){
@@ -579,6 +626,7 @@ async function openChat(cid,meta){
   },err=>{});
   try{
     if(!meta.group){await keyFor(other,await pubOf(other,meta))}
+    let firstMsgs=true,lastTs=0;
     UNSUB=DB.collection('chats').doc(cid).collection('msgs').orderBy('ts').onSnapshot(async s=>{
       const M=$('msgs');
       OURLS.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}});OURLS=[];
@@ -593,6 +641,9 @@ async function openChat(cid,meta){
         try{await renderMsg(d,M)}catch(e){
           const el=document.createElement('div');el.className='m them';el.textContent='[could not show a message]';M.appendChild(el)}
       }
+      const ld=docs[docs.length-1];const lts=ld?(ld.data().ts||0):0;
+      if(!firstMsgs&&SNDON&&lts>lastTs&&ld&&ld.data().from!==ME)beep();
+      lastTs=lts;firstMsgs=false;
       const last=M.lastElementChild;if(last)last.scrollIntoView({block:'nearest'});
     },err=>{$('msgs').textContent='';const n=document.createElement('div');n.className='note';n.textContent='messages error: '+err.code;$('msgs').appendChild(n)});
   }catch(e){
@@ -625,12 +676,20 @@ function buildMenu(meta){
         await DB.collection('users').doc(ME).set({blocked:BLOCKED},{merge:true}).catch(()=>{});
         $('cmenu').style.display='none';resetChatUI();toast('blocked')});
     });
-    add('DELETE CHAT',()=>{
-      const cid=OPEN;
-      DELETED.push(cid);
-      DB.collection('users').doc(ME).set({deleted:DELETED},{merge:true}).catch(()=>{});
+    const unadded=meta.blockedBy&&meta.blockedBy.includes(ME);
+    add(unadded?'RE-ADD THEM':'UNADD THEM',()=>{
+      if(unadded){DB.collection('chats').doc(OPEN).update({blockedBy:firebase.firestore.FieldValue.arrayRemove(ME)})
+        .then(()=>toast('re-added')).catch(e=>toast(e.message||e,true));
+        $('cmenu').style.display='none';return}
+      ask('unadd them? they can no longer message you and cannot add you back',async()=>{
+        await DB.collection('chats').doc(OPEN).update({blockedBy:firebase.firestore.FieldValue.arrayUnion(ME)}).catch(()=>{});
+        $('cmenu').style.display='none';toast('unadded — history stays, close the DM whenever')});
+    },true);
+    add('CLOSE DM',()=>{
+      CLOSED.push({c:OPEN,a:Date.now()});
+      DB.collection('users').doc(ME).set({closed:CLOSED},{merge:true}).catch(()=>{});
       $('cmenu').style.display='none';resetChatUI();
-      toast('chat removed — add them again anytime');
+      toast('DM closed — find it via search anytime');
     },true);
   }else{
     add('LEAVE GROUP',()=>ask('leave this group?',()=>leaveGroup()),true);
@@ -673,7 +732,7 @@ function renderMeta(meta){
   $('ctitle').textContent=meta.group?(meta.name||'group'):((meta.names&&meta.names[CHATMETA.other])||'chat');
   $('csub').textContent=meta.group
     ?(meta.members.length+' members · code '+((meta.joinCode||'------').toUpperCase())+(meta.ghost?' · burning':''))
-    :('end-to-end encrypted'+(meta.ghost?' · burning':''));
+    :('end-to-end encrypted'+(meta.ghost?' · burning':'')+((meta.blockedBy&&meta.blockedBy.includes(CHATMETA.other))?' · you cannot message them':''));
   $('ghostb').textContent='burn: '+(meta.ghost?'on':'off');
   const t=meta.typing||{};
   const now=Date.now();
@@ -791,9 +850,16 @@ async function renderMsg(d,M){
       const t=DECMAP[d.id];
       if(!t||t==='[media]'){$('merr').textContent='media cannot be forwarded';return}
       openFwd(t)};
+    const a4=document.createElement('button');a4.className='ghost';a4.textContent='UNSEND';
+    a4.onclick=ev=>{ev.stopPropagation();bar.remove();
+      ask('unsend this message? it disappears for everyone',async()=>{
+        await DB.collection('chats').doc(OPEN).collection('msgs').doc(d.id).delete().catch(()=>{});
+        toast('unsent')})};
     const a3=document.createElement('button');a3.className='ghost';a3.textContent='REPORT';
     a3.onclick=ev=>{ev.stopPropagation();bar.remove();doReport(d,m)};
-    acts.appendChild(a1);acts.appendChild(a2);acts.appendChild(a3);
+    acts.appendChild(a1);acts.appendChild(a2);
+    if(mine)acts.appendChild(a4);
+    acts.appendChild(a3);
     bar.appendChild(acts);
     el.appendChild(bar);
   };
@@ -813,7 +879,7 @@ function showReply(){
 }
 function openFwd(text){
   fwdText=text;const L=$('fwdlist');L.textContent='';
-  const opts=CHATCACHE.filter(c=>c.id!==OPEN&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
+  const opts=CHATCACHE.filter(c=>c.id!==OPEN&&!isClosed(c.id)&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
   if(!opts.length){const d=document.createElement('div');d.className='note';d.textContent='no other chats';L.appendChild(d)}
   opts.forEach(c=>{const b=document.createElement('button');b.className='ghost';
     const other=c.data.members.find(u=>u!==ME);
@@ -836,6 +902,8 @@ async function sendTo(cid,meta,t,reply){
   if(MUTED)throw new Error('you are muted');
   if(!rateOK())throw new Error('slow down — you are sending too fast');
   if(!isClean(t))throw new Error('that message is not allowed');
+  if(!meta.group){const oth=meta.members.find(u=>u!==ME);const bb=meta.blockedBy||[];
+    if(bb.includes(oth)&&!bb.includes(ME))throw new Error('you cannot message this user')}
   let doc;
   if(meta.group){
     const rcpt={};
@@ -872,6 +940,9 @@ async function sendImage(){
   if(!OPEN){$('merr').textContent='open a chat first';return}
   if(MUTED){$('merr').textContent='you are muted';return}
   if(!rateOK()){$('merr').textContent='slow down';return}
+  const cmeta=CHATMETA.meta;
+  if(!cmeta.group){const bb=cmeta.blockedBy||[];
+    if(bb.includes(CHATMETA.other)&&!bb.includes(ME)){$('merr').textContent='you cannot message this user';return}}
   $('merr').textContent='';
   try{
     const bmp=await createImageBitmap(f);
@@ -914,6 +985,9 @@ async function toggleMic(){
       if(blob.size>500*1024){$('merr').textContent='voice note too long (max ~30s)';return}
       if(!OPEN){$('merr').textContent='open a chat first';return}
       try{
+        const vmeta=CHATMETA.meta;
+        if(!vmeta.group){const bb=vmeta.blockedBy||[];
+          if(bb.includes(CHATMETA.other)&&!bb.includes(ME)){$('merr').textContent='you cannot message this user';return}}
         const b64data=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(blob)});
         const meta=CHATMETA.meta;
         const members=meta.group?meta.members:[ME,CHATMETA.other];
@@ -960,8 +1034,7 @@ async function adminMsg(uid,name){
         pubs:{[ME]:MEP.pub,[uid]:tpub},updated:Date.now()});
       cd=await DB.collection('chats').doc(cid).get();
     }
-    DELETED=DELETED.filter(x=>x!==cid);
-    DB.collection('users').doc(ME).set({deleted:DELETED},{merge:true}).catch(()=>{});
+    unclose(cid);
     $('adminmodal').classList.remove('open');
     openChat(cid,cd.data());
   }catch(e){toast('could not open chat: '+(e.message||e),true)}
@@ -976,10 +1049,23 @@ function openAdmin(){
   DB.collection('mods').onSnapshot(s=>{MODSL=s.docs.map(d=>({id:d.id,data:d.data()}));renderA()},()=>{});
   DB.collection('mutes').onSnapshot(s=>{MUTESL=s.docs.map(d=>({id:d.id,data:d.data()}));renderA()},()=>{});
   DB.collection('users').limit(80).onSnapshot(s=>{USERSL=s.docs.map(d=>({id:d.id,data:d.data()}));renderA()},()=>{});
+  $('unbb').onclick=async()=>{
+    const q=$('unbq').value.trim();const R=$('unbres');R.textContent='';
+    if(!q)return;
+    const uid=await lookupUser(q);
+    if(!uid){const d=document.createElement('div');d.className='note';d.textContent='nobody with that name';R.appendChild(d);return}
+    const b=await DB.collection('bans').doc(uid).get().catch(()=>null);
+    const chip=document.createElement('div');chip.className='chip';
+    const s=document.createElement('span');s.style.flex='1';
+    s.textContent=q+((b&&b.exists)?' — banned':' — NOT banned');
+    const btn=document.createElement('button');btn.textContent='UNBAN';
+    if(!b||!b.exists)btn.disabled=true;
+    btn.onclick=()=>doUnban(uid).then(()=>{toast('unbanned');$('unbq').value='';R.textContent=''}).catch(e=>toast(e.message||e,true));
+    chip.appendChild(s);chip.appendChild(btn);R.appendChild(chip)};
 }
 function renderA(){
   const owner=ME===ADMIN_UID;
-  ['secReports','secBans','secMods','areports','abans','amods'].forEach(i=>{$(i).style.display=owner?'':'none'});
+  ['secReports','secBans','secMods','areports','abans','amods','unbanrow','unbres'].forEach(i=>{$(i).style.display=owner?'':'none'});
   const mk=(l,f)=>{const b=document.createElement('button');b.textContent=l;
     b.onclick=()=>f().catch(e=>toast(e.message||e,true));return b};
   if(owner){
