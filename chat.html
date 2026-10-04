@@ -38,22 +38,23 @@
   #setup{width:min(440px,94vw);background:rgba(16,16,24,.86);border:1px solid #ffffff22;border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:12px;text-align:center;backdrop-filter:blur(12px);margin-top:18px}
   #setup input{text-align:center;font-size:16px}
   .note{font-size:12px;color:#8b90b0}
-  #myname{font-size:15px;background:#ffffff0d;border:1px dashed #7af0ff55;border-radius:12px;padding:10px;cursor:pointer;transition:.15s}
-  #myname:hover{border-color:#7af0ff;background:#7af0ff14}
+  .csub{font-size:11px;color:#7f86a8;min-height:14px;margin-top:-4px}
+  #backb{display:none;padding:8px 12px}
+  .okmsg{color:#7dffa8!important}
   #setup button:disabled{opacity:.55;transform:none;box-shadow:none}
   #serr,#aerr{color:#ff6b8a;min-height:16px;font-size:12px}
   a.home{color:#7af0ff;font-size:13px;text-decoration:none;margin-top:14px;font-weight:700}
   a.home:hover{text-decoration:underline}
   .other{margin-top:8px;font-size:12px;color:#9aa3d0}
   .other a{color:#7af0ff;font-weight:800}
-  @media(max-width:640px){#app{grid-template-columns:1fr}#listpane.hide{display:none}}
+  @media(max-width:640px){#app{grid-template-columns:1fr}#listpane.hide{display:none}#backb{display:inline-block}}
 </style>
 </head>
 <body>
 <canvas id="fx"></canvas>
 <div class="orbs"><i class="orb a"></i><i class="orb b"></i></div>
 <div class="wrap">
-<h1>💬 CHAT <span>· add by display name · keep it clean</span></h1>
+<h1>CHAT <span>· add by display name · keep it clean</span></h1>
 <div id="setup">
   <div style="font-weight:900;font-size:18px">pick a display name</div>
   <div class="note">friends add you with this name. no friend code. keys stay in this browser.</div>
@@ -63,14 +64,15 @@
 </div>
 <div id="app" style="display:none">
   <div class="pane" id="listpane">
-    <div id="myname" title="tap to copy">…</div>
     <div class="row"><input id="add" maxlength="16" placeholder="their display name" /><button id="addb">ADD</button></div>
     <div id="aerr"></div>
     <div id="reqs"></div>
+    <div style="font-size:11px;color:#888">CHATS</div>
     <div id="chats" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto"></div>
   </div>
   <div class="pane">
-    <div id="ctitle" style="font-weight:900">pick a chat</div>
+    <div class="row" style="align-items:center"><button id="backb" class="ghost">←</button><div id="ctitle" style="font-weight:900">pick a chat</div></div>
+    <div class="csub" id="csub"></div>
     <div id="msgs"></div>
     <div class="row"><input id="box" maxlength="500" placeholder="message…" /><button id="send">SEND</button></div>
     <div class="note" id="merr"></div>
@@ -90,6 +92,10 @@ const $=id=>document.getElementById(id);
 const b64=a=>btoa(String.fromCharCode(...a));
 const unb=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 function ok(){return CONFIG.apiKey!=='PASTE'}
+(function(){try{const p=JSON.parse(localStorage.sc_name||'null');
+  if(p&&p.name&&localStorage.sc_priv){document.getElementById('setup').style.display='none';
+    document.getElementById('app').style.display='grid';
+    document.getElementById('ctitle').textContent='connecting…'}}catch(e){}})();
 function normName(s){return (s||'').trim().toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,16)}
 function variants(s){
   const maps=[
@@ -129,7 +135,7 @@ async function enc(key,t){const iv=crypto.getRandomValues(new Uint8Array(12));
   const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(t)));
   return{iv:b64(iv),ct:b64(ct)}}
 async function dec(key,m){try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb(m.iv)},key,unb(m.ct));
-  return new TextDecoder().decode(pt)}catch(e){return'🔒 undecryptable (keys changed)'}}
+  return new TextDecoder().decode(pt)}catch(e){  return'[undecryptable — keys changed]'}}
 async function claimName(nm){
   const key=normName(nm);
   if(key.length<3)throw new Error('name needs 3+ letters or numbers');
@@ -166,12 +172,13 @@ async function init(){
   try{
     await firebase.auth().signInAnonymously();ME=firebase.auth().currentUser.uid;
     me=await DB.collection('users').doc(ME).get();
-  }catch(e){$('serr').textContent='blocked: '+e.message;return}
+  }catch(e){$('setup').style.display='flex';$('serr').textContent='blocked: '+e.message;return}
   $('go').disabled=false;$('go').textContent='START ▸';
   if(me.exists&&localStorage.sc_priv){
     const p=JSON.parse(localStorage.sc_name||'null')||me.data();
     if(p&&p.name&&isClean(p.name)){start(p);return}
   }
+  $('setup').style.display='flex';
   $('go').onclick=async()=>{
     $('serr').textContent='';
     const nm=$('nm').value.trim().slice(0,16);
@@ -198,12 +205,12 @@ async function init(){
 function start(p){
   MEP=p;
   $('setup').style.display='none';$('app').style.display='grid';
-  $('myname').textContent='your name: '+p.name+' (tap to copy)';
-  $('myname').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(p.name)};
+  $('ctitle').textContent='pick a chat';$('csub').textContent='';
+  $('backb').onclick=()=>{$('listpane').classList.remove('hide')};
   claimName(p.name).catch(()=>{});
   if(p.name&&!p.nameLower){DB.collection('users').doc(ME).set({nameLower:normName(p.name)},{merge:true}).catch(()=>{})}
   $('addb').onclick=async()=>{
-    $('aerr').textContent='';
+    $('aerr').textContent='';$('aerr').className='';
     const q=$('add').value.trim();
     if(!q)return;
     const to=await lookupUser(q);
@@ -215,7 +222,8 @@ function start(p){
     if(existing.exists&&existing.data().status==='pending'){$('aerr').textContent='request already sent';return}
     const meDoc=await DB.collection('users').doc(ME).get();
     await DB.collection('requests').doc(ME+'_'+to).set({from:ME,to:to,fromName:p.name,fromPubKey:meDoc.data().pub,status:'pending',ts:Date.now()});
-    $('add').value='';$('aerr').textContent='';alert('request sent!');
+    $('add').value='';$('aerr').className='okmsg';$('aerr').textContent='request sent';
+    setTimeout(()=>{if($('aerr').textContent==='request sent'){$('aerr').textContent='';$('aerr').className=''}},2500);
   };
   DB.collection('requests').where('to','==',ME).where('status','==','pending').onSnapshot(s=>{
     const R=$('reqs');R.textContent='';
@@ -233,23 +241,27 @@ function start(p){
       const no=document.createElement('button');no.textContent='NO';no.className='ghost';
       no.onclick=()=>DB.collection('requests').doc(d.id).update({status:'declined'});
       row.appendChild(okB);row.appendChild(no);el.appendChild(row);R.appendChild(el)});
-  });
-  DB.collection('chats').where('members','array-contains',ME).orderBy('updated','desc').onSnapshot(s=>{
+  },err=>{});
+  DB.collection('chats').where('members','array-contains',ME).onSnapshot(s=>{
     const C=$('chats');C.textContent='';
-    s.forEach(d=>{const c=d.data();const other=c.members.find(u=>u!==ME);
+    const docs=[...s.docs].sort((a,b)=>((b.data().updated||0)-(a.data().updated||0)));
+    if(!docs.length){const d=document.createElement('div');d.className='note';d.textContent='no chats yet — add someone above';C.appendChild(d)}
+    docs.forEach(d=>{const c=d.data();const other=c.members.find(u=>u!==ME);
       const el=document.createElement('div');el.className='item'+(OPEN===d.id?' act':'');
       const b=document.createElement('b');b.textContent=(c.names&&c.names[other])||'chat';
-      const sm=document.createElement('small');sm.textContent='🔒 encrypted';
+      const sm=document.createElement('small');sm.textContent='end-to-end encrypted';
       el.appendChild(b);el.appendChild(sm);
       el.onclick=()=>openChat(d.id,other,c);C.appendChild(el)});
-  });
+  },err=>{const C=$('chats');C.textContent='';const d=document.createElement('div');d.className='note';
+    d.textContent='chat list error: '+err.code;C.appendChild(d)});
   $('send').onclick=send;$('box').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
 }
 async function myKey(theirPub){if(!KEY||KEY._for!==JSON.stringify(theirPub))KEY=Object.assign(await sharedKey(theirPub),{_for:JSON.stringify(theirPub)});return KEY}
 let CHATMETA=null;
 async function openChat(cid,other,meta){OPEN=cid;CHATMETA={other:other,pubs:meta.pubs};
   [...document.querySelectorAll('#chats .item')].forEach(e=>e.classList.remove('act'));
-  $('ctitle').textContent=meta.names?meta.names[other]:'chat';
+  $('ctitle').textContent=(meta.names&&meta.names[other])||'chat';
+  $('csub').textContent='end-to-end encrypted';
   if(innerWidth<640)$('listpane').classList.add('hide');
   if(UNSUB)UNSUB();
   const key=await myKey(meta.pubs[other]);
