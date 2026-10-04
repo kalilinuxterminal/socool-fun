@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Bot Arena — socool.fun</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
+  body{background:#080810;color:#fff;overflow:hidden;height:100vh}
+  canvas{display:block}
+  #hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:12px 18px;font-weight:800;letter-spacing:1px;z-index:5;pointer-events:none;text-shadow:0 0 10px #f0f}
+  #hpbar{width:180px;height:10px;background:rgba(255,255,255,.15);border-radius:100px;margin-top:6px;overflow:hidden}
+  #hpfill{height:100%;width:100%;background:linear-gradient(90deg,#0f0,#ff0);border-radius:100px}
+  #over,#start{position:fixed;inset:0;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;background:rgba(5,5,15,.8);backdrop-filter:blur(8px);z-index:10;text-align:center;padding:20px}
+  #over{display:none}
+  h1{font-size:clamp(30px,7vw,56px);font-weight:900;background:linear-gradient(90deg,#ff2f2f,#ff7a00,#ffe14d);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(255,47,47,.5))}
+  .btn{font-size:17px;font-weight:800;letter-spacing:2px;background:#fff;color:#000;border:0;border-radius:100px;padding:14px 44px;cursor:pointer}
+  .keys{font-size:13px;color:#999}
+  a.home{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);color:#777;font-size:12px;z-index:6;text-decoration:none}
+</style>
+</head>
+<body>
+<canvas id="g"></canvas>
+<div id="hud"><div>🤖 WAVE <span id="wave">1</span> · KILLS <span id="kills">0</span><div id="hpbar"><div id="hpfill"></div></div></div><div style="text-align:right">SCORE <span id="score">0</span><br><span id="best" style="font-size:12px;color:#8ef"></span></div></div>
+<div id="start"><h1>BOT ARENA</h1><div class="keys">WASD move · mouse aim · click shoot · bots get meaner every wave</div><button class="btn" id="go">FIGHT ▸</button></div>
+<div id="over"><h1>ELIMINATED</h1><div class="keys" id="final"></div><button class="btn" id="again">RUN IT BACK ▸</button></div>
+<a class="home" href="index.html">← socool.fun</a>
+<script>
+const c=document.getElementById('g'),x=c.getContext('2d');
+let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight}rs();addEventListener('resize',rs);
+let P,bots,bullets,parts,wave,kills,score,over,started,best=+(localStorage.getItem('sc_arena')||0);
+document.getElementById('best').textContent='BEST '+best;
+const mouse={x:0,y:0,down:false},keys={};
+addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true});
+addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
+addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+addEventListener('mousedown',()=>{mouse.down=true});
+addEventListener('mouseup',()=>{mouse.down=false});
+// touch: left half = move stick, right half = aim+fire
+let stick=null,aimT=null;
+addEventListener('touchstart',e=>{for(const t of e.changedTouches){if(t.clientX<W/2&&!stick)stick={id:t.identifier,sx:t.clientX,sy:t.clientY,x:t.clientX,y:t.clientY};else if(!aimT)aimT={id:t.identifier,x:t.clientX,y:t.clientY}}},{passive:false});
+addEventListener('touchmove',e=>{for(const t of e.changedTouches){if(stick&&t.identifier===stick.id){stick.x=t.clientX;stick.y=t.clientY}if(aimT&&t.identifier===aimT.id){aimT.x=t.clientX;aimT.y=t.clientY}}e.preventDefault()},{passive:false});
+addEventListener('touchend',e=>{for(const t of e.changedTouches){if(stick&&t.identifier===stick.id)stick=null;if(aimT&&t.identifier===aimT.id)aimT=null}});
+const walls=[];
+function maze(){walls.length=0;const n=5+Math.min(4,wave);
+  for(let i=0;i<n;i++){const w=60+Math.random()*140,h=24;const px=80+Math.random()*(W-160),py=120+Math.random()*(H-220);
+    walls.push({x:px-w/2,y:py-h/2,w:w,h:h,vert:Math.random()<0.4});
+    const o=walls[walls.length-1];if(o.vert){o.w=h;o.h=w}}}
+function spawnWave(){maze();bots=[];const n=Math.min(2+wave,7);
+  for(let i=0;i<n;i++){let px,py,tries=0;do{px=80+Math.random()*(W-160);py=120+Math.random()*(H-240);tries++}while(Math.hypot(px-P.x,py-P.y)<260&&tries<40);
+    bots.push({x:px,y:py,hp:40+wave*12,max:40+wave*12,sp:1.1+wave*0.12+Math.random()*0.5,cd:0,flash:0})}}
+function reset(){P={x:W/2,y:H/2,hp:100,max:100,cd:0};bullets=[];parts=[];wave=1;kills=0;score=0;over=false;spawnWave();upd()}
+function upd(){document.getElementById('wave').textContent=wave;document.getElementById('kills').textContent=kills;document.getElementById('score').textContent=score;document.getElementById('hpfill').style.width=(P.hp/P.max*100)+'%'}
+function hitWall(px,py,r){for(const w of walls){if(px+r>w.x&&px-r<w.x+w.w&&py+r>w.y&&py-r<w.y+w.h)return true}return false}
+function los(ax,ay,bx,by){for(const w of walls){
+  // sample midpoint checks: cheap segment-vs-rect
+  for(let t=0;t<=1;t+=0.1){const px=ax+(bx-ax)*t,py=ay+(by-ay)*t;if(px>w.x&&px<w.x+w.w&&py>w.y&&py<w.y+w.h)return false}}return true}
+function frame(dt){
+  if(started&&!over){
+    // move
+    let mx=0,my=0;
+    if(keys['w']||keys['arrowup'])my-=1;if(keys['s']||keys['arrowdown'])my+=1;
+    if(keys['a']||keys['arrowleft'])mx-=1;if(keys['d']||keys['arrowright'])mx+=1;
+    if(stick){mx=(stick.x-stick.sx)/50;my=(stick.y-stick.sy)/50;const l=Math.hypot(mx,my);if(l>1){mx/=l;my/=l}}
+    const sp=240*dt,nx=P.x+mx*sp,ny=P.y+my*sp;
+    if(!hitWall(nx,P.y,14))P.x=Math.max(20,Math.min(W-20,nx));
+    if(!hitWall(P.x,ny,14))P.y=Math.max(70,Math.min(H-20,ny));
+    // aim + shoot
+    let ax=mouse.x,ay=mouse.y,firing=mouse.down;
+    if(aimT){ax=aimT.x;ay=aimT.y;firing=true}
+    P.cd-=dt;
+    if(firing&&P.cd<=0){P.cd=0.16;const a=Math.atan2(ay-P.y,ax-P.x);
+      bullets.push({x:P.x+Math.cos(a)*22,y:P.y+Math.sin(a)*22,vx:Math.cos(a)*620,vy:Math.sin(a)*620,foe:false,life:1.2});
+      parts.push({x:P.x+Math.cos(a)*26,y:P.y+Math.sin(a)*26,vx:Math.cos(a)*120,vy:Math.sin(a)*120,life:0.15,col:'#ffe14d'})}
+    P.aim=Math.atan2(ay-P.y,ax-P.x);
+    // bots
+    for(const b of bots){
+      const dP=Math.hypot(P.x-b.x,P.y-b.y),see=los(b.x,b.y,P.x,P.y);
+      let bx=0,by=0;
+      if(!see||dP>340){bx=(P.x-b.x)/dP;by=(P.y-b.y)/dP}
+      else if(dP<170){bx=-(P.x-b.x)/dP;by=-(P.y-b.y)/dP}
+      else{bx=-(P.y-b.y)/dP;by=(P.x-b.x)/dP;if(Math.random()<0.02){bx*=-1;by*=-1}}
+      const bnx=b.x+bx*b.sp*60*dt,bny=b.y+by*b.sp*60*dt;
+      if(!hitWall(bnx,b.y,13))b.x=Math.max(20,Math.min(W-20,bnx));
+      if(!hitWall(b.x,bny,13))b.y=Math.max(70,Math.min(H-20,bny));
+      b.cd-=dt;b.flash=Math.max(0,b.flash-dt);
+      if(see&&dP<520&&b.cd<=0){b.cd=Math.max(0.35,1.1-wave*0.07);const a=Math.atan2(P.y-b.y,P.x-b.x)+(Math.random()-0.5)*0.22;
+        bullets.push({x:b.x,y:b.y,vx:Math.cos(a)*380,vy:Math.sin(a)*380,foe:true,life:1.6})}
+    }
+    // bullets
+    for(let i=bullets.length-1;i>=0;i--){const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;
+      let dead=b.life<=0||b.x<0||b.x>W||b.y<0||b.y>H||hitWall(b.x,b.y,3);
+      if(!dead){
+        if(!b.foe){for(let j=bots.length-1;j>=0;j--){const e=bots[j];if(Math.hypot(e.x-b.x,e.y-b.y)<15){e.hp-=12;e.flash=0.12;dead=true;
+          for(let k=0;k<8;k++)parts.push({x:b.x,y:b.y,vx:(Math.random()-0.5)*260,vy:(Math.random()-0.5)*260,life:0.35,col:'#ff2f2f'});
+          if(e.hp<=0){bots.splice(j,1);kills++;score+=100+wave*25;upd()}break}}}
+        else if(Math.hypot(P.x-b.x,P.y-b.y)<15){P.hp-=7+wave;dead=true;upd();
+          for(let k=0;k<8;k++)parts.push({x:b.x,y:b.y,vx:(Math.random()-0.5)*260,vy:(Math.random()-0.5)*260,life:0.35,col:'#fff'})}
+      }
+      if(dead)bullets.splice(i,1)}
+    for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;if(p.life<=0)parts.splice(i,1)}
+    if(P.hp<=0){gameOver();return}
+    if(!bots.length){wave++;P.hp=Math.min(P.max,P.hp+35);spawnWave();upd()}
+  }
+  // draw
+  x.fillStyle='#080810';x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(255,255,255,.05)';x.lineWidth=1;
+  for(let gx=0;gx<W;gx+=44){x.beginPath();x.moveTo(gx,0);x.lineTo(gx,H);x.stroke()}
+  for(let gy=0;gy<H;gy+=44){x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke()}
+  x.fillStyle='#151528';walls.forEach(w=>{x.fillStyle='#151528';x.fillRect(w.x,w.y,w.w,w.h);x.strokeStyle='#7c3aed';x.strokeRect(w.x+.5,w.y+.5,w.w-1,w.h-1)});
+  for(const p of parts){x.globalAlpha=Math.max(0,p.life*3);x.fillStyle=p.col;x.beginPath();x.arc(p.x,p.y,3,0,7);x.fill()}x.globalAlpha=1;
+  x.fillStyle='#ff2fb3';
+  for(const b of bullets){x.fillStyle=b.foe?'#ff2f2f':'#ffe14d';x.shadowColor=x.fillStyle;x.shadowBlur=10;x.beginPath();x.arc(b.x,b.y,4,0,7);x.fill()}x.shadowBlur=0;
+  // player
+  x.save();x.translate(P.x,P.y);x.rotate(P.aim||0);
+  x.fillStyle='#00e5ff';x.shadowColor='#00e5ff';x.shadowBlur=16;x.beginPath();x.arc(0,0,14,0,7);x.fill();x.shadowBlur=0;
+  x.fillStyle='#003844';x.fillRect(8,-4,14,8);x.restore();
+  // bots
+  for(const b of bots){x.fillStyle=b.flash>0?'#fff':'#ff2f2f';x.shadowColor='#ff2f2f';x.shadowBlur=14;
+    x.beginPath();x.arc(b.x,b.y,13,0,7);x.fill();x.shadowBlur=0;
+    x.fillStyle='#300';x.fillRect(b.x-16,b.y-22,32,5);x.fillStyle='#f00';x.fillRect(b.x-16,b.y-22,32*Math.max(0,b.hp/b.max),5)}
+  if(stick){x.strokeStyle='rgba(255,255,255,.4)';x.lineWidth=2;x.beginPath();x.arc(stick.sx,stick.sy,44,0,7);x.stroke();x.fillStyle='rgba(255,255,255,.5)';x.beginPath();x.arc(stick.x,stick.y,18,0,7);x.fill()}
+}
+function gameOver(){over=true;if(score>best){best=score;localStorage.setItem('sc_arena',best);document.getElementById('best').textContent='BEST '+best}
+  document.getElementById('final').textContent='wave '+wave+' · '+kills+' kills · score '+score;document.getElementById('over').style.display='flex'}
+document.getElementById('go').onclick=()=>{document.getElementById('start').style.display='none';started=true};
+document.getElementById('again').onclick=()=>{document.getElementById('over').style.display='none';reset()};
+reset();let last=performance.now();
+(function loop(t){requestAnimationFrame(loop);const now=t||performance.now();const dt=Math.min(0.05,(now-last)/1000);last=now;if(!document.hidden)frame(dt)})()
+</script>
+</body>
+</html>

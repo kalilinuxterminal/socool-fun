@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Minesweeper — socool.fun</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
+  body{background:#07070f;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}
+  h1{font-size:30px;font-weight:900;background:linear-gradient(90deg,#ff2f2f,#ffe14d);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #bar{display:flex;gap:18px;font-weight:800;align-items:center;flex-wrap:wrap;justify-content:center}
+  #board{display:grid;gap:3px;background:#101022;padding:8px;border-radius:12px;border:1px solid #ff2f2f33}
+  .cell{width:min(8vw,38px);height:min(8vw,38px);background:#23233d;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;cursor:pointer}
+  .cell.open{background:#101022;cursor:default}
+  .cell.boom{background:#ff2f2f}
+  .btn{background:#fff;color:#000;border:0;border-radius:100px;padding:8px 26px;font-weight:800;cursor:pointer;font-size:14px}
+  .btn.on{background:#ff2fb3;color:#fff}
+  .diff{display:flex;gap:8px}
+  a{color:#777;font-size:12px;text-decoration:none}
+  #msg{font-weight:800;min-height:22px}
+</style>
+</head>
+<body>
+<h1>💣 MINESWEEPER</h1>
+<div id="bar"><span>🚩 <span id="f">0</span></span><span>⏱️ <span id="t">0</span>s</span>
+  <div class="diff"><button class="btn" data-d="0">EASY</button><button class="btn" data-d="1">MED</button><button class="btn" data-d="2">HARD</button></div>
+  <button class="btn" id="fm">🚩 FLAG: OFF</button></div>
+<div id="board"></div>
+<div id="msg"></div>
+<button class="btn" id="r">RESTART</button>
+<a href="index.html">← socool.fun</a>
+<script>
+const B=document.getElementById('board');
+const DS=[{r:9,c:9,m:10},{r:12,c:12,m:24},{r:14,c:18,m:45}];
+let R,C,M,grid,open,flags,over,win,started,t0,timer,flagMode=false;
+function reset(d){const D=DS[d||0];R=D.r;C=D.c;M=D.m;grid=[];open=0;flags=0;over=false;win=false;started=false;
+  clearInterval(timer);document.getElementById('t').textContent='0';document.getElementById('msg').textContent='';
+  for(let r=0;r<R;r++){grid.push([]);for(let c=0;c<C;c++)grid[r].push({m:false,o:false,f:false,n:0})}
+  let p=0;while(p<M){const r=Math.floor(Math.random()*R),c=Math.floor(Math.random()*C);
+    if(!grid[r][c].m){grid[r][c].m=true;p++;
+      for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const rr=r+dr,cc=c+dc;if(grid[rr]&&grid[rr][cc])grid[rr][cc].n++}}}
+  B.style.gridTemplateColumns=`repeat(${C},1fr)`;draw();upd()}
+function upd(){document.getElementById('f').textContent=M-flags}
+function draw(){B.innerHTML='';const cols=['','#5af','#3f6','#f44','#94f','#fa0','#0cc','#fff','#888'];
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++){const d=document.createElement('div');d.className='cell';const k=grid[r][c];
+    if(k.o){d.classList.add('open');if(k.m){d.classList.add('boom');d.textContent='💥'}else if(k.n)d.textContent=k.n,d.style.color=cols[k.n]}
+    else if(k.f)d.textContent='🚩';
+    d.onclick=()=>tap(r,c);d.oncontextmenu=e=>{e.preventDefault();flag(r,c)};B.appendChild(d)}}
+function tap(r,c){if(over||win)return;const k=grid[r][c];if(k.o||k.f)return;
+  if(flagMode){flag(r,c);return}
+  if(!started){started=true;t0=Date.now();timer=setInterval(()=>document.getElementById('t').textContent=Math.floor((Date.now()-t0)/1000),500)}
+  if(k.m){revealAll();over=true;document.getElementById('msg').textContent='💥 BOOM';draw();return}
+  flood(r,c);draw();check()}
+function flag(r,c){if(over||win)return;const k=grid[r][c];if(k.o)return;k.f=!k.f;flags+=k.f?1:-1;upd();draw()}
+function flood(r,c){const k=grid[r]&&grid[r][c];if(!k||k.o||k.f||k.m)return;k.o=true;open++;
+  if(!k.n)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)flood(r+dr,c+dc)}
+function revealAll(){grid.flat().forEach(k=>{if(k.m)k.o=true})}
+function check(){if(open>=R*C-M){win=true;clearInterval(timer);
+  const t=document.getElementById('t').textContent;document.getElementById('msg').textContent='🏆 CLEARED IN '+t+'s!'}}
+let lv=0;
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{lv=+b.dataset.d;reset(lv)});
+document.getElementById('fm').onclick=e=>{flagMode=!flagMode;e.target.textContent='🚩 FLAG: '+(flagMode?'ON':'OFF');e.target.classList.toggle('on',flagMode)};
+document.getElementById('r').onclick=()=>reset(lv);reset(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Tic-Tac-Toe — socool.fun</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
+  body{background:#07070f;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+  h1{font-size:30px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#ff2fb3);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #bar{display:flex;gap:22px;font-weight:800}
+  #board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .cell{width:min(26vw,110px);height:min(26vw,110px);background:#14142a;border:1px solid #ffffff22;border-radius:14px;font-size:52px;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .cell.x{color:#00e5ff;text-shadow:0 0 18px #00e5ff}
+  .cell.o{color:#ff2fb3;text-shadow:0 0 18px #ff2fb3}
+  #msg{font-weight:800;min-height:24px;font-size:18px}
+  .btn{background:#fff;color:#000;border:0;border-radius:100px;padding:10px 34px;font-weight:800;cursor:pointer}
+  a{color:#777;font-size:12px;text-decoration:none}
+</style>
+</head>
+<body>
+<h1>⭕ TIC-TAC-TOE</h1>
+<div id="bar"><span>YOU <span id="w">0</span></span><span>BOT <span id="l">0</span></span><span>DRAW <span id="d">0</span></span></div>
+<div id="board"></div>
+<div id="msg">your move — you're X</div>
+<button class="btn" id="r">NEW ROUND</button>
+<a href="index.html">← socool.fun</a>
+<script>
+const B=document.getElementById('board');
+let g,lock,W=0,L=0,D=0;
+const LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function reset(){g=Array(9).fill('');lock=false;document.getElementById('msg').textContent="your move — you're X";draw()}
+function draw(){B.innerHTML='';g.forEach((v,i)=>{const d=document.createElement('div');d.className='cell '+(v?v.toLowerCase():'');
+  d.textContent=v;d.onclick=()=>play(i);B.appendChild(d)})}
+function winner(b){for(const[a,c,e]of LINES)if(b[a]&&b[a]===b[c]&&b[a]===b[e])return b[a];
+  return b.every(v=>v)?'D':null}
+function play(i){if(lock||g[i])return;g[i]='X';const w1=winner(g);
+  if(w1)return end(w1);lock=true;draw();
+  setTimeout(()=>{bot();const w2=winner(g);draw();if(w2)end(w2);else lock=false},350);draw()}
+function bot(){
+  // win > block > center > corner > random
+  const avail=g.map((v,i)=>v?null:i).filter(v=>v!==null);
+  const tryWin=p=>{for(const[a,c,e]of LINES){const L=[g[a],g[c],g[e]];
+    if(L.filter(v=>v===p).length===2&&L.includes('')){g[[a,c,e][L.indexOf('')]]='O';return true}}return false};
+  if(tryWin('O'))return;if(tryWin('X'))return;
+  if(g[4]===''){g[4]='O';return}
+  const corners=[0,2,6,8].filter(i=>!g[i]);
+  if(corners.length&&Math.random()<0.8){g[corners[Math.floor(Math.random()*corners.length)]]='O';return}
+  g[avail[Math.floor(Math.random()*avail.length)]]='O'}
+function end(w){lock=true;
+  if(w==='X'){W++;document.getElementById('msg').textContent='🏆 YOU WIN!'}
+  else if(w==='O'){L++;document.getElementById('msg').textContent='🤖 BOT WINS'}
+  else{D++;document.getElementById('msg').textContent='🤝 DRAW'}
+  document.getElementById('w').textContent=W;document.getElementById('l').textContent=L;document.getElementById('d').textContent=D}
+document.getElementById('r').onclick=reset;reset();
+</script>
+</body>
+</html>

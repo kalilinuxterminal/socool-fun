@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Breakout — socool.fun</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
+  body{background:#07070f;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+  h1{font-size:30px;font-weight:900;background:linear-gradient(90deg,#00e5ff,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #bar{display:flex;gap:22px;font-weight:800}
+  canvas{background:#0b0b18;border:2px solid #00e5ff33;border-radius:16px;box-shadow:0 0 40px #00e5ff22;max-width:94vw;touch-action:none}
+  .btn{background:#fff;color:#000;border:0;border-radius:100px;padding:10px 34px;font-weight:800;cursor:pointer}
+  a{color:#777;font-size:12px;text-decoration:none}
+  .keys{font-size:12px;color:#888}
+</style>
+</head>
+<body>
+<h1>🧱 BREAKOUT</h1>
+<div id="bar"><span>SCORE <span id="s">0</span></span><span>LIVES <span id="l">3</span></span><span>LVL <span id="v">1</span></span></div>
+<canvas id="g" width="480" height="560"></canvas>
+<div class="keys">mouse / arrows / drag to move</div>
+<button class="btn" id="r">RESTART</button>
+<a href="index.html">← socool.fun</a>
+<script>
+const c=document.getElementById('g'),x=c.getContext('2d');
+let pad,balls,bricks,score,lives,lvl,over,sticky,best=+(localStorage.getItem('sc_break')||0);
+function build(l){bricks=[];const rows=4+l,cols=8;
+  for(let r=0;r<rows;r++)for(let q=0;q<cols;q++)bricks.push({x:20+q*((c.width-40)/cols),y:50+r*30,w:(c.width-40)/cols-8,h:22,
+    col:['#ff2fb3','#7c3aed','#00e5ff','#00ff9d','#ffe14d'][(r+l)%5],hp:1+(r+l>5?1:0)})}
+function reset(){pad={x:c.width/2-50,w:100};balls=[nb()];score=0;lives=3;lvl=1;over=false;sticky=true;build(0);upd()}
+function nb(){return{x:c.width/2,y:c.height-60,vx:(Math.random()<.5?-1:1)*260,vy:-320}}
+function upd(){document.getElementById('s').textContent=score;document.getElementById('l').textContent=lives;document.getElementById('v').textContent=lvl}
+addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();pad.x=Math.max(0,Math.min(c.width-pad.w,(e.clientX-r.left)*(c.width/r.width)-pad.w/2))});
+addEventListener('keydown',e=>{if(e.key==='ArrowLeft')pad.x=Math.max(0,pad.x-26);if(e.key==='ArrowRight')pad.x=Math.min(c.width-pad.w,pad.x+26)});
+c.addEventListener('touchmove',e=>{const t=e.changedTouches[0],r=c.getBoundingClientRect();pad.x=Math.max(0,Math.min(c.width-pad.w,(t.clientX-r.left)*(c.width/r.width)-pad.w/2));e.preventDefault()},{passive:false});
+c.addEventListener('pointerdown',()=>{sticky=false});
+function frame(dt){
+  if(!over){
+    if(sticky&&balls.length){balls[0].x=pad.x+pad.w/2;balls[0].y=c.height-60}
+    else for(let i=balls.length-1;i>=0;i--){const b=balls[i];b.x+=b.vx*dt;b.y+=b.vy*dt;
+      if(b.x<6||b.x>c.width-6)b.vx*=-1;if(b.y<6)b.vy*=-1;
+      if(b.y>c.height){balls.splice(i,1);continue}
+      if(b.vy>0&&b.y>c.height-60&&b.y<c.height-30&&b.x>pad.x&&b.x<pad.x+pad.w){
+        const rel=(b.x-(pad.x+pad.w/2))/(pad.w/2);const sp=Math.hypot(b.vx,b.vy)*1.02;
+        b.vx=rel*sp*0.9;b.vy=-Math.abs(Math.sqrt(Math.max(100,sp*sp-b.vx*b.vx)))}
+      for(let j=bricks.length-1;j>=0;j--){const k=bricks[j];
+        if(b.x>k.x-6&&b.x<k.x+k.w+6&&b.y>k.y-6&&b.y<k.y+k.h+6){b.vy*=-1;k.hp--;score+=10;
+          if(k.hp<=0)bricks.splice(j,1);
+          if(score>best){best=score;localStorage.setItem('sc_break',best)}break}}}
+    if(!balls.length){lives--;if(lives<=0){over=true}else{balls=[nb()];sticky=true}upd()}
+    if(!bricks.length){lvl++;build(lvl-1+3);balls.push(nb());upd()}
+  }
+  x.fillStyle='#0b0b18';x.fillRect(0,0,c.width,c.height);
+  bricks.forEach(k=>{x.fillStyle=k.col;x.shadowColor=k.col;x.shadowBlur=10;x.fillRect(k.x,k.y,k.w,k.h)});x.shadowBlur=0;
+  x.fillStyle='#fff';x.shadowColor='#fff';x.shadowBlur=12;x.fillRect(pad.x,c.height-44,pad.w,12);x.shadowBlur=0;
+  x.fillStyle='#ffe14d';balls.forEach(b=>{x.beginPath();x.arc(b.x,b.y,7,0,7);x.fill()});
+  if(over){x.fillStyle='rgba(0,0,0,.65)';x.fillRect(0,0,c.width,c.height);x.fillStyle='#fff';x.font='900 32px sans-serif';x.textAlign='center';x.fillText('GAME OVER',c.width/2,c.height/2);x.font='700 18px sans-serif';x.fillText('score '+score,c.width/2,c.height/2+36)}
+}
+document.getElementById('r').onclick=reset;reset();
+let last=performance.now();(function loop(t){requestAnimationFrame(loop);const n=t||performance.now();const dt=Math.min(.05,(n-last)/1000);last=n;if(!document.hidden)frame(dt)})()
+</script>
+</body>
+</html>
