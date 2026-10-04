@@ -163,7 +163,7 @@ async function sharedKey(theirRaw){
   if(!j)throw new Error('their key is missing or corrupted');
   const mine=validPriv();
   if(!mine)throw new Error('your key is missing — re-register on this browser');
-  const mk=await crypto.subtle.importKey('jwk',mine,'ECDH',{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);
+  const mk=await crypto.subtle.importKey('jwk',mine,{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);
   const theirs=await crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,[]);
   return crypto.subtle.deriveKey({name:'ECDH',public:theirs},mk,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
 async function keyFor(uid,pub){
