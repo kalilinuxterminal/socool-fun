@@ -409,6 +409,7 @@ async function init(){
   };
 }
 function start(p){
+  if(ME===ADMIN_UID){$('adminb').style.display='block';$('adminb').onclick=openAdmin;toast('admin mode on')}
   if(!asJwk(p.pub)||!validPriv()){
     alert('your keys were broken — they have been refreshed. old chats will stay locked.');
   }
@@ -553,7 +554,6 @@ function start(p){
   document.addEventListener('click',e=>{const M=$('cmenu');
     if(M.style.display==='flex'&&!M.contains(e.target)&&e.target!==$('cmenub'))M.style.display='none'});
   $('fwdx').onclick=()=>{$('fwd').classList.remove('open')};
-  if(ME===ADMIN_UID){$('adminb').style.display='block';$('adminb').onclick=openAdmin}
 }
 function renderChats(){
   const C=$('chats');C.textContent='';
