@@ -6,38 +6,43 @@
 <title>socool.fun — free unblocked games</title>
 <meta property="og:title" content="socool.fun" />
 <meta property="og:description" content="free unblocked games. no downloads." />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕹️</text></svg>" />
+<link rel="icon" type="image/webp" href="bitlife.webp" />
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
   body{background:#0a0a14;color:#fff;min-height:100vh;overflow-x:hidden}
-  .bg{position:fixed;inset:0;background:radial-gradient(800px 500px at 15% 10%,#2b0a4d,transparent),radial-gradient(700px 500px at 85% 20%,#062a4d,transparent),radial-gradient(900px 600px at 50% 100%,#3d0b2e,transparent),#0a0a14;z-index:-2}
-  .grid-bg{position:fixed;inset:0;z-index:-1;opacity:.25;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%)}
+  .bg{position:fixed;inset:0;background:#0a0a10;z-index:-2}
+  .grid-bg{position:fixed;inset:0;z-index:-1;opacity:.2;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%)}
   header{text-align:center;padding:52px 16px 10px}
-  .logo{font-size:clamp(44px,9vw,84px);font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#ff2fb3,#7c3aed,#00e5ff,#00ff9d,#ff2fb3);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:slide 6s linear infinite;filter:drop-shadow(0 0 24px rgba(255,47,179,.35))}
-  @keyframes slide{to{background-position:300% center}}
+  .logo{font-size:clamp(44px,9vw,84px);font-weight:900;letter-spacing:2px;color:#fff}
   .tag{margin-top:8px;color:#b9b9d6;font-size:15px;letter-spacing:1px}
   .tag b{color:#fff}
   .wrap{max-width:1060px;margin:0 auto;padding:30px 16px 60px}
   .section{font-size:13px;letter-spacing:3px;color:#8b8bb0;margin:26px 6px 14px;text-transform:uppercase}
   .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
   a.card{display:block;text-decoration:none;color:#fff;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px 20px;transition:.18s;position:relative;overflow:hidden}
-  a.card:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(255,255,255,.35);box-shadow:0 14px 44px rgba(124,58,237,.35)}
+  a.card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.4);box-shadow:0 14px 34px rgba(0,0,0,.6)}
   a.card .emoji{font-size:40px}
   a.card img.icon{width:72px;height:72px;border-radius:18px;object-fit:cover;display:block}
   a.card h2{font-size:19px;margin:10px 0 4px}
   a.card p{font-size:13px;color:#a9a9c9;min-height:36px}
   a.card .play{display:inline-block;margin-top:12px;font-size:13px;font-weight:800;letter-spacing:1px;background:#fff;color:#000;border-radius:100px;padding:8px 20px}
-  a.card.hot{border-color:#ff2fb3}
-  a.card.hot:after{content:'HOT';position:absolute;top:12px;right:12px;font-size:10px;font-weight:900;letter-spacing:1px;background:linear-gradient(90deg,#ff2fb3,#ff7a00);border-radius:100px;padding:4px 10px}
+  a.card.hot{border-color:#fff}
+  a.card.hot:after{content:'HOT';position:absolute;top:12px;right:12px;font-size:10px;font-weight:900;letter-spacing:1px;background:#fff;color:#000;border-radius:100px;padding:4px 10px}
   footer{text-align:center;color:#666;font-size:12px;padding:0 0 40px}
   footer a{color:#999}
+  #player{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;background:#000}
+  #player.open{display:flex}
+  #playerbar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#0d0d15;border-bottom:1px solid #ffffff1c}
+  #ptitle{font-weight:800;letter-spacing:1px;font-size:14px}
+  #close{margin-left:auto;background:#fff;color:#000;border:0;border-radius:100px;padding:8px 22px;font-weight:800;cursor:pointer;font-size:13px}
+  #frame{flex:1;border:0;width:100%;background:#000}
   #splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:#0a0a14;transition:opacity .45s;cursor:pointer}
   #splash.hide{opacity:0;pointer-events:none}
   #splash .s-logo{font-size:clamp(38px,8vw,64px);font-weight:900;letter-spacing:6px;opacity:0;animation:rise .7s ease-out forwards}
   #splash .s-by{font-size:16px;letter-spacing:2px;color:#ccc;opacity:0;animation:rise .7s .35s ease-out forwards}
-  #splash .s-by b{background:linear-gradient(90deg,#ff2fb3,#7c3aed,#00e5ff,#00ff9d,#ff2fb3);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:slide 3s linear infinite}
+  #splash .s-by b{color:#fff}
   #splash .s-bar{width:min(300px,60vw);height:4px;border-radius:100px;background:rgba(255,255,255,.12);overflow:hidden;opacity:0;animation:rise .5s .5s ease-out forwards}
-  #splash .s-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff2fb3,#00e5ff);animation:fill 1.9s .2s linear forwards}
+  #splash .s-bar i{display:block;height:100%;width:0;background:#fff;animation:fill 1.9s .2s linear forwards}
   @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
   @keyframes fill{to{width:100%}}
 </style>
@@ -54,14 +59,19 @@
   <div class="games">
     <a class="card hot" href="bitlife.html"><img class="icon" src="bitlife.webp" alt="BitLife" /><h2>BitLife</h2><p>Live a whole life. Choices matter.</p><span class="play">PLAY ▸</span></a>
     <a class="card hot" href="arena.html"><img class="icon" src="penalty-challenge-logo.webp" alt="Arena" /><h2>Arena</h2><p>Enter the arena. Last one standing.</p><span class="play">PLAY ▸</span></a>
-    <a class="card hot" href="baxaball.html"><img class="icon" src="basketball-stars-2026-m240x240.webp" alt="Baxaball" /><h2>Baxaball</h2><p>Hoop dreams. Run the court.</p><span class="play">PLAY ▸</span></a>
+    <a class="card hot" href="baxaball.html"><img class="icon" src="basketball-stars-2026-m240x240.webp" alt="Basketball Stars" /><h2>Basketball Stars</h2><p>Hoop dreams. Run the court.</p><span class="play">PLAY ▸</span></a>
   </div>
 </div>
 <footer>socool.fun · all games run 100% in your browser · <a href="https://tqig.space">tqig.space</a></footer>
+<div id="player"><div id="playerbar"><span id="ptitle"></span><button id="close">✕ CLOSE</button></div><iframe id="frame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe></div>
 <script>
 (function(){const s=document.getElementById('splash');if(!s)return;let gone=false;
 const go=()=>{if(gone)return;gone=true;s.classList.add('hide');setTimeout(()=>s.remove(),500)};
 setTimeout(go,2100);s.onclick=go})();
+(function(){const p=document.getElementById('player'),f=document.getElementById('frame'),t=document.getElementById('ptitle');
+document.querySelectorAll('a.card').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();
+  t.textContent=a.querySelector('h2').textContent;f.src=a.getAttribute('href');p.classList.add('open')}));
+document.getElementById('close').onclick=()=>{p.classList.remove('open');f.src='about:blank'}})();
 </script>
 </body>
 </html>
