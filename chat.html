@@ -56,9 +56,9 @@
   </div>
 </div>
 <a class="home" href="index.html">← socool.fun</a>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-firestore-compat.js"></script>
 <script>
 // ===== PASTE YOUR FIREBASE CONFIG HERE (console.firebase.google.com → project settings) =====
 const CONFIG={apiKey:"AIzaSyCOnc_NDHNPQKyqggZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
@@ -79,6 +79,7 @@ async function enc(key,t){const iv=crypto.getRandomValues(new Uint8Array(12));
 async function dec(key,m){try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb(m.iv)},key,unb(m.ct));
   return new TextDecoder().decode(pt)}catch(e){return'🔒 undecryptable (keys changed)'}}
 async function init(){
+  if(typeof firebase==='undefined'){$('setup').style.display='flex';$('serr').textContent='could not reach the chat servers from this network.';return}
   if(!ok()){$('setup').style.display='flex';$('serr').textContent='chat not connected yet — owner is wiring it up.';return}
   firebase.initializeApp(CONFIG);DB=firebase.firestore();
   await firebase.auth().signInAnonymously();ME=firebase.auth().currentUser.uid;
