@@ -28,18 +28,20 @@
   #setup input{text-align:center;font-size:16px}
   .note{font-size:11px;color:#777}
   #mycode{font-size:15px;background:#ffffff0d;border:1px dashed #ffffff3a;border-radius:10px;padding:10px;cursor:pointer}
+  #setup button:disabled{opacity:.55}
+  #serr{color:#f66;min-height:16px;font-size:12px}
   a.home{color:#777;font-size:12px;text-decoration:none;margin-top:6px}
   @media(max-width:640px){#app{grid-template-columns:1fr}#listpane.hide{display:none}}
 </style>
 </head>
 <body>
 <h1>💬 CHAT <span>· end-to-end encrypted</span></h1>
-<div id="setup" style="display:none">
+<div id="setup">
   <div style="font-weight:900;font-size:18px">pick your name + code</div>
   <div class="note">friends add you with your code. keys stay in THIS browser — new device = new keys.</div>
   <input id="nm" maxlength="16" placeholder="display name" />
   <input id="cd" maxlength="12" placeholder="friend code (e.g. tqig77)" />
-  <button id="go">START ▸</button>
+  <button id="go" disabled>connecting…</button>
   <div class="note" id="serr"></div>
 </div>
 <div id="app" style="display:none">
@@ -56,12 +58,12 @@
   </div>
 </div>
 <a class="home" href="index.html">← socool.fun</a>
-<script src="vendor/firebase-app-compat.js"></script>
-<script src="vendor/firebase-auth-compat.js"></script>
-<script src="vendor/firebase-firestore-compat.js"></script>
+<script defer src="vendor/firebase-app-compat.js"></script>
+<script defer src="vendor/firebase-auth-compat.js"></script>
+<script defer src="vendor/firebase-firestore-compat.js"></script>
 <script>
 // ===== PASTE YOUR FIREBASE CONFIG HERE (console.firebase.google.com → project settings) =====
-const CONFIG={apiKey:"AIzaSyCOnc_NDHNPQKyqggZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
+const CONFIG={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
 // ============================================================================================
 let DB=null,ME=null,KEY=null,OPEN=null,UNSUB=null;
 const $=id=>document.getElementById(id);
@@ -86,9 +88,9 @@ async function init(){
   try{
   await firebase.auth().signInAnonymously();ME=firebase.auth().currentUser.uid;
   me=await DB.collection('users').doc(ME).get();
-  }catch(e){$('setup').style.display='flex';$('serr').textContent='blocked: '+e.message;return}
+  }catch(e){$('serr').textContent='blocked: '+e.message;return}
+  $('go').disabled=false;$('go').textContent='START ▸';
   if(me.exists&&localStorage.sc_priv){start(JSON.parse(localStorage.sc_name||'null')||me.data());return}
-  $('setup').style.display='flex';
   $('go').onclick=async()=>{
     const nm=$('nm').value.trim().slice(0,16),cd=$('cd').value.trim().toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);
     if(!nm||cd.length<3){$('serr').textContent='need a name + code (3+ letters/numbers)';return}
@@ -155,7 +157,7 @@ async function send(){const t=$('box').value.trim();if(!t||!OPEN)return;$('box')
   const e=await enc(key,t);
   await DB.collection('chats').doc(OPEN).collection('msgs').add({from:ME,iv:e.iv,ct:e.ct,ts:Date.now()});
   await DB.collection('chats').doc(OPEN).update({updated:Date.now()})}
-init();
+if(document.readyState==='loading')addEventListener('DOMContentLoaded',init);else init();
 </script>
 </body>
 </html>
