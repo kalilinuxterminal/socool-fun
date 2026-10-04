@@ -82,8 +82,11 @@ async function init(){
   if(typeof firebase==='undefined'){$('setup').style.display='flex';$('serr').textContent='could not reach the chat servers from this network.';return}
   if(!ok()){$('setup').style.display='flex';$('serr').textContent='chat not connected yet — owner is wiring it up.';return}
   firebase.initializeApp(CONFIG);DB=firebase.firestore();
+  let me=null;
+  try{
   await firebase.auth().signInAnonymously();ME=firebase.auth().currentUser.uid;
-  const me=await DB.collection('users').doc(ME).get();
+  me=await DB.collection('users').doc(ME).get();
+  }catch(e){$('setup').style.display='flex';$('serr').textContent='blocked: '+e.message;return}
   if(me.exists&&localStorage.sc_priv){start(JSON.parse(localStorage.sc_name||'null')||me.data());return}
   $('setup').style.display='flex';
   $('go').onclick=async()=>{
