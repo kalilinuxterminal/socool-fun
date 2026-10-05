@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Chat — socool.fun</title>
+<title>Chat · socool.fun</title>
 <style>
   :root,body[data-theme="mono"]{--acc:#ffffff;--accT:rgba(255,255,255,.22);--orbA:#ffffff;--orbB:#aaaaaa}
   body[data-theme="azure"]{--acc:#4da3ff;--accT:rgba(77,163,255,.22);--orbA:#2f6fe0;--orbB:#63b3ff}
@@ -53,7 +53,7 @@
   .cavatar{width:34px;height:34px;flex:none;border-radius:50%;background:var(--accT);color:var(--acc);font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center}
   .chatitem{display:flex;align-items:center;gap:10px}
   @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .m.me{align-self:flex-end;background:#fff;color:#000}
+  .m.me{align-self:flex-end;background:var(--accT);color:#fff;border:1px solid var(--accT)}
   .m.them{align-self:flex-start;background:#ffffff16}
   .m.blocked{opacity:.55;font-style:italic}
   .sender{font-size:10px;opacity:.55;display:block;margin-bottom:2px;font-weight:800;letter-spacing:.5px}
@@ -62,7 +62,11 @@
   .m audio{width:230px;margin-top:4px;display:block}
   .rx{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
   .rx span{font-size:11px;font-weight:800;border:1px solid #ffffff33;border-radius:100px;padding:2px 8px;opacity:.9}
-  .m.me .rx span{border-color:#00000033}
+  .m.me .rx span{border-color:#ffffff33}
+  .m.me a{color:#fff}
+  .m img.pfp{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+  .cavatar img,.savatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+  .cavatar.click,.savatar.click{cursor:pointer}
   .rbar{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
   .rbar button{padding:4px 10px;font-size:12px;border-radius:100px}
   #replybox{display:none;align-items:center;gap:8px;font-size:12px;color:#aaa;background:#ffffff0d;border-left:3px solid var(--acc);border-radius:8px;padding:6px 10px}
@@ -196,6 +200,13 @@
 </div></div>
 <div id="settings" class="modal"><div class="mbox" style="max-width:420px">
   <div class="row" style="justify-content:space-between;align-items:center"><b>SETTINGS</b><button id="setx" class="ghost">CLOSE</button></div>
+  <div class="asec">PROFILE</div>
+  <img id="mypic" style="width:72px;height:72px;border-radius:50%;object-fit:cover;align-self:center;display:none;border:2px solid var(--accT)" />
+  <span id="myinit" class="cavatar" style="align-self:center;width:72px;height:72px;font-size:26px"></span>
+  <button id="picb" class="ghost" style="align-self:center">CHANGE PICTURE</button>
+  <input type="file" id="picfile" accept="image/*" style="display:none" />
+  <div class="row"><input id="aboutq" maxlength="80" placeholder="about you (status)" /><button id="aboutb" class="ghost">SAVE</button></div>
+  <div class="row"><input id="linkq" maxlength="140" placeholder="your link (instagram, tiktok…)" /><button id="linkb" class="ghost">SAVE</button></div>
   <div class="asec">THEME</div>
   <div id="themepk"><span>THEME</span><i data-t="azure" style="background:#4da3ff"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
   <div class="asec">STATUS</div>
@@ -203,13 +214,23 @@
   <div class="asec">SOUND</div>
   <button id="sndb" class="ghost" style="text-align:left"></button>
   <div class="asec">MORE</div>
-  <div class="note" style="opacity:.4">read receipts — coming soon</div>
-  <div class="note" style="opacity:.4">message scheduling — coming soon</div>
+  <div class="note" style="opacity:.4">read receipts · coming soon</div>
+  <div class="note" style="opacity:.4">message scheduling · coming soon</div>
 </div></div>
 <div id="notifm2" class="modal"><div class="mbox" style="max-width:400px;text-align:center">
   <div style="font-size:11px;letter-spacing:4px;color:var(--acc);font-weight:900">SERVER NOTIFICATION</div>
   <div id="notiftext2" style="font-weight:700;font-size:16px;line-height:1.5"></div>
   <button id="notifok2" style="align-self:center">OK</button>
+</div></div>
+<div id="profile" class="modal"><div class="mbox" style="max-width:340px;text-align:center;align-items:center">
+  <img id="pfpimg" style="width:96px;height:96px;border-radius:50%;object-fit:cover;display:none;border:2px solid var(--accT)" />
+  <span id="pfpinit" class="cavatar" style="width:96px;height:96px;font-size:34px"></span>
+  <b id="pfname" style="font-size:20px"></b>
+  <div class="note" id="pfmeta" style="text-align:center"></div>
+  <div id="pfabout" class="note" style="text-align:center;font-size:13px;color:#ccc;min-height:14px"></div>
+  <a id="pflink" target="_blank" rel="noopener" style="display:none;color:var(--acc);font-weight:800;font-size:13px;text-decoration:none;word-break:break-all"></a>
+  <button id="pfmsg">MESSAGE</button>
+  <button id="pfx" class="ghost">CLOSE</button>
 </div></div>
 <script defer src="vendor/firebase-app-compat.js"></script>
 <script defer src="vendor/firebase-auth-compat.js"></script>
@@ -270,7 +291,7 @@ async function sharedKey(theirRaw){
   const j=asJwk(theirRaw);
   if(!j)throw new Error('their key is missing or corrupted');
   const mine=validPriv();
-  if(!mine)throw new Error('your key is missing — re-register on this browser');
+  if(!mine)throw new Error('your key is missing · re-register on this browser');
   const mk=await crypto.subtle.importKey('jwk',mine,{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);
   const theirs=await crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,[]);
   return crypto.subtle.deriveKey({name:'ECDH',public:theirs},mk,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
@@ -287,13 +308,13 @@ async function pubOf(uid,meta){
   const d=await DB.collection('users').doc(uid).get().catch(()=>null);
   if(d&&d.exists){j=asJwk(d.data().pub);
     if(j){meta.pubs=meta.pubs||{};meta.pubs[uid]=j;return j}}
-  throw new Error('their key is not available yet — they may need to re-register');
+  throw new Error('their key is not available yet · they may need to re-register');
 }
 async function enc(key,t){const iv=crypto.getRandomValues(new Uint8Array(12));
   const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(t)));
   return{iv:b64(iv),ct:b64(ct)}}
 async function dec(key,m){try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb(m.iv)},key,unb(m.ct));
-  return new TextDecoder().decode(pt)}catch(e){return'[undecryptable — keys changed]'}}
+  return new TextDecoder().decode(pt)}catch(e){return'[undecryptable · keys changed]'}}
 async function encBytes(key,u8){const iv=crypto.getRandomValues(new Uint8Array(12));
   const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,u8));
   return{iv:b64(iv),ct:b64(ct)}}
@@ -352,9 +373,48 @@ async function getPres(uid){
   const c=PRESENCE.get(uid);
   if(c&&Date.now()-c.at<15000)return c;
   try{const d=await DB.collection('users').doc(uid).get();
-    const last=d.exists?d.data().last:0;
+    const r=d.exists?d.data():{};
+    const last=r.last||0;
     const on=!!(last&&(Date.now()-last<50000));
-    const v={on:on,at:Date.now(),last:last};PRESENCE.set(uid,v);return v}catch(e){return c||{on:false,at:Date.now(),last:0}}
+    const v={on:on,at:Date.now(),last:last,pic:r.pic||null,about:r.about||'',created:r.created||0,link:r.link||'',name:r.name||''};
+    PRESENCE.set(uid,v);return v}catch(e){return c||{on:false,at:Date.now(),last:0,pic:null,about:'',created:0,link:'',name:''}}
+}
+function setAvatar(el,pic,label){
+  el.textContent='';
+  if(pic){const im=document.createElement('img');im.src=pic;el.appendChild(im)}
+  else el.textContent=((label||'?')[0]||'?').toUpperCase();
+}
+async function shrinkAvatar(file){
+  const bmp=await createImageBitmap(file);
+  const s=Math.min(1,256/Math.max(bmp.width,bmp.height));
+  const cv=document.createElement('canvas');
+  cv.width=Math.max(1,Math.round(bmp.width*s));cv.height=Math.max(1,Math.round(bmp.height*s));
+  cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);
+  let u=cv.toDataURL('image/jpeg',.8);
+  if(u.length>300000)u=cv.toDataURL('image/jpeg',.5);
+  if(u.length>900000)throw new Error('image too large even after compression');
+  return u;
+}
+let PFUID=null;
+async function openProfile(uid,name){
+  try{
+    const p=await getPres(uid);
+    const nm=p.name||name||'user';
+    $('pfname').textContent=nm;
+    if(p.pic){$('pfpimg').src=p.pic;$('pfpimg').style.display='block';$('pfpinit').style.display='none'}
+    else{setAvatar($('pfpinit'),null,nm);$('pfpinit').style.display='flex';$('pfpimg').style.display='none'}
+    const bits=[];
+    if(p.created)bits.push('joined '+new Date(p.created).toLocaleDateString());
+    if(p.last)bits.push(p.on?'online':'seen '+ago(p.last));
+    $('pfmeta').textContent=bits.join(' · ');
+    $('pfabout').textContent=p.about||'';
+    if(p.link){$('pflink').href=p.link;let host=p.link;
+      try{host=new URL(p.link).hostname}catch(e){}
+      $('pflink').textContent=host;$('pflink').style.display='block'}
+    else $('pflink').style.display='none';
+    PFUID=uid;
+    $('profile').classList.add('open');
+  }catch(e){toast('could not load profile',true)}
 }
 function isBlocked(uid){return BLOCKED.some(b=>b.u===uid)}
 function toast(t,warn){const d=document.createElement('div');d.className='toast'+(warn?' warn':'');d.textContent=t;
@@ -389,7 +449,7 @@ document.querySelectorAll('#themepk i').forEach(j=>j.classList.toggle('on',j===i
     document.getElementById('ctitle').textContent='connecting…'}}catch(e){}})();
 async function init(){
   if(typeof firebase==='undefined'){$('setup').style.display='flex';$('serr').textContent='could not reach the chat servers from this network.';return}
-  if(!ok()){$('setup').style.display='flex';$('serr').textContent='chat not connected yet — owner is wiring it up.';return}
+  if(!ok()){$('setup').style.display='flex';$('serr').textContent='chat not connected yet · owner is wiring it up.';return}
   firebase.initializeApp(CONFIG);DB=firebase.firestore();
   let me=null;
   try{
@@ -432,7 +492,7 @@ async function init(){
 function start(p){
   if(ME===ADMIN_UID){$('adminb').style.display='block';$('adminb').onclick=openAdmin;toast('admin mode on')}
   if(!asJwk(p.pub)||!validPriv()){
-    alert('your keys were broken — they have been refreshed. old chats will stay locked.');
+    alert('your keys were broken · they have been refreshed. old chats will stay locked.');
   }
   MEP=p;
   $('setup').style.display='none';$('app').style.display='grid';
@@ -445,15 +505,46 @@ function start(p){
   $('meName').onclick=()=>alert('your id: '+ME);
   DB.collection('users').doc(ME).get().then(d=>{
     if(!d.exists)return;const data=d.data();
+    MEP.pic=MEP.pic||data.pic||null;MEP.about=data.about||'';MEP.link=data.link||'';
+    if(!data.created)DB.collection('users').doc(ME).set({created:Date.now()},{merge:true}).catch(()=>{});
+    myUI();
     const today=new Date().toDateString();
     if(data.streakDay!==today){
       const yest=new Date(Date.now()-86400000).toDateString();
       MEP.streak=(data.streakDay===yest)?(data.streak||0)+1:1;
       DB.collection('users').doc(ME).set({streak:MEP.streak,streakDay:today},{merge:true}).catch(()=>{});
-      if(MEP.streak>1)toast('day '+MEP.streak+' streak — keep it going');
+      if(MEP.streak>1)toast('day '+MEP.streak+' streak · keep it going');
     } else MEP.streak=data.streak||0;
     updateMeName();
   }).catch(()=>{});
+  const myUI=()=>{
+    if(MEP.pic){$('mypic').src=MEP.pic;$('mypic').style.display='block';$('myinit').style.display='none'}
+    else{setAvatar($('myinit'),null,MEP.name);$('myinit').style.display='flex';$('mypic').style.display='none'}
+    $('aboutq').value=MEP.about||'';$('linkq').value=MEP.link||''};
+  myUI();
+  $('picb').onclick=()=>$('picfile').click();
+  $('picfile').onchange=async()=>{
+    const f=$('picfile').files[0];$('picfile').value='';
+    if(!f)return;
+    try{const u=await shrinkAvatar(f);
+      await DB.collection('users').doc(ME).set({pic:u},{merge:true});
+      MEP.pic=u;myUI();toast('picture updated')}
+    catch(e){toast(e.message||e,true)}};
+  $('aboutb').onclick=async()=>{
+    const t=$('aboutq').value.trim().slice(0,80);
+    if(!isClean(t)){toast('that status is not allowed',true);return}
+    await DB.collection('users').doc(ME).set({about:t},{merge:true}).catch(()=>{});
+    MEP.about=t;toast('status saved')};
+  $('linkb').onclick=async()=>{
+    let t=$('linkq').value.trim();
+    if(!t){await DB.collection('users').doc(ME).set({link:''},{merge:true}).catch(()=>{});MEP.link='';toast('link cleared');return}
+    if(!/^https?:\/\//i.test(t))t='https://'+t;
+    try{new URL(t)}catch(e){toast('that link is not valid',true);return}
+    if(!isClean(t)){toast('that link is not allowed',true);return}
+    await DB.collection('users').doc(ME).set({link:t.slice(0,160)},{merge:true}).catch(()=>{});
+    MEP.link=t;toast('link saved')};
+  $('pfx').onclick=()=>$('profile').classList.remove('open');
+  $('pfmsg').onclick=()=>{$('profile').classList.remove('open');if(PFUID)adminMsg(PFUID,($('pfname').textContent||'user'))};
   $('ctitle').textContent='pick a chat';$('csub').textContent='';
   $('backb').onclick=()=>{$('listpane').classList.remove('hide')};
   $('plusb').onclick=()=>{const pn=$('newpanel');const open=pn.style.display==='none';
@@ -505,7 +596,7 @@ function start(p){
     if(to===ME){$('aerr').textContent='that is you';return}
     if(isBlocked(to)){$('aerr').textContent='unblock them first';return}
     const rev=await DB.collection('requests').doc(to+'_'+ME).get().catch(()=>null);
-    if(rev&&rev.exists&&rev.data().status==='pending'){$('aerr').textContent='they already added you — check requests';return}
+    if(rev&&rev.exists&&rev.data().status==='pending'){$('aerr').textContent='they already added you · check requests';return}
     const existing=await DB.collection('requests').doc(ME+'_'+to).get().catch(()=>null);
     if(existing&&existing.exists&&existing.data().status==='pending'){$('aerr').textContent='request already sent';return}
     const cid=[ME,to].sort().join('_');
@@ -530,8 +621,8 @@ function start(p){
       let codeOK=true;
       try{await DB.collection('gcodes').doc(code).set({gid:ref.id,ts:Date.now()})}catch(e2){codeOK=false}
       $('gnm').value='';
-      if(codeOK)flash('group created — code: '+code.toUpperCase(),true);
-      else flash('group created — but the join code failed. republish the rules in firebase console',false);
+      if(codeOK)flash('group created · code: '+code.toUpperCase(),true);
+      else flash('group created · but the join code failed. republish the rules in firebase console',false);
     }catch(e){$('aerr').textContent='could not create group: '+(e.message||e)}
   };
   $('joinb').onclick=async()=>{
@@ -559,7 +650,7 @@ function start(p){
       const el=document.createElement('div');el.className='item';
       const b=document.createElement('b');b.textContent=r.fromName||'someone';
       const sm=document.createElement('small');
-      sm.textContent=r.type==='group'?('invited you to group "'+(r.gname||'group')+'"'):'wants to chat — accept to start';
+      sm.textContent=r.type==='group'?('invited you to group "'+(r.gname||'group')+'"'):'wants to chat · accept to start';
       el.appendChild(b);el.appendChild(sm);
       const row=document.createElement('div');row.className='row';row.style.marginTop='6px';
       const okB=document.createElement('button');okB.textContent='ACCEPT';
@@ -613,7 +704,7 @@ function renderChats(){
   const gav=document.createElement('span');gav.className='cavatar';gav.textContent='G';
   const gcol=document.createElement('div');gcol.style.cssText='flex:1;min-width:0';
   const gb=document.createElement('b');gb.textContent='GLOBAL';
-  const gsm=document.createElement('small');gsm.textContent='public — everyone sees this';
+  const gsm=document.createElement('small');gsm.textContent='public · everyone sees this';
   gcol.appendChild(gb);gcol.appendChild(gsm);g.appendChild(gav);g.appendChild(gcol);
   g.onclick=openGlobal;C.appendChild(g);
   const q=(CS||'').trim().toLowerCase();
@@ -621,7 +712,7 @@ function renderChats(){
   const shut=CHATCACHE.filter(c=>isClosed(c.id)&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
   const list=q?live.concat(shut).filter(c=>chatName(c).toLowerCase().includes(q)):live;
   if(!list.length){const d=document.createElement('div');d.className='note';
-    d.textContent=q?'nothing found':'no chats yet — add someone above';C.appendChild(d)}
+    d.textContent=q?'nothing found':'no chats yet · add someone above';C.appendChild(d)}
   list.forEach(({id,data:c})=>{
     const closed=isClosed(id);
     const el=document.createElement('div');el.className='item chatitem'+(OPEN===id?' act':'');
@@ -632,9 +723,12 @@ function renderChats(){
     const b=document.createElement('b');b.textContent=chatName({id,data:c});
     nmRow.appendChild(b);
     if(!c.group&&!closed){const dot=document.createElement('span');dot.className='dot';nmRow.appendChild(dot);
-      getPres(c.members.find(u=>u!==ME)).then(p=>{dot.className='dot'+(p.on?' on':'')})}
+      const otherUid=c.members.find(u=>u!==ME);
+      getPres(otherUid).then(p=>{dot.className='dot'+(p.on?' on':'');
+        if(p.pic){setAvatar(av,p.pic,chatName({id,data:c}));av.classList.add('click');
+          av.onclick=ev=>{ev.stopPropagation();openProfile(otherUid,chatName({id,data:c}))}}})}
     const sm=document.createElement('small');
-    sm.textContent=closed?'closed — tap to reopen':(c.group?('group · '+c.members.length+' · code '+((c.joinCode||'------').toUpperCase())):'end-to-end encrypted');
+    sm.textContent=closed?'closed · tap to reopen':(c.group?('group · '+c.members.length+' · code '+((c.joinCode||'------').toUpperCase())):'end-to-end encrypted');
     col.appendChild(nmRow);col.appendChild(sm);
     el.appendChild(av);el.appendChild(col);
     el.onclick=()=>{if(closed)unclose(id);openChat(id,c)};
@@ -644,7 +738,7 @@ function renderChats(){
 function renderFriends(){
   const F=$('friends');if(!F)return;F.textContent='';
   const fr=CHATCACHE.filter(c=>!c.data.group&&!isBlocked(c.data.members.find(u=>u!==ME)));
-  if(!fr.length){const d=document.createElement('div');d.className='note';d.textContent='no friends yet — add someone';F.appendChild(d);return}
+  if(!fr.length){const d=document.createElement('div');d.className='note';d.textContent='no friends yet · add someone';F.appendChild(d);return}
   fr.forEach(c=>{const other=c.data.members.find(u=>u!==ME);
     const it=document.createElement('div');it.className='chip';
     const l=document.createElement('span');l.style.flex='1';l.style.minWidth='0';
@@ -653,6 +747,8 @@ function renderFriends(){
     const seen=document.createElement('small');seen.style.cssText='color:#888;font-size:10px;display:block';
     l.appendChild(dot);l.appendChild(nm);l.appendChild(seen);
     getPres(other).then(p=>{dot.className='dot'+(p.on?' on':'');seen.textContent=p.on?'online':(p.last?('seen '+ago(p.last)):'unknown')});
+    l.style.cursor='pointer';
+    l.onclick=()=>openProfile(other,(c.data.names||{})[other]||'chat');
     const m=document.createElement('button');m.textContent='MSG';
     m.onclick=()=>{unclose(c.id);$('newpanel').style.display='none';$('plusbi').style.transform='none';openChat(c.id,c.data)};
     it.appendChild(l);it.appendChild(m);F.appendChild(it)})}
@@ -660,7 +756,7 @@ let CHATMETA=null;
 function openGlobal(){
   OPEN='__global';CHATMETA=null;
   document.querySelectorAll('#chats .item').forEach(e=>e.classList.remove('act'));
-  $('ctitle').textContent='GLOBAL';$('csub').textContent='public chat — everyone can read and write';
+  $('ctitle').textContent='GLOBAL';$('csub').textContent='public chat · everyone can read and write';
   $('typing').textContent='';
   $('hdot').style.display='none';$('invrow').style.display='none';$('ownrow').style.display='none';
   $('memlist').style.display='none';$('ghostb').style.display='none';$('cmenub').style.display='none';
@@ -686,9 +782,11 @@ function renderGlobalMsg(d,M){
   const el=document.createElement('div');el.className='m '+(m.from===ME?'me':'them');
   const head=document.createElement('div');head.className='mhead';
   const av=document.createElement('span');av.className='savatar';
-  av.textContent=((m.name||'?')[0]||'?').toUpperCase();
+  setAvatar(av,null,m.name||'someone');
   const sn=document.createElement('span');sn.className='sender';sn.textContent=m.name||'someone';
   head.appendChild(av);head.appendChild(sn);el.appendChild(head);
+  if(m.from!==ME)getPres(m.from).then(p=>{if(p.pic){setAvatar(av,p.pic,m.name||'someone');
+    av.classList.add('click');av.onclick=ev=>{ev.stopPropagation();openProfile(m.from,m.name||'someone')}}});
   const clean=isClean(m.text);
   el.className+=clean?'':' blocked';
   el.appendChild(document.createTextNode((clean?m.text:'blocked')||''));
@@ -799,13 +897,13 @@ function buildMenu(meta){
         $('cmenu').style.display='none';return}
       ask('unadd them? they can no longer message you and cannot add you back',async()=>{
         await DB.collection('chats').doc(OPEN).update({blockedBy:firebase.firestore.FieldValue.arrayUnion(ME)}).catch(()=>{});
-        $('cmenu').style.display='none';toast('unadded — history stays, close the DM whenever')});
+        $('cmenu').style.display='none';toast('unadded · history stays, close the DM whenever')});
     },true);
     add('CLOSE DM',()=>{
       CLOSED.push({c:OPEN,a:Date.now()});
       DB.collection('users').doc(ME).set({closed:CLOSED},{merge:true}).catch(()=>{});
       $('cmenu').style.display='none';resetChatUI();
-      toast('DM closed — find it via search anytime');
+      toast('DM closed · find it via search anytime');
     },true);
   }else{
     add('LEAVE GROUP',()=>ask('leave this group?',()=>leaveGroup()),true);
@@ -929,10 +1027,12 @@ async function renderMsg(d,M){
     if(meta.group&&!mine){
       const head=document.createElement('div');head.className='mhead';
       const av=document.createElement('span');av.className='savatar';
-      av.textContent=(((meta.names||{})[m.from])||'?')[0].toUpperCase();
+      setAvatar(av,null,((meta.names||{})[m.from])||'member');
       const s=document.createElement('span');s.className='sender';
       s.textContent=(meta.names&&meta.names[m.from])||'member';
       head.appendChild(av);head.appendChild(s);el.appendChild(head);
+      if(m.from!==ME)getPres(m.from).then(p=>{if(p.pic){setAvatar(av,p.pic,s.textContent);
+        av.classList.add('click');av.onclick=ev=>{ev.stopPropagation();openProfile(m.from,s.textContent)}}});
     }
     const clean=isClean(txt);
     el.className+=clean?'':' blocked';
@@ -1020,12 +1120,12 @@ async function doReport(d,m){
       reportedUid:m.from,reportedName:isG?(m.name||'?'):(((CHATMETA&&CHATMETA.meta.names)||{})[m.from]||'?'),
       global:isG,
       text:DECMAP[d.id]||'[media]',ts:Date.now(),status:'open'});
-    toast('reported — the owner has been notified');
+    toast('reported · the owner has been notified');
   }catch(e){toast('report failed: '+(e.message||e),true)}
 }
 async function sendTo(cid,meta,t,reply){
   if(MUTED)throw new Error('you are muted');
-  if(!rateOK())throw new Error('slow down — you are sending too fast');
+  if(!rateOK())throw new Error('slow down · you are sending too fast');
   if(!isClean(t))throw new Error('that message is not allowed');
   if(!meta.group){const oth=meta.members.find(u=>u!==ME);const bb=meta.blockedBy||[];
     if(bb.includes(oth)&&!bb.includes(ME))throw new Error('you cannot message this user')}
@@ -1193,7 +1293,7 @@ function openAdmin(){
     const b=await DB.collection('bans').doc(uid).get().catch(()=>null);
     const chip=document.createElement('div');chip.className='chip';
     const s=document.createElement('span');s.style.flex='1';
-    s.textContent=q+((b&&b.exists)?' — banned':' — NOT banned');
+    s.textContent=q+((b&&b.exists)?' · banned':' · NOT banned');
     const btn=document.createElement('button');btn.textContent='UNBAN';
     if(!b||!b.exists)btn.disabled=true;
     btn.onclick=()=>doUnban(uid).then(()=>{toast('unbanned');$('unbq').value='';R.textContent=''}).catch(e=>toast(e.message||e,true));
@@ -1216,7 +1316,7 @@ function renderA(){
     REPORTSL.forEach(({id,data:r})=>{
       const it=document.createElement('div');it.className='aitem';
       const t1=document.createElement('div');
-      t1.textContent='"'+(r.text||'')+'" — reported: '+(r.reportedName||'?')+' · by: '+(r.fromName||'?');
+      t1.textContent='"'+(r.text||'')+'" · reported: '+(r.reportedName||'?')+' · by: '+(r.fromName||'?');
       const btns=document.createElement('div');btns.className='btns';
       btns.appendChild(mk('BAN REPORTED',()=>doBan(r.reportedUid,r.reportedName)));
       btns.appendChild(mk('BAN REPORTER',()=>doBan(r.from,r.fromName)));
@@ -1256,7 +1356,7 @@ function renderA(){
     const row=document.createElement('div');row.className='row';row.style.alignItems='center';
     const dot=document.createElement('span');dot.className='dot'+(isOn(r)?' on':'');
     const t1=document.createElement('span');t1.style.flex='1';
-    t1.textContent=(r.name||'?')+' — '+(isOn(r)?'online, active now':'active '+(r.last?ago(r.last)+' ago':'never'));
+    t1.textContent=(r.name||'?')+' · '+(isOn(r)?'online, active now':'active '+(r.last?ago(r.last)+' ago':'never'));
     row.appendChild(dot);row.appendChild(t1);
     const banned=BANSL.some(b=>b.id===id),muted=MUTESL.some(m=>m.id===id),mod=MODSL.some(m=>m.id===id);
     row.appendChild(mk(muted?'UNMUTE':'MUTE',()=>muted?doUnmute(id):doMute(id,r.name)));

@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Typing Test — socool.fun</title>
+<title>Typing Test · socool.fun</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
   body{background:#08080e;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px}
@@ -31,7 +31,7 @@
 </style>
 </head>
 <body>
-<h1>⌨️ TYPING <span>TEST</span></h1>
+<h1>TYPING <span>TEST</span></h1>
 <div id="stats">
   <div><b id="time">30</b><span>SECONDS</span></div>
   <div><b id="wpm">0</b><span>WPM</span></div>
@@ -39,13 +39,13 @@
 </div>
 <div id="stage"></div>
 <input id="box" placeholder="click here and start typing…" autocomplete="off" />
-<div class="note" id="msg">type the highlighted word — space moves to the next one</div>
+<div class="note" id="msg">type the highlighted word · space moves to the next one</div>
 <button id="r" style="display:none">GO AGAIN ▸</button>
 <div id="board"></div>
 <a href="index.html">← socool.fun</a>
-<script defer src="vendor/firebase-app-compat.js"></script>
-<script defer src="vendor/firebase-auth-compat.js"></script>
-<script defer src="vendor/firebase-firestore-compat.js"></script>
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-firestore-compat.js"></script>
 <script>
 const WORDS=['the','and','for','are','but','not','you','all','can','her','was','one','our','out','day','get','has','him','his','how','man','new','now','old','see','two','way','who','boy','did','its','let','put','say','she','too','use','that','with','have','this','will','your','from','they','know','want','been','good','much','some','time','very','when','come','here','just','like','long','make','many','over','such','take','than','them','well','were','school','class','money','water','world','year','gaming','speed','score','level','focus','grind','study','notes'];
 const $=id=>document.getElementById(id);
@@ -77,11 +77,11 @@ function finish(){
   const mins=(Date.now()-startT)/60000;
   const wpm=Math.max(0,Math.round((okChars/5)/mins));
   const acc=typedWords?Math.round(okWords/typedWords*100):0;
-  $('msg').textContent='FINAL: '+wpm+' WPM · '+acc+'% accuracy — submitted to the leaderboard';
+  const okP=window.__submitScore?Promise.resolve(window.__submitScore('typing',wpm)):Promise.resolve(false);
+  okP.then(ok=>{$('msg').textContent='FINAL: '+wpm+' WPM · '+acc+'% · '+(ok?'saved to the leaderboard':'not saved · scores rules not published yet')});
   $('box').value='';$('box').disabled=true;
   $('r').style.display='block';
   render();
-  if(window.__submitScore)__submitScore('typing',wpm);
   loadBoard(wpm);
 }
 function loadBoard(mine){
@@ -96,7 +96,7 @@ function loadBoard(mine){
         it.innerHTML='<span>'+i+'. <b></b></span><span>'+r.score+' wpm</span>';
         it.querySelector('b').textContent=r.name||'anon';
         B.appendChild(it);i++});
-      if(s.empty){const d=document.createElement('div');d.className='note';d.textContent='no scores yet — you set the bar';B.appendChild(d)}
+      if(s.empty){const d=document.createElement('div');d.className='note';d.textContent='no scores yet · you set the bar';B.appendChild(d)}
     }).catch(()=>{const d=document.createElement('div');d.className='note';d.textContent='could not load leaderboard';B.appendChild(d)});
   }catch(e){}
 }
@@ -121,7 +121,7 @@ $('box').addEventListener('input',e=>{
 $('r').onclick=()=>{done=false;idx=0;startT=0;okWords=0;okChars=0;typedWords=0;pool.ok=[];
   clearInterval(timer);$('time').textContent='30';$('wpm').textContent='0';$('acc').textContent='100';
   $('box').disabled=false;$('r').style.display='none';$('board').style.display='none';
-  $('msg').textContent='type the highlighted word — space moves to the next one';
+  $('msg').textContent='type the highlighted word · space moves to the next one';
   newPool();render();$('box').focus()};
 newPool();render();
 </script>
@@ -131,8 +131,8 @@ const C={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1f
 if(typeof firebase==='undefined')return;firebase.initializeApp(C);
 firebase.auth().signInAnonymously().then(()=>{window.__submitScore=(g,s)=>{try{
   let n='anon';try{n=(JSON.parse(localStorage.sc_name)||{}).name||'anon'}catch(e){}
-  if(!s||s<=0)return;
-  firebase.firestore().collection('scores').add({game:g,name:n.slice(0,16),uid:firebase.auth().currentUser.uid,score:Math.round(s),ts:Date.now()}).catch(()=>{})}catch(e){}}}).catch(()=>{})}catch(e){}})();
+  if(!s||s<=0)return Promise.resolve(false);
+  return firebase.firestore().collection('scores').add({game:g,name:n.slice(0,16),uid:firebase.auth().currentUser.uid,score:Math.round(s),ts:Date.now()}).then(()=>true).catch(()=>false)}catch(e){return Promise.resolve(false)}}}).catch(()=>{})}catch(e){}})();
 </script>
 </body>
 </html>

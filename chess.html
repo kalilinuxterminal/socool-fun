@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>2 Player Chess — socool.fun</title>
+<title>2 Player Chess · socool.fun</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
   body{background:#07070f;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px}
@@ -28,7 +28,7 @@
 </style>
 </head>
 <body>
-<h1>♞ 2 PLAYER CHESS</h1>
+<h1>2 PLAYER CHESS</h1>
 <div id="bar"><span id="turn">WHITE TO MOVE</span><button class="btn" id="r">NEW GAME</button></div>
 <div id="board"></div>
 <div id="msg"></div>
@@ -37,7 +37,7 @@
 <div id="promo"><div><span data-p="q">♕</span><span data-p="r">♖</span><span data-p="b">♗</span><span data-p="n">♘</span></div></div>
 <script>
 const B=document.getElementById('board');
-const UNI={kw:'♚',qw:'♛',rw:'♜',bw:'♝',nw:'♞',pw:'♟',kb:'♚',qb:'♛',rb:'♜',bb:'♝',nb:'♞',pb:'♟'};
+const UNI={kw:'♚',qw:'♛',rw:'♜',bw:'♝',nw:'',pw:'♟',kb:'♚',qb:'♛',rb:'♜',bb:'♝',nb:'',pb:'♟'};
 let bd,turn,cast,ep,sel,legal,lastMove,over;
 function reset(){bd=[
   ['rb','nb','bb','qb','kb','bb','nb','rb'],
@@ -120,7 +120,7 @@ function doMove(r,c,m){const[tr,tc,flag]=m,p=bd[r][c];
     document.getElementById('turn').textContent=turn==='w'?'WHITE TO MOVE':'BLACK TO MOVE';
     const k=kingPos(bd,turn),chk=attacked(bd,k[0],k[1],turn==='w'?'b':'w');
     if(!anyLegal(turn)){over=true;
-      document.getElementById('msg').textContent=chk?(turn==='w'?'🏆 BLACK WINS — checkmate!':'🏆 WHITE WINS — checkmate!'):'🤝 STALEMATE — draw!'}
+      document.getElementById('msg').textContent=chk?(turn==='w'?'🏆 BLACK WINS · checkmate!':'🏆 WHITE WINS · checkmate!'):'🤝 STALEMATE · draw!'}
     else if(chk)document.getElementById('msg').textContent='⚠️ CHECK!';
     else document.getElementById('msg').textContent='';
     draw()};

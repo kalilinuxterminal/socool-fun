@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -191,7 +191,7 @@
   <div class="launch">
     <button class="lcard" id="btnGames">
       <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="6"/><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"/></svg></span>
-      <span class="tx"><h2>GAMES</h2><p>unblocked browser games — nothing to install</p></span>
+      <span class="tx"><h2>GAMES</h2><p>unblocked browser games · nothing to install</p></span>
       <span class="go">▸</span>
     </button>
     <a class="lcard" href="chat.html">
@@ -201,7 +201,7 @@
     </a>
     <a class="lcard" href="https://tqig.space" target="_blank" rel="noopener">
       <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></span>
-      <span class="tx"><h2>MY OTHER SITE</h2><p>tqig.space — the main hub</p></span>
+      <span class="tx"><h2>MY OTHER SITE</h2><p>tqig.space · the main hub</p></span>
       <span class="go">↗</span>
     </a>
     <button class="lcard" id="btnLb">
@@ -236,7 +236,7 @@
   <div class="section">top runs · all games</div>
   <div id="lblist" style="max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:8px"></div>
   <div class="section" style="margin-top:26px">how to get on the board</div>
-  <div class="note" style="max-width:1060px;margin:0 auto;line-height:2">play any game signed into chat — typing test, snake, 2048, breakout, hoops, racer and reaction all post scores. reaction converts to points (500 minus your ms). keep your daily streak alive in chat — it shows next to your name.</div>
+  <div class="note" style="max-width:1060px;margin:0 auto;line-height:2">play any game signed into chat · typing test, snake, 2048, breakout, hoops, racer and reaction all post scores. reaction converts to points (500 minus your ms). keep your daily streak alive in chat · it shows next to your name.</div>
 </div>
 <footer>socool.fun · runs 100% in your browser · made by <b>@euroeth</b> on ig</footer>
 <div id="notifm"><div>
@@ -251,9 +251,9 @@
     <a href="https://www.tiktok.com/@tqig" target="_blank" rel="noopener">@tqig on tiktok</a></div>
 </div>
 <div id="player"><div id="playerbar"><span id="ptitle"></span><button id="fs">⛶ FULLSCREEN</button><button id="close">✕ CLOSE</button></div><iframe id="frame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe></div>
-<script defer src="vendor/firebase-app-compat.js"></script>
-<script defer src="vendor/firebase-auth-compat.js"></script>
-<script defer src="vendor/firebase-firestore-compat.js"></script>
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-firestore-compat.js"></script>
 <script>
 (function(){const s=document.getElementById('splash');if(!s)return;
 document.body.classList.add('pre');
@@ -286,7 +286,7 @@ async function loadLb(){
   try{
     await firebase.auth().signInAnonymously().catch(()=>{});
     const s=await firebase.firestore().collection('scores').orderBy('score','desc').limit(10).get();
-    if(s.empty){const d=document.createElement('div');d.className='note';d.textContent='no scores yet — be the first legend';L.appendChild(d);return}
+    if(s.empty){const d=document.createElement('div');d.className='note';d.textContent='no scores yet · be the first legend';L.appendChild(d);return}
     let i=1;
     s.forEach(d=>{const r=d.data();
       const it=document.createElement('div');it.className='aitem';

@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Penalty Kick — socool.fun</title>
+<title>Penalty Kick · socool.fun</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
   body{background:#07070f;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}
@@ -22,9 +22,9 @@
 </style>
 </head>
 <body>
-<h1>⚽ PENALTY KICK</h1>
+<h1>PENALTY KICK</h1>
 <div id="bar"><span>GOALS <span id="g">0</span>/5</span><span>STREAK <span id="s">0</span></span><span>BEST <span id="b">0</span></span></div>
-<div id="pitch"><div id="goal"><div id="net"></div></div><div id="keeper">🧍</div><div id="ball">⚽</div><div id="aim"></div></div>
+<div id="pitch"><div id="goal"><div id="net"></div></div><div id="keeper">🧍</div><div id="ball"></div><div id="aim"></div></div>
 <div id="msg">click inside the goal to shoot!</div>
 <button class="btn" id="r">RESTART</button>
 <a href="index.html">← socool.fun</a>
@@ -57,12 +57,12 @@ function shoot(px,py){busy=true;
     const kx=parseFloat(keeper.style.left),dist=Math.abs(kx-tx);
     shots++;
     if(dist<9){msg.textContent='🧤 SAVED!';streak=0}
-    else{goals++;streak++;msg.textContent=['GOAL! 🔥','TOP BINS! 🚀','CLINICAL! ⚽'][Math.floor(Math.random()*3)];
+    else{goals++;streak++;msg.textContent=['GOAL! 🔥','TOP BINS! 🚀','CLINICAL! '][Math.floor(Math.random()*3)];
       if(streak>best){best=streak;localStorage.setItem('sc_pen',best);document.getElementById('b').textContent=best}}
     upd();
     setTimeout(()=>{
       ball.style.left='50%';ball.style.top='';ball.style.bottom='8%';ball.style.transform='translate(-50%,0)';keeper.style.left='50%';
-      if(shots>=5){msg.textContent=`FULL TIME: ${goals}/5`+(goals===5?' — PERFECT! 🏆':'');round++;shots=0;goals=0;setTimeout(upd,10)}
+      if(shots>=5){msg.textContent=`FULL TIME: ${goals}/5`+(goals===5?' · PERFECT! 🏆':'');round++;shots=0;goals=0;setTimeout(upd,10)}
       busy=false},700);
   },320)}
 document.getElementById('r').onclick=()=>{round=1;reset()};reset();
