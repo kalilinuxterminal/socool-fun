@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -121,13 +121,25 @@ function frame(dt){
   document.getElementById('speed').textContent=Math.round(speed);
   document.getElementById('score').textContent=Math.round(score);
 }
-function gameOver(){over=true;if(og)og.gain.value=0;const s=Math.round(score);if(s>best){best=s;localStorage.setItem('sc_racer',best);document.getElementById('best').textContent='BEST '+best}
+function gameOver(){over=true;if(og)og.gain.value=0;const s=Math.round(score);if(window.__submitScore)__submitScore('racer',s);if(s>best){best=s;localStorage.setItem('sc_racer',best);document.getElementById('best').textContent='BEST '+best}
   document.getElementById('final').textContent='score '+s+' · best '+best;document.getElementById('over').style.display='flex'}
 function reset(){over=false;speed=0;score=0;playerX=0;pos=0;document.getElementById('over').style.display='none'}
 document.getElementById('go').onclick=()=>{audio();if(AC&&AC.state==='suspended')AC.resume();document.getElementById('start').style.display='none';started=true};
 document.getElementById('again').onclick=()=>{reset()};
 let last=performance.now();
 (function loop(t){requestAnimationFrame(loop);const now=t||performance.now();const dt=Math.min(0.05,(now-last)/1000);last=now;if(!document.hidden)frame(dt)})()
+</script>
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-firestore-compat.js"></script>
+<script>
+(function(){try{
+const C={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
+if(typeof firebase==='undefined')return;firebase.initializeApp(C);
+firebase.auth().signInAnonymously().then(()=>{window.__submitScore=(g,s)=>{try{
+  let n='anon';try{n=(JSON.parse(localStorage.sc_name)||{}).name||'anon'}catch(e){}
+  if(!s||s<=0)return;
+  firebase.firestore().collection('scores').add({game:g,name:n.slice(0,16),uid:firebase.auth().currentUser.uid,score:Math.round(s),ts:Date.now()}).catch(()=>{})}catch(e){}}}).catch(()=>{})}catch(e){}})();
 </script>
 </body>
 </html>

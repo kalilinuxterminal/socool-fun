@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -34,9 +34,22 @@ pad.onclick=()=>{const n=performance.now();
   if(st==='idle'||st==='done'){wait()}
   else if(st==='wait'){clearTimeout(timer);st='done';pad.style.background='#a00';pad.innerHTML='TOO EARLY! 😂<br><small>tap to retry</small>'}
   else{const ms=n-t0;times.push(ms);if(times.length>50)times.shift();localStorage.setItem('sc_react',JSON.stringify(times));
+    if(window.__submitScore&&ms<=Math.min.apply(null,times))__submitScore('reaction',Math.max(0,500-ms));
     st='done';pad.style.background='#223';pad.innerHTML=Math.round(ms)+'ms — '+rank(ms)+'<br><small>tap to go again</small>';show()}};
 document.getElementById('r').onclick=()=>{times=[];localStorage.setItem('sc_react','[]');st='idle';pad.style.background='#a00';pad.innerHTML='TAP TO START';show()};
 show();
+</script>
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-firestore-compat.js"></script>
+<script>
+(function(){try{
+const C={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
+if(typeof firebase==='undefined')return;firebase.initializeApp(C);
+firebase.auth().signInAnonymously().then(()=>{window.__submitScore=(g,s)=>{try{
+  let n='anon';try{n=(JSON.parse(localStorage.sc_name)||{}).name||'anon'}catch(e){}
+  if(!s||s<=0)return;
+  firebase.firestore().collection('scores').add({game:g,name:n.slice(0,16),uid:firebase.auth().currentUser.uid,score:Math.round(s),ts:Date.now()}).catch(()=>{})}catch(e){}}}).catch(()=>{})}catch(e){}})();
 </script>
 </body>
 </html>

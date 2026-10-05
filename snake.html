@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -44,6 +44,7 @@ c.addEventListener('touchmove',e=>{const t=e.changedTouches[0],dx=t.clientX-sx,d
   sx=t.clientX;sy=t.clientY;e.preventDefault()},{passive:false});
 function step(){dir=nd;const h={x:sn[0].x+dir.x,y:sn[0].y+dir.y};
   if(h.x<0||h.y<0||h.x>=N||h.y>=N||sn.some(s=>s.x===h.x&&s.y===h.y)){over=true;
+    if(window.__submitScore)__submitScore('snake',score);
     if(score>best){best=score;localStorage.setItem('sc_snake',best);document.getElementById('b').textContent=best}return}
   sn.unshift(h);
   if(h.x===food.x&&h.y===food.y){score+=10;upd();place()}else sn.pop()}
@@ -55,6 +56,18 @@ function draw(){x.fillStyle='#0b0b18';x.fillRect(0,0,c.width,c.height);
   if(over){x.fillStyle='rgba(0,0,0,.6)';x.fillRect(0,0,c.width,c.height);x.fillStyle='#fff';x.font='900 30px sans-serif';x.textAlign='center';x.fillText('GAME OVER',c.width/2,c.height/2)}}
 document.getElementById('r').onclick=reset;reset();
 let last=0;function loop(t){requestAnimationFrame(loop);if(t-last>Math.max(55,140-score*0.5)){last=t;if(!over&&!document.hidden){step();draw()}}}requestAnimationFrame(loop);
+</script>
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-firestore-compat.js"></script>
+<script>
+(function(){try{
+const C={apiKey:"AIzaSyCOnc_NDHNPQKyqgqZmMzS1Q6z4PcRwp74",authDomain:"socool-c1fd1.firebaseapp.com",projectId:"socool-c1fd1",appId:"1:184507958381:web:5b911f23c21d203b8aeb64"};
+if(typeof firebase==='undefined')return;firebase.initializeApp(C);
+firebase.auth().signInAnonymously().then(()=>{window.__submitScore=(g,s)=>{try{
+  let n='anon';try{n=(JSON.parse(localStorage.sc_name)||{}).name||'anon'}catch(e){}
+  if(!s||s<=0)return;
+  firebase.firestore().collection('scores').add({game:g,name:n.slice(0,16),uid:firebase.auth().currentUser.uid,score:Math.round(s),ts:Date.now()}).catch(()=>{})}catch(e){}}}).catch(()=>{})}catch(e){}})();
 </script>
 </body>
 </html>

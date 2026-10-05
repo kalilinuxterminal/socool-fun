@@ -204,6 +204,11 @@
       <span class="tx"><h2>MY OTHER SITE</h2><p>tqig.space — the main hub</p></span>
       <span class="go">↗</span>
     </a>
+    <button class="lcard" id="btnLb">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a2 2 0 0 0 2 4h1M17 6h3a2 2 0 0 1-2 4h-1"/></svg></span>
+      <span class="tx"><h2>LEADERBOARDS</h2><p>top runs + your daily streak</p></span>
+      <span class="go">▸</span>
+    </button>
   </div>
   <div id="themepk"><span>THEME</span><i data-t="azure" style="background:#4da3ff"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
 </div>
@@ -212,10 +217,26 @@
   <div id="search">🔎 <input id="q" type="text" placeholder="search games…" autocomplete="off" /></div>
   <div class="section">pick your game · <span id="count"></span></div>
   <div class="games">
-    <a class="card hot" href="bitlife.html"><img class="icon" src="bitlife.webp" alt="BitLife" /><h2>BitLife</h2><p>Live a whole life. Choices matter.</p><span class="play">PLAY ▸</span></a>
-    <a class="card hot" href="arena.html"><img class="icon" src="penalty-challenge-logo.webp" alt="Arena" /><h2>Arena</h2><p>Enter the arena. Last one standing.</p><span class="play">PLAY ▸</span></a>
-    <a class="card hot" href="baxaball.html"><img class="icon" src="basketball-stars-2026-m240x240.webp" alt="Basketball Stars" /><h2>Basketball Stars</h2><p>Hoop dreams. Run the court.</p><span class="play">PLAY ▸</span></a>
+    <a class="card hot" href="typing.html"><div class="emoji">⌨️</div><h2>Typing Test</h2><p>30 seconds. Top the school board.</p><span class="play">PLAY ▸</span></a>
+    <a class="card hot" href="hoops.html"><div class="emoji">🏀</div><h2>Hoops Shootout</h2><p>Flick to score vs the CPU.</p><span class="play">PLAY ▸</span></a>
+    <a class="card hot" href="racer.html"><div class="emoji">🏎️</div><h2>Neon Racer</h2><p>Night drive. Dodge traffic.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="snake.html"><div class="emoji">🐍</div><h2>Snake</h2><p>Eat, grow, survive.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="g2048.html"><div class="emoji">🔢</div><h2>2048</h2><p>Slide and merge.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="breakout.html"><div class="emoji">🧱</div><h2>Breakout</h2><p>Smash every brick.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="mines.html"><div class="emoji">💣</div><h2>Minesweeper</h2><p>Three difficulties.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="chess.html"><div class="emoji">♞</div><h2>2 Player Chess</h2><p>Full rules, one screen.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="dig.html"><div class="emoji">⛏️</div><h2>Dig Out</h2><p>Escape the mine.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="penalty.html"><div class="emoji">⚽</div><h2>Penalty Kick</h2><p>5 shots vs the keeper.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="reaction.html"><div class="emoji">⚡</div><h2>Reaction Test</h2><p>How fast are you really.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="tictactoe.html"><div class="emoji">⭕</div><h2>Tic-Tac-Toe</h2><p>Never lose again.</p><span class="play">PLAY ▸</span></a>
   </div>
+</div>
+<div id="viewLb" class="wrap" style="display:none">
+  <div class="toprow"><button class="backbtn" id="btnLbBack">← back</button></div>
+  <div class="section">top runs · all games</div>
+  <div id="lblist" style="max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:8px"></div>
+  <div class="section" style="margin-top:26px">how to get on the board</div>
+  <div class="note" style="max-width:1060px;margin:0 auto;line-height:2">play any game signed into chat — typing test, snake, 2048, breakout, hoops, racer and reaction all post scores. reaction converts to points (500 minus your ms). keep your daily streak alive in chat — it shows next to your name.</div>
 </div>
 <footer>socool.fun · runs 100% in your browser · made by <b>@euroeth</b> on ig</footer>
 <div id="notifm"><div>
@@ -251,10 +272,31 @@ document.querySelectorAll('#themepk i').forEach(i=>{i.classList.toggle('on',i.da
 i.onclick=()=>{document.body.dataset.theme=i.dataset.t;try{localStorage.sc_theme=i.dataset.t}catch(e){}
 document.querySelectorAll('#themepk i').forEach(j=>j.classList.toggle('on',j===i))}})}catch(e){}})();
 (function(){const g=document.getElementById('btnGames'),h=document.getElementById('btnHome');
-g.onclick=()=>{document.getElementById('viewHome').style.display='none';
-document.getElementById('viewGames').style.display='block'};
-h.onclick=()=>{document.getElementById('viewGames').style.display='none';
-document.getElementById('viewHome').style.display='flex'}})();
+const lb=document.getElementById('btnLb'),lbb=document.getElementById('btnLbBack');
+const home=document.getElementById('viewHome'),games=document.getElementById('viewGames'),lbv=document.getElementById('viewLb');
+const show=el=>{home.style.display='none';games.style.display='none';lbv.style.display='none';el.style.display=el===home?'flex':'block'};
+g.onclick=()=>show(games);
+lb.onclick=()=>{show(lbv);loadLb()};
+lbb.onclick=()=>show(home);
+h.onclick=()=>show(home)})();
+async function loadLb(){
+  const L=document.getElementById('lblist');if(!L)return;
+  L.textContent='';
+  if(typeof firebase==='undefined'){const d=document.createElement('div');d.className='note';d.textContent='leaderboards unavailable on this network';L.appendChild(d);return}
+  try{
+    await firebase.auth().signInAnonymously().catch(()=>{});
+    const s=await firebase.firestore().collection('scores').orderBy('score','desc').limit(10).get();
+    if(s.empty){const d=document.createElement('div');d.className='note';d.textContent='no scores yet — be the first legend';L.appendChild(d);return}
+    let i=1;
+    s.forEach(d=>{const r=d.data();
+      const it=document.createElement('div');it.className='aitem';
+      it.style.cssText='display:flex;justify-content:space-between;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 18px;font-size:15px;font-weight:700';
+      const l=document.createElement('span');l.textContent=i+'. '+(r.name||'anon');
+      const rr=document.createElement('span');rr.style.color='var(--acc)';
+      rr.textContent=r.score+' pts · '+(r.game||'game');
+      it.appendChild(l);it.appendChild(rr);L.appendChild(it);i++});
+  }catch(e){const d=document.createElement('div');d.className='note';d.textContent='could not load leaderboards';L.appendChild(d)}
+}
 (function(){const p=document.getElementById('player'),f=document.getElementById('frame'),t=document.getElementById('ptitle');
 document.querySelectorAll('a.card').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();
   t.textContent=a.querySelector('h2').textContent;f.src=a.getAttribute('href');p.classList.add('open')}));

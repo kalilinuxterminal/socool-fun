@@ -436,8 +436,24 @@ function start(p){
   }
   MEP=p;
   $('setup').style.display='none';$('app').style.display='grid';
-  $('meName').innerHTML='signed in as <b></b>';$('meName').querySelector('b').textContent=p.name;
+  const updateMeName=()=>{$('meName').innerHTML='signed in as <b></b>';
+    const b=$('meName').querySelector('b');b.textContent=p.name;
+    if(MEP.streak>1){const s=document.createElement('span');
+      s.style.cssText='font-size:10px;color:var(--acc);font-weight:800';
+      s.textContent=' · '+MEP.streak+'d streak';$('meName').appendChild(s)}};
+  updateMeName();
   $('meName').onclick=()=>alert('your id: '+ME);
+  DB.collection('users').doc(ME).get().then(d=>{
+    if(!d.exists)return;const data=d.data();
+    const today=new Date().toDateString();
+    if(data.streakDay!==today){
+      const yest=new Date(Date.now()-86400000).toDateString();
+      MEP.streak=(data.streakDay===yest)?(data.streak||0)+1:1;
+      DB.collection('users').doc(ME).set({streak:MEP.streak,streakDay:today},{merge:true}).catch(()=>{});
+      if(MEP.streak>1)toast('day '+MEP.streak+' streak — keep it going');
+    } else MEP.streak=data.streak||0;
+    updateMeName();
+  }).catch(()=>{});
   $('ctitle').textContent='pick a chat';$('csub').textContent='';
   $('backb').onclick=()=>{$('listpane').classList.remove('hide')};
   $('plusb').onclick=()=>{const pn=$('newpanel');const open=pn.style.display==='none';
@@ -593,6 +609,13 @@ function start(p){
 }
 function renderChats(){
   const C=$('chats');C.textContent='';
+  const g=document.createElement('div');g.className='item chatitem'+(OPEN==='__global'?' act':'');
+  const gav=document.createElement('span');gav.className='cavatar';gav.textContent='G';
+  const gcol=document.createElement('div');gcol.style.cssText='flex:1;min-width:0';
+  const gb=document.createElement('b');gb.textContent='GLOBAL';
+  const gsm=document.createElement('small');gsm.textContent='public — everyone sees this';
+  gcol.appendChild(gb);gcol.appendChild(gsm);g.appendChild(gav);g.appendChild(gcol);
+  g.onclick=openGlobal;C.appendChild(g);
   const q=(CS||'').trim().toLowerCase();
   const live=CHATCACHE.filter(c=>!isClosed(c.id)&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
   const shut=CHATCACHE.filter(c=>isClosed(c.id)&&(c.data.group||!isBlocked(c.data.members.find(u=>u!==ME))));
@@ -634,8 +657,58 @@ function renderFriends(){
     m.onclick=()=>{unclose(c.id);$('newpanel').style.display='none';$('plusbi').style.transform='none';openChat(c.id,c.data)};
     it.appendChild(l);it.appendChild(m);F.appendChild(it)})}
 let CHATMETA=null;
+function openGlobal(){
+  OPEN='__global';CHATMETA=null;
+  document.querySelectorAll('#chats .item').forEach(e=>e.classList.remove('act'));
+  $('ctitle').textContent='GLOBAL';$('csub').textContent='public chat — everyone can read and write';
+  $('typing').textContent='';
+  $('hdot').style.display='none';$('invrow').style.display='none';$('ownrow').style.display='none';
+  $('memlist').style.display='none';$('ghostb').style.display='none';$('cmenub').style.display='none';
+  $('cmenu').style.display='none';$('replybox').style.display='none';REPLYTO=null;
+  if(innerWidth<640)$('listpane').classList.add('hide');
+  if(UNSUB)UNSUB();if(UNSUBMETA)UNSUBMETA();UNSUBMETA=null;
+  UNSUB=DB.collection('global').orderBy('ts','desc').limit(80).onSnapshot(s=>{
+    const M=$('msgs');
+    OURLS.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}});OURLS=[];
+    M.textContent='';DECMAP={};
+    const docs=[...s.docs].reverse();
+    if(!docs.length){const n=document.createElement('div');n.className='note';
+      n.textContent='be the first to say something';M.appendChild(n)}
+    docs.forEach(d=>renderGlobalMsg(d,M));
+    const last=M.lastElementChild;if(last)last.scrollIntoView({block:'nearest'});
+  },err=>{$('msgs').textContent='';const n=document.createElement('div');n.className='note';
+    n.textContent='global error: '+err.code;$('msgs').appendChild(n)});
+  renderChats();
+}
+function renderGlobalMsg(d,M){
+  const m=d.data();
+  if(m.from!==ME&&isBlocked(m.from))return;
+  const el=document.createElement('div');el.className='m '+(m.from===ME?'me':'them');
+  const head=document.createElement('div');head.className='mhead';
+  const av=document.createElement('span');av.className='savatar';
+  av.textContent=((m.name||'?')[0]||'?').toUpperCase();
+  const sn=document.createElement('span');sn.className='sender';sn.textContent=m.name||'someone';
+  head.appendChild(av);head.appendChild(sn);el.appendChild(head);
+  const clean=isClean(m.text);
+  el.className+=clean?'':' blocked';
+  el.appendChild(document.createTextNode((clean?m.text:'blocked')||''));
+  DECMAP[d.id]=m.text||'';
+  const tm=document.createElement('small');
+  tm.textContent=new Date(m.ts||Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  el.appendChild(tm);
+  el.onclick=()=>{
+    const ex=el.querySelector('.rbar');
+    if(ex){ex.remove();return}
+    document.querySelectorAll('.rbar').forEach(b=>b.remove());
+    const bar=document.createElement('div');bar.className='rbar';
+    const rb=document.createElement('button');rb.className='ghost';rb.textContent='REPORT';
+    rb.onclick=ev=>{ev.stopPropagation();bar.remove();doReport(d,m)};
+    bar.appendChild(rb);el.appendChild(bar);
+  };
+  M.appendChild(el);
+}
 function onType(){
-  if(!OPEN)return;
+  if(!OPEN||OPEN==='__global')return;
   if(!typingSent){typingSent=true;
     DB.collection('chats').doc(OPEN).update({['typing.'+ME]:Date.now()}).catch(()=>{});
     setTimeout(()=>typingSent=false,2000)}
@@ -643,7 +716,7 @@ function onType(){
   typingTimer=setTimeout(()=>{DB.collection('chats').doc(OPEN).update({['typing.'+ME]:firebase.firestore.FieldValue.delete()}).catch(()=>{})},3000);
 }
 function clearTyping(){
-  if(!OPEN)return;
+  if(!OPEN||OPEN==='__global')return;
   clearTimeout(typingTimer);typingSent=false;
   DB.collection('chats').doc(OPEN).update({['typing.'+ME]:firebase.firestore.FieldValue.delete()}).catch(()=>{});
 }
@@ -863,7 +936,7 @@ async function renderMsg(d,M){
     }
     const clean=isClean(txt);
     el.className+=clean?'':' blocked';
-    el.textContent=(clean?txt:'blocked')||'';
+    el.appendChild(document.createTextNode((clean?txt:'blocked')||''));
   }
   const rx=m.reactions||{};
   const counts={};
@@ -942,8 +1015,10 @@ function openFwd(text){
 }
 async function doReport(d,m){
   try{
+    const isG=OPEN==='__global';
     await DB.collection('reports').add({from:ME,fromName:MEP.name,chatId:OPEN,msgId:d.id,
-      reportedUid:m.from,reportedName:((CHATMETA.meta.names||{})[m.from])||'?',
+      reportedUid:m.from,reportedName:isG?(m.name||'?'):(((CHATMETA&&CHATMETA.meta.names)||{})[m.from]||'?'),
+      global:isG,
       text:DECMAP[d.id]||'[media]',ts:Date.now(),status:'open'});
     toast('reported — the owner has been notified');
   }catch(e){toast('report failed: '+(e.message||e),true)}
@@ -977,6 +1052,15 @@ async function send(){
   const t=$('box').value.trim();
   if(!t)return;
   if(!OPEN){$('merr').textContent='open a chat first';return}
+  if(OPEN==='__global'){
+    $('box').value='';
+    if(MUTED){$('merr').textContent='you are muted';return}
+    if(!rateOK()){$('merr').textContent='slow down';return}
+    if(!isClean(t)){$('merr').textContent='that message is not allowed';return}
+    try{await DB.collection('global').add({from:ME,name:MEP.name,text:t,ts:Date.now()})}
+    catch(e){$('merr').textContent='send failed: '+(e.message||e)}
+    return;
+  }
   $('box').value='';
   clearTyping();
   try{
@@ -988,6 +1072,7 @@ async function sendImage(){
   const f=$('file').files[0];$('file').value='';
   if(!f)return;
   if(!OPEN){$('merr').textContent='open a chat first';return}
+  if(OPEN==='__global'){$('merr').textContent='text only in global';return}
   if(MUTED){$('merr').textContent='you are muted';return}
   if(!rateOK()){$('merr').textContent='slow down';return}
   const cmeta=CHATMETA.meta;
@@ -1019,6 +1104,7 @@ async function sendImage(){
 }
 async function toggleMic(){
   if(REC&&REC.state==='recording'){REC.stop();return}
+  if(OPEN==='__global'){$('merr').textContent='text only in global';return}
   if(MUTED){$('merr').textContent='you are muted';return}
   if(!OPEN){$('merr').textContent='open a chat first';return}
   if(!rateOK()){$('merr').textContent='slow down';return}
@@ -1134,7 +1220,7 @@ function renderA(){
       const btns=document.createElement('div');btns.className='btns';
       btns.appendChild(mk('BAN REPORTED',()=>doBan(r.reportedUid,r.reportedName)));
       btns.appendChild(mk('BAN REPORTER',()=>doBan(r.from,r.fromName)));
-      btns.appendChild(mk('DELETE MSG',()=>DB.collection('chats').doc(r.chatId).collection('msgs').doc(r.msgId).delete()));
+      btns.appendChild(mk('DELETE MSG',()=>r.global?DB.collection('global').doc(r.msgId).delete():DB.collection('chats').doc(r.chatId).collection('msgs').doc(r.msgId).delete()));
       btns.appendChild(mk('DISMISS',()=>DB.collection('reports').doc(id).update({status:'dismissed'})));
       btns.appendChild(mk('MSG REPORTED',()=>adminMsg(r.reportedUid,r.reportedName)));
       btns.appendChild(mk('MSG REPORTER',()=>adminMsg(r.from,r.fromName)));
