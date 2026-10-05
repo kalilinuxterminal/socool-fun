@@ -45,7 +45,13 @@
   #msgs:empty::before{content:'no messages yet';margin:auto;color:#3a3a48;font-size:14px;font-weight:800;letter-spacing:1px}
   #msgs::-webkit-scrollbar,#chats::-webkit-scrollbar,.mbox::-webkit-scrollbar{width:8px}
   #msgs::-webkit-scrollbar-thumb,#chats::-webkit-scrollbar-thumb,.mbox::-webkit-scrollbar-thumb{background:#ffffff1e;border-radius:8px}
-  .m{max-width:80%;padding:8px 12px;border-radius:14px;font-size:14px;word-break:break-word;animation:pop .18s ease;cursor:pointer}
+  .m{max-width:80%;padding:9px 13px;border-radius:16px;font-size:14px;word-break:break-word;animation:pop .18s ease;cursor:pointer}
+  .m small{display:block;font-size:9px;opacity:.45;margin-top:3px;text-align:right;font-weight:600}
+  .m.me{box-shadow:0 2px 12px #ffffff12}
+  .mhead{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+  .savatar{width:22px;height:22px;flex:none;border-radius:50%;background:var(--accT);color:var(--acc);font-weight:900;font-size:11px;display:flex;align-items:center;justify-content:center}
+  .cavatar{width:34px;height:34px;flex:none;border-radius:50%;background:var(--accT);color:var(--acc);font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center}
+  .chatitem{display:flex;align-items:center;gap:10px}
   @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .m.me{align-self:flex-end;background:#fff;color:#000}
   .m.them{align-self:flex-start;background:#ffffff16}
@@ -96,9 +102,9 @@
   .aitem{background:#ffffff08;border-radius:10px;padding:8px 10px;font-size:12px;display:flex;flex-direction:column;gap:6px}
   .aitem .btns{display:flex;gap:6px;flex-wrap:wrap}
   .aitem .btns button{padding:5px 10px;font-size:11px}
-  #csearch{background:#ffffff09;border:1px solid #ffffff20;border-radius:100px;padding:5px 12px;font-size:12px;color:#fff;outline:0;min-width:0}
+  #csearch{background:#ffffff09;border:1px solid #ffffff20;border-radius:12px;padding:6px 12px;font-size:12px;color:#fff;outline:0;min-width:0}
   #csearch::placeholder{color:#666}
-  #csearch:focus{border-color:var(--acc)}
+  #csearch:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accT)}
   #adminb{display:none}
   #toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:92vw}
   .toast{background:#fff;color:#000;font-weight:800;font-size:13px;border-radius:100px;padding:10px 22px;box-shadow:0 10px 40px #000a;animation:tin .25s ease;max-width:92vw;text-align:center}
@@ -126,8 +132,8 @@
   <div class="pane" id="listpane">
     <div class="row" style="align-items:center;gap:8px">
       <div id="meName" title="click for your id">…</div>
-      <button id="setb" class="ghost" style="padding:9px 12px">SET</button>
-      <button id="plusb" class="ghost" style="padding:9px 14px">+</button>
+      <button id="setb" class="ghost" style="padding:8px" title="settings"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <button id="plusb" class="ghost" style="padding:8px" title="more"><svg id="plusbi" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:.2s"><path d="M6 9l6 6 6-6"/></svg></button>
     </div>
     <div id="newpanel" style="display:none;flex-direction:column;gap:8px">
       <div class="row"><input id="add" maxlength="16" placeholder="friend's display name" /><button id="addb" class="ghost">ADD</button></div>
@@ -191,7 +197,7 @@
 <div id="settings" class="modal"><div class="mbox" style="max-width:420px">
   <div class="row" style="justify-content:space-between;align-items:center"><b>SETTINGS</b><button id="setx" class="ghost">CLOSE</button></div>
   <div class="asec">THEME</div>
-  <div id="themepk"><span>THEME</span><i data-t="mono" style="background:#fff"></i><i data-t="azure" style="background:#4da3ff"></i><i data-t="coalescent" style="background:#3ddbc0"></i><i data-t="orangy" style="background:#ffa03d"></i><i data-t="lakers" id="lk"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
+  <div id="themepk"><span>THEME</span><i data-t="azure" style="background:#4da3ff"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
   <div class="asec">STATUS</div>
   <div class="row" id="presrow" style="align-items:center"><span class="note">VISIBILITY</span><button id="pon" class="ghost">ONLINE</button><button id="poff" class="ghost">INVISIBLE</button></div>
   <div class="asec">SOUND</div>
@@ -369,7 +375,9 @@ let SNDON=localStorage.sc_snd!=='0';
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();
   const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=880;g.gain.value=.06;
   o.connect(g);g.connect(a.destination);o.start();setTimeout(()=>{o.stop();a.close()},90)}catch(e){}}
-(function(){try{const t=localStorage.sc_theme||'mono';document.body.dataset.theme=t;
+(function(){try{const ok=['azure','pink','pinkblue'];
+const t=ok.includes(localStorage.sc_theme)?localStorage.sc_theme:'azure';
+document.body.dataset.theme=t;
 document.querySelectorAll('#themepk i').forEach(i=>{i.classList.toggle('on',i.dataset.t===t);
 i.onclick=()=>{document.body.dataset.theme=i.dataset.t;try{localStorage.sc_theme=i.dataset.t}catch(e){}
 document.querySelectorAll('#themepk i').forEach(j=>j.classList.toggle('on',j===i))}})}catch(e){}})();
@@ -433,7 +441,7 @@ function start(p){
   $('ctitle').textContent='pick a chat';$('csub').textContent='';
   $('backb').onclick=()=>{$('listpane').classList.remove('hide')};
   $('plusb').onclick=()=>{const pn=$('newpanel');const open=pn.style.display==='none';
-    pn.style.display=open?'flex':'none';$('plusb').textContent=open?'×':'+';
+    pn.style.display=open?'flex':'none';$('plusbi').style.transform=open?'rotate(180deg)':'none';
     if(open)renderBlocked()};
   claimName(p.name).catch(()=>{});
   if(p.name&&!p.nameLower){DB.collection('users').doc(ME).set({nameLower:normName(p.name)},{merge:true}).catch(()=>{})}
@@ -593,14 +601,19 @@ function renderChats(){
     d.textContent=q?'nothing found':'no chats yet — add someone above';C.appendChild(d)}
   list.forEach(({id,data:c})=>{
     const closed=isClosed(id);
-    const el=document.createElement('div');el.className='item'+(OPEN===id?' act':'');
+    const el=document.createElement('div');el.className='item chatitem'+(OPEN===id?' act':'');
+    const av=document.createElement('span');av.className='cavatar';
+    av.textContent=(chatName({id,data:c})||'?')[0].toUpperCase();
+    const col=document.createElement('div');col.style.cssText='flex:1;min-width:0';
+    const nmRow=document.createElement('div');nmRow.style.cssText='display:flex;align-items:center';
     const b=document.createElement('b');b.textContent=chatName({id,data:c});
+    nmRow.appendChild(b);
+    if(!c.group&&!closed){const dot=document.createElement('span');dot.className='dot';nmRow.appendChild(dot);
+      getPres(c.members.find(u=>u!==ME)).then(p=>{dot.className='dot'+(p.on?' on':'')})}
     const sm=document.createElement('small');
     sm.textContent=closed?'closed — tap to reopen':(c.group?('group · '+c.members.length+' · code '+((c.joinCode||'------').toUpperCase())):'end-to-end encrypted');
-    el.appendChild(b);el.appendChild(sm);
-    if(!c.group&&!closed){const dot=document.createElement('span');dot.className='dot';
-      el.insertBefore(dot,sm);
-      getPres(c.members.find(u=>u!==ME)).then(p=>{dot.className='dot'+(p.on?' on':'')})}
+    col.appendChild(nmRow);col.appendChild(sm);
+    el.appendChild(av);el.appendChild(col);
     el.onclick=()=>{if(closed)unclose(id);openChat(id,c)};
     C.appendChild(el)});
   renderFriends();
@@ -618,7 +631,7 @@ function renderFriends(){
     l.appendChild(dot);l.appendChild(nm);l.appendChild(seen);
     getPres(other).then(p=>{dot.className='dot'+(p.on?' on':'');seen.textContent=p.on?'online':(p.last?('seen '+ago(p.last)):'unknown')});
     const m=document.createElement('button');m.textContent='MSG';
-    m.onclick=()=>{unclose(c.id);$('newpanel').style.display='none';$('plusb').textContent='+';openChat(c.id,c.data)};
+    m.onclick=()=>{unclose(c.id);$('newpanel').style.display='none';$('plusbi').style.transform='none';openChat(c.id,c.data)};
     it.appendChild(l);it.appendChild(m);F.appendChild(it)})}
 let CHATMETA=null;
 function onType(){
@@ -841,8 +854,12 @@ async function renderMsg(d,M){
       el.appendChild(qt);
     }
     if(meta.group&&!mine){
+      const head=document.createElement('div');head.className='mhead';
+      const av=document.createElement('span');av.className='savatar';
+      av.textContent=(((meta.names||{})[m.from])||'?')[0].toUpperCase();
       const s=document.createElement('span');s.className='sender';
-      s.textContent=(meta.names&&meta.names[m.from])||'member';el.appendChild(s);
+      s.textContent=(meta.names&&meta.names[m.from])||'member';
+      head.appendChild(av);head.appendChild(s);el.appendChild(head);
     }
     const clean=isClean(txt);
     el.className+=clean?'':' blocked';
@@ -857,6 +874,9 @@ async function renderMsg(d,M){
     keys.forEach(c=>{const sp=document.createElement('span');sp.textContent=c+' ×'+counts[c];row.appendChild(sp)});
     el.appendChild(row);
   }
+  const tm=document.createElement('small');
+  tm.textContent=new Date(m.ts||Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  el.appendChild(tm);
   el.onclick=()=>{
     const ex=el.querySelector('.rbar');
     if(ex){ex.remove();return}
@@ -1139,12 +1159,19 @@ function renderA(){
     const t1=document.createElement('span');t1.style.flex='1';t1.textContent=(r.name||id)+(owner?'':' · by mod');
     row.appendChild(t1);row.appendChild(mk('UNMUTE',()=>doUnmute(id)));it.appendChild(row);MU.appendChild(it)});
   const U=$('ausers');U.textContent='';
-  USERSL.filter(u=>u.id!==ME).forEach(({id,data:r})=>{
+  const others=USERSL.filter(u=>u.id!==ME);
+  const isOn=r=>!!(r.last&&(Date.now()-r.last<50000));
+  const onl=others.filter(u=>isOn(u.data)).length;
+  const summ=document.createElement('div');summ.className='note';
+  summ.textContent=onl+' online now · '+others.length+' total users';
+  U.appendChild(summ);
+  others.sort((a,b)=>(isOn(b.data)?1:0)-(isOn(a.data)?1:0)).forEach(({id,data:r})=>{
     const it=document.createElement('div');it.className='aitem';
     const row=document.createElement('div');row.className='row';row.style.alignItems='center';
-    const on=r.last&&(Date.now()-r.last<50000);
-    const t1=document.createElement('span');t1.style.flex='1';t1.textContent=(r.name||'?')+(on?' · online':'');
-    row.appendChild(t1);
+    const dot=document.createElement('span');dot.className='dot'+(isOn(r)?' on':'');
+    const t1=document.createElement('span');t1.style.flex='1';
+    t1.textContent=(r.name||'?')+' — '+(isOn(r)?'online, active now':'active '+(r.last?ago(r.last)+' ago':'never'));
+    row.appendChild(dot);row.appendChild(t1);
     const banned=BANSL.some(b=>b.id===id),muted=MUTESL.some(m=>m.id===id),mod=MODSL.some(m=>m.id===id);
     row.appendChild(mk(muted?'UNMUTE':'MUTE',()=>muted?doUnmute(id):doMute(id,r.name)));
     if(owner){

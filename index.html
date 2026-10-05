@@ -147,7 +147,7 @@
       <span class="go">↗</span>
     </a>
   </div>
-  <div id="themepk"><span>THEME</span><i data-t="mono" style="background:#fff"></i><i data-t="azure" style="background:#4da3ff"></i><i data-t="coalescent" style="background:#3ddbc0"></i><i data-t="orangy" style="background:#ffa03d"></i><i data-t="lakers" id="lk"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
+  <div id="themepk"><span>THEME</span><i data-t="azure" style="background:#4da3ff"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
 </div>
 <div id="viewGames" class="wrap">
   <div class="toprow"><button class="backbtn" id="btnHome">← back</button></div>
@@ -181,7 +181,9 @@
 (function(){const s=document.getElementById('splash');if(!s)return;let gone=false;
 const go=()=>{if(gone)return;gone=true;s.classList.add('hide');setTimeout(()=>s.remove(),500)};
 setTimeout(go,2300);s.onclick=go})();
-(function(){try{const t=localStorage.sc_theme||'mono';document.body.dataset.theme=t;
+(function(){try{const ok=['azure','pink','pinkblue'];
+const t=ok.includes(localStorage.sc_theme)?localStorage.sc_theme:'azure';
+document.body.dataset.theme=t;
 document.querySelectorAll('#themepk i').forEach(i=>{i.classList.toggle('on',i.dataset.t===t);
 i.onclick=()=>{document.body.dataset.theme=i.dataset.t;try{localStorage.sc_theme=i.dataset.t}catch(e){}
 document.querySelectorAll('#themepk i').forEach(j=>j.classList.toggle('on',j===i))}})}catch(e){}})();
