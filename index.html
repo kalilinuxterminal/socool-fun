@@ -72,11 +72,9 @@
   #spcount{font-size:11px;letter-spacing:2px;color:#888;font-weight:700;min-width:34px}
   @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
   .wrap{position:relative;z-index:2}
+  header,#annbar,#viewHome,#viewGames,footer{transition:opacity .45s ease}
+  body.pre header,body.pre #annbar,body.pre #viewHome,body.pre #viewGames,body.pre footer{opacity:0}
   header{text-align:center;padding:56px 16px 8px}
-  .eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:5px;color:var(--acc);
-    border:1px solid var(--accT);border-radius:100px;padding:7px 18px;margin-bottom:18px;
-    animation:glowp 3.2s ease-in-out infinite}
-  @keyframes glowp{0%,100%{box-shadow:0 0 0 0 var(--accT)}50%{box-shadow:0 0 18px 0 var(--accT)}}
   .logo{font-size:clamp(46px,10vw,92px);font-weight:900;letter-spacing:2px;line-height:1;
     background:linear-gradient(110deg,#fff 25%,var(--acc) 50%,#fff 75%);
     background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -180,7 +178,6 @@
   <div class="s-barrow"><div class="s-bar"><i id="spbar"></i></div><span id="spcount">0%</span></div>
 </div>
 <header>
-  <div><span class="eyebrow">SOCOOL.FUN</span></div>
   <div class="logo">socool.fun</div>
   <div class="tagline">free unblocked games · encrypted chat · zero downloads</div>
   <div class="accentbar"></div>
@@ -237,8 +234,10 @@
 <script defer src="vendor/firebase-auth-compat.js"></script>
 <script defer src="vendor/firebase-firestore-compat.js"></script>
 <script>
-(function(){const s=document.getElementById('splash');if(!s)return;let gone=false;
-const go=()=>{if(gone)return;gone=true;s.classList.add('hide');setTimeout(()=>s.remove(),500)};
+(function(){const s=document.getElementById('splash');if(!s)return;
+document.body.classList.add('pre');
+let gone=false;
+const go=()=>{if(gone)return;gone=true;s.classList.add('hide');document.body.classList.remove('pre');setTimeout(()=>s.remove(),500)};
 setTimeout(go,2950);s.onclick=go;
 const bar=document.getElementById('spbar'),num=document.getElementById('spcount');
 if(bar&&num)setTimeout(()=>{const t0=Date.now();
