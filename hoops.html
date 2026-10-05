@@ -19,7 +19,7 @@
 </head>
 <body>
 <h1>HOOPS <span>SHOOTOUT</span></h1>
-<div id="bar"><span>YOU <span id="ys">0</span></span><span>⏱️ <span id="t">60</span></span><span>CPU <span id="cs">0</span></span></div>
+<div id="bar"><span>YOU <span id="ys">0</span></span><span><span id="t">60</span></span><span>CPU <span id="cs">0</span></span></div>
 <canvas id="g" width="640" height="420"></canvas>
 <div id="msg">drag from the ball to aim, release to shoot!</div>
 <button class="btn" id="r">NEW MATCH</button>
@@ -63,7 +63,7 @@ function step(dt){
   // swish: crossing rim plane downward between rim edges, moving down, above rim before
   if(!ball.scored&&ball.vy>0&&ball.y>=RIM_Y&&ball.y-ball.vy*dt<RIM_Y&&ball.x>RIM_L+6&&ball.x<RIM_R-6){
     ball.scored=true;
-    if(shooter==='you'){you+=2;streak=(streak||0)+1;msg(streak>1?'SWISH! +2 🔥 x'+streak:'SWISH! +2 🔥');
+    if(shooter==='you'){you+=2;streak=(streak||0)+1;msg(streak>1?'SWISH! +2  x'+streak:'SWISH! +2 ');
       if(you>best){best=you;localStorage.setItem('sc_hoops',best)}}
     else{cpu+=2;msg('CPU buckets it…')}
     upd()}
@@ -76,7 +76,7 @@ function frame(dt){
     if(ball.dead){if(shooter==='you')aiShoot();else newBall()}
     if(time<=0){time=0;over=true;
       if(window.__submitScore)__submitScore('hoops',you);
-      msg(you>cpu?'🏆 YOU WIN!':you<cpu?'🤖 CPU WINS':'🤝 DRAW');
+      msg(you>cpu?'YOU WIN!':you<cpu?'CPU WINS':'DRAW');
       if(you>best){best=you;localStorage.setItem('sc_hoops',best)}}
     step(dt);upd();
   }

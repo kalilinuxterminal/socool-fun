@@ -48,9 +48,9 @@ function bot(){
   if(corners.length&&Math.random()<0.8){g[corners[Math.floor(Math.random()*corners.length)]]='O';return}
   g[avail[Math.floor(Math.random()*avail.length)]]='O'}
 function end(w){lock=true;
-  if(w==='X'){W++;document.getElementById('msg').textContent='🏆 YOU WIN!'}
-  else if(w==='O'){L++;document.getElementById('msg').textContent='🤖 BOT WINS'}
-  else{D++;document.getElementById('msg').textContent='🤝 DRAW'}
+  if(w==='X'){W++;document.getElementById('msg').textContent='YOU WIN!'}
+  else if(w==='O'){L++;document.getElementById('msg').textContent='BOT WINS'}
+  else{D++;document.getElementById('msg').textContent='DRAW'}
   document.getElementById('w').textContent=W;document.getElementById('l').textContent=L;document.getElementById('d').textContent=D}
 document.getElementById('r').onclick=reset;reset();
 </script>

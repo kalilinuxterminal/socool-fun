@@ -208,7 +208,7 @@
   <div class="row"><input id="aboutq" maxlength="80" placeholder="about you (status)" /><button id="aboutb" class="ghost">SAVE</button></div>
   <div class="row"><input id="linkq" maxlength="140" placeholder="your link (instagram, tiktok…)" /><button id="linkb" class="ghost">SAVE</button></div>
   <div class="asec">THEME</div>
-  <div id="themepk"><span>THEME</span><i data-t="azure" style="background:#4da3ff"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
+  <div id="themepk"><span>THEME</span><i data-t="azure" style="background:#4da3ff"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="mono" style="background:#fff"></i></div>
   <div class="asec">STATUS</div>
   <div class="row" id="presrow" style="align-items:center"><span class="note">VISIBILITY</span><button id="pon" class="ghost">ONLINE</button><button id="poff" class="ghost">INVISIBLE</button></div>
   <div class="asec">SOUND</div>
@@ -435,7 +435,7 @@ let SNDON=localStorage.sc_snd!=='0';
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();
   const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=880;g.gain.value=.06;
   o.connect(g);g.connect(a.destination);o.start();setTimeout(()=>{o.stop();a.close()},90)}catch(e){}}
-(function(){try{const ok=['azure','pink','pinkblue'];
+(function(){try{const ok=['azure','pink','mono'];
 const t=ok.includes(localStorage.sc_theme)?localStorage.sc_theme:'azure';
 document.body.dataset.theme=t;
 document.querySelectorAll('#themepk i').forEach(i=>{i.classList.toggle('on',i.dataset.t===t);

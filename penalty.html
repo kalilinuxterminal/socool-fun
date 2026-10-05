@@ -24,7 +24,7 @@
 <body>
 <h1>PENALTY KICK</h1>
 <div id="bar"><span>GOALS <span id="g">0</span>/5</span><span>STREAK <span id="s">0</span></span><span>BEST <span id="b">0</span></span></div>
-<div id="pitch"><div id="goal"><div id="net"></div></div><div id="keeper">🧍</div><div id="ball"></div><div id="aim"></div></div>
+<div id="pitch"><div id="goal"><div id="net"></div></div><div id="keeper">▲</div><div id="ball"></div><div id="aim"></div></div>
 <div id="msg">click inside the goal to shoot!</div>
 <button class="btn" id="r">RESTART</button>
 <a href="index.html">← socool.fun</a>
@@ -43,7 +43,7 @@ pitch.addEventListener('mouseleave',()=>aim.style.display='none');
 pitch.addEventListener('pointerdown',e=>{if(busy)return;
   const r=rect(pitch),gr=rect(document.getElementById('goal'));
   const px=e.clientX-r.left,py=e.clientY-r.top;
-  if(px<gr.left-r.left||px>gr.right-r.left||py<gr.top-r.top||py>gr.bottom-r.top){msg.textContent='💨 OFF TARGET!';return}
+  if(px<gr.left-r.left||px>gr.right-r.left||py<gr.top-r.top||py>gr.bottom-r.top){msg.textContent='OFF TARGET!';return}
   shoot(px,py)});
 function shoot(px,py){busy=true;
   const r=rect(pitch);
@@ -56,13 +56,13 @@ function shoot(px,py){busy=true;
   setTimeout(()=>{
     const kx=parseFloat(keeper.style.left),dist=Math.abs(kx-tx);
     shots++;
-    if(dist<9){msg.textContent='🧤 SAVED!';streak=0}
-    else{goals++;streak++;msg.textContent=['GOAL! 🔥','TOP BINS! 🚀','CLINICAL! '][Math.floor(Math.random()*3)];
+    if(dist<9){msg.textContent='SAVED!';streak=0}
+    else{goals++;streak++;msg.textContent=['GOAL!','TOP BINS!','CLINICAL! '][Math.floor(Math.random()*3)];
       if(streak>best){best=streak;localStorage.setItem('sc_pen',best);document.getElementById('b').textContent=best}}
     upd();
     setTimeout(()=>{
       ball.style.left='50%';ball.style.top='';ball.style.bottom='8%';ball.style.transform='translate(-50%,0)';keeper.style.left='50%';
-      if(shots>=5){msg.textContent=`FULL TIME: ${goals}/5`+(goals===5?' · PERFECT! 🏆':'');round++;shots=0;goals=0;setTimeout(upd,10)}
+      if(shots>=5){msg.textContent=`FULL TIME: ${goals}/5`+(goals===5?' · PERFECT!':'');round++;shots=0;goals=0;setTimeout(upd,10)}
       busy=false},700);
   },320)}
 document.getElementById('r').onclick=()=>{round=1;reset()};reset();

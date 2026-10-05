@@ -25,7 +25,7 @@
 <script>
 const pad=document.getElementById('pad');
 let st='idle',t0=0,timer=null,times=JSON.parse(localStorage.getItem('sc_react')||'[]');
-function rank(ms){if(ms<180)return'INHUMAN';if(ms<220)return'🔥 CRACKED';if(ms<270)return'💪 FAST';if(ms<350)return'🙂 AVERAGE';return'🐢 SLOW'}
+function rank(ms){if(ms<180)return'INHUMAN';if(ms<220)return'CRACKED';if(ms<270)return'FAST';if(ms<350)return'AVERAGE';return'SLOW'}
 function show(){document.getElementById('l').textContent=times.length?Math.round(times[times.length-1])+'ms '+rank(times[times.length-1]):'·';
   document.getElementById('b').textContent=times.length?Math.round(Math.min(...times))+'ms':'·';
   const last5=times.slice(-5);document.getElementById('a').textContent=last5.length?Math.round(last5.reduce((a,b)=>a+b,0)/last5.length)+'ms':'·'}

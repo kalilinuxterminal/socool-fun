@@ -6,10 +6,10 @@
 <title>socool.fun</title>
 <link rel="icon" type="image/webp" href="browser%20tba%20icon.webp" />
 <style>
-  :root,body[data-theme="mono"]{--acc:#4da3ff;--accT:rgba(77,163,255,.22);--orbA:#2f6fe0;--orbB:#63b3ff;--orbC:#1b3d7a}
+  :root{--acc:#4da3ff;--accT:rgba(77,163,255,.22);--orbA:#2f6fe0;--orbB:#63b3ff;--orbC:#1b3d7a}
+  body[data-theme="mono"]{--acc:#ffffff;--accT:rgba(255,255,255,.22);--orbA:#ffffff;--orbB:#aaaaaa;--orbC:#555555}
   body[data-theme="azure"]{--acc:#4da3ff;--accT:rgba(77,163,255,.22);--orbA:#2f6fe0;--orbB:#63b3ff;--orbC:#1b3d7a}
   body[data-theme="pink"]{--acc:#ff4f9a;--accT:rgba(255,79,154,.22);--orbA:#ff2d7e;--orbB:#ff8fc0;--orbC:#99104a}
-  body[data-theme="pinkblue"]{--acc:#ff4f9a;--accT:rgba(77,124,255,.22);--orbA:#4d7cff;--orbB:#ff2d7e;--orbC:#2a3fa0}
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;user-select:none;-webkit-user-select:none}
   body{background:#08080e;color:#fff;min-height:100vh;overflow-x:hidden}
   canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
@@ -210,25 +210,25 @@
       <span class="go">▸</span>
     </button>
   </div>
-  <div id="themepk"><span>THEME</span><i data-t="azure" style="background:#4da3ff"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="pinkblue" id="pk2"></i></div>
+  <div id="themepk"><span>THEME</span><i data-t="azure" style="background:#4da3ff"></i><i data-t="pink" style="background:#ff4f9a"></i><i data-t="mono" style="background:#fff"></i></div>
 </div>
 <div id="viewGames" class="wrap">
   <div class="toprow"><button class="backbtn" id="btnHome">← back</button></div>
-  <div id="search">🔎 <input id="q" type="text" placeholder="search games…" autocomplete="off" /></div>
+  <div id="search"><input id="q" type="text" placeholder="search games…" autocomplete="off" /></div>
   <div class="section">pick your game · <span id="count"></span></div>
   <div class="games">
-    <a class="card hot" href="typing.html"><div class="emoji">⌨️</div><h2>Typing Test</h2><p>30 seconds. Top the school board.</p><span class="play">PLAY ▸</span></a>
-    <a class="card hot" href="hoops.html"><div class="emoji">🏀</div><h2>Hoops Shootout</h2><p>Flick to score vs the CPU.</p><span class="play">PLAY ▸</span></a>
-    <a class="card hot" href="racer.html"><div class="emoji">🏎️</div><h2>Neon Racer</h2><p>Night drive. Dodge traffic.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="snake.html"><div class="emoji">🐍</div><h2>Snake</h2><p>Eat, grow, survive.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="g2048.html"><div class="emoji">🔢</div><h2>2048</h2><p>Slide and merge.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="breakout.html"><div class="emoji">🧱</div><h2>Breakout</h2><p>Smash every brick.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="mines.html"><div class="emoji">💣</div><h2>Minesweeper</h2><p>Three difficulties.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="chess.html"><div class="emoji">♞</div><h2>2 Player Chess</h2><p>Full rules, one screen.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="dig.html"><div class="emoji">⛏️</div><h2>Dig Out</h2><p>Escape the mine.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="penalty.html"><div class="emoji">⚽</div><h2>Penalty Kick</h2><p>5 shots vs the keeper.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="reaction.html"><div class="emoji">⚡</div><h2>Reaction Test</h2><p>How fast are you really.</p><span class="play">PLAY ▸</span></a>
-    <a class="card" href="tictactoe.html"><div class="emoji">⭕</div><h2>Tic-Tac-Toe</h2><p>Never lose again.</p><span class="play">PLAY ▸</span></a>
+    <a class="card hot" href="typing.html"><h2>Typing Test</h2><p>30 seconds. Top the school board.</p><span class="play">PLAY ▸</span></a>
+    <a class="card hot" href="hoops.html"><h2>Hoops Shootout</h2><p>Flick to score vs the CPU.</p><span class="play">PLAY ▸</span></a>
+    <a class="card hot" href="racer.html"><h2>Neon Racer</h2><p>Night drive. Dodge traffic.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="snake.html"><h2>Snake</h2><p>Eat, grow, survive.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="g2048.html"><h2>2048</h2><p>Slide and merge.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="breakout.html"><h2>Breakout</h2><p>Smash every brick.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="mines.html"><h2>Minesweeper</h2><p>Three difficulties.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="chess.html"><h2>2 Player Chess</h2><p>Full rules, one screen.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="dig.html"><h2>Dig Out</h2><p>Escape the mine.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="penalty.html"><h2>Penalty Kick</h2><p>5 shots vs the keeper.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="reaction.html"><h2>Reaction Test</h2><p>How fast are you really.</p><span class="play">PLAY ▸</span></a>
+    <a class="card" href="tictactoe.html"><h2>Tic-Tac-Toe</h2><p>Never lose again.</p><span class="play">PLAY ▸</span></a>
   </div>
 </div>
 <div id="viewLb" class="wrap" style="display:none">
@@ -250,7 +250,7 @@
     <a href="https://www.instagram.com/euroeth/" target="_blank" rel="noopener">@euroeth on ig</a><br>
     <a href="https://www.tiktok.com/@tqig" target="_blank" rel="noopener">@tqig on tiktok</a></div>
 </div>
-<div id="player"><div id="playerbar"><span id="ptitle"></span><button id="fs">⛶ FULLSCREEN</button><button id="close">✕ CLOSE</button></div><iframe id="frame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe></div>
+<div id="player"><div id="playerbar"><span id="ptitle"></span><button id="fs">FULLSCREEN</button><button id="close">CLOSE</button></div><iframe id="frame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe></div>
 <script src="vendor/firebase-app-compat.js"></script>
 <script src="vendor/firebase-auth-compat.js"></script>
 <script src="vendor/firebase-firestore-compat.js"></script>
@@ -265,7 +265,7 @@ if(bar&&num)setTimeout(()=>{const t0=Date.now();
   const iv=setInterval(()=>{const el=(Date.now()-t0)/1250;const p=Math.min(100,Math.round(el*100));
     bar.style.width=p+'%';num.textContent=p+'%';
     if(p>=100)clearInterval(iv)},33)},1050)})();
-(function(){try{const ok=['azure','pink','pinkblue'];
+(function(){try{const ok=['azure','pink','mono'];
 const t=ok.includes(localStorage.sc_theme)?localStorage.sc_theme:'azure';
 document.body.dataset.theme=t;
 document.querySelectorAll('#themepk i').forEach(i=>{i.classList.toggle('on',i.dataset.t===t);
@@ -327,8 +327,10 @@ q.addEventListener('input',upd);upd})();
 (function(){addEventListener('mousemove',e=>{const mx=e.clientX/innerWidth-.5,my=e.clientY/innerHeight-.5;
   const o=document.querySelector('.orbs');if(o)o.style.transform='translate('+(mx*-22)+'px,'+(my*-14)+'px)';
   const fl=document.querySelectorAll('.floor');fl.forEach((f,i)=>{f.style.marginLeft=(mx*(i+1)*8)+'px'})})})();
+let ANN=0;
 (function(){
-  document.getElementById('annx').onclick=()=>document.getElementById('annbar').style.display='none';
+  document.getElementById('annx').onclick=()=>{document.getElementById('annbar').style.display='none';
+    try{if(ANN)localStorage.sc_lastAnnH=String(ANN)}catch(e){}};
   document.getElementById('notifok').onclick=()=>document.getElementById('notifm').style.display='none';
   if(typeof firebase==='undefined')return;
   try{
@@ -345,8 +347,11 @@ q.addEventListener('input',upd);upd})();
       DB.collection('ann').orderBy('ts','desc').limit(1).onSnapshot(s=>{
         if(s.empty){document.getElementById('annbar').style.display='none';return}
         const d=s.docs[0].data();
-        document.getElementById('annbar').style.display='block';
-        document.getElementById('anntext').textContent=d.text||'';
+        const seen=+(localStorage.sc_lastAnnH||0);
+        if(d.ts>seen){ANN=d.ts;
+          document.getElementById('annbar').style.display='block';
+          document.getElementById('anntext').textContent=d.text||'';
+        } else document.getElementById('annbar').style.display='none';
       },()=>{});
       let lastN=+(localStorage.sc_lastN||0);
       if(!lastN){localStorage.sc_lastN=Date.now();lastN=+localStorage.sc_lastN}

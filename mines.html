@@ -22,9 +22,9 @@
 </head>
 <body>
 <h1>MINESWEEPER</h1>
-<div id="bar"><span>🚩 <span id="f">0</span></span><span>⏱️ <span id="t">0</span>s</span>
+<div id="bar"><span>FLAGS <span id="f">0</span></span><span><span id="t">0</span>s</span>
   <div class="diff"><button class="btn" data-d="0">EASY</button><button class="btn" data-d="1">MED</button><button class="btn" data-d="2">HARD</button></div>
-  <button class="btn" id="fm">🚩 FLAG: OFF</button></div>
+  <button class="btn" id="fm">FLAG MODE: OFF</button></div>
 <div id="board"></div>
 <div id="msg"></div>
 <button class="btn" id="r">RESTART</button>
@@ -43,23 +43,23 @@ function reset(d){const D=DS[d||0];R=D.r;C=D.c;M=D.m;grid=[];open=0;flags=0;over
 function upd(){document.getElementById('f').textContent=M-flags}
 function draw(){B.innerHTML='';const cols=['','#5af','#3f6','#f44','#94f','#fa0','#0cc','#fff','#888'];
   for(let r=0;r<R;r++)for(let c=0;c<C;c++){const d=document.createElement('div');d.className='cell';const k=grid[r][c];
-    if(k.o){d.classList.add('open');if(k.m){d.classList.add('boom');d.textContent='💥'}else if(k.n)d.textContent=k.n,d.style.color=cols[k.n]}
-    else if(k.f)d.textContent='🚩';
+    if(k.o){d.classList.add('open');if(k.m){d.classList.add('boom');d.textContent='X'}else if(k.n)d.textContent=k.n,d.style.color=cols[k.n]}
+    else if(k.f)d.textContent='!';
     d.onclick=()=>tap(r,c);d.oncontextmenu=e=>{e.preventDefault();flag(r,c)};B.appendChild(d)}}
 function tap(r,c){if(over||win)return;const k=grid[r][c];if(k.o||k.f)return;
   if(flagMode){flag(r,c);return}
   if(!started){started=true;t0=Date.now();timer=setInterval(()=>document.getElementById('t').textContent=Math.floor((Date.now()-t0)/1000),500)}
-  if(k.m){revealAll();over=true;document.getElementById('msg').textContent='💥 BOOM';draw();return}
+  if(k.m){revealAll();over=true;document.getElementById('msg').textContent='X BOOM';draw();return}
   flood(r,c);draw();check()}
 function flag(r,c){if(over||win)return;const k=grid[r][c];if(k.o)return;k.f=!k.f;flags+=k.f?1:-1;upd();draw()}
 function flood(r,c){const k=grid[r]&&grid[r][c];if(!k||k.o||k.f||k.m)return;k.o=true;open++;
   if(!k.n)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)flood(r+dr,c+dc)}
 function revealAll(){grid.flat().forEach(k=>{if(k.m)k.o=true})}
 function check(){if(open>=R*C-M){win=true;clearInterval(timer);
-  const t=document.getElementById('t').textContent;document.getElementById('msg').textContent='🏆 CLEARED IN '+t+'s!'}}
+  const t=document.getElementById('t').textContent;document.getElementById('msg').textContent=' CLEARED IN '+t+'s!'}}
 let lv=0;
 document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{lv=+b.dataset.d;reset(lv)});
-document.getElementById('fm').onclick=e=>{flagMode=!flagMode;e.target.textContent='🚩 FLAG: '+(flagMode?'ON':'OFF');e.target.classList.toggle('on',flagMode)};
+document.getElementById('fm').onclick=e=>{flagMode=!flagMode;e.target.textContent='FLAG MODE: '+(flagMode?'ON':'OFF');e.target.classList.toggle('on',flagMode)};
 document.getElementById('r').onclick=()=>reset(lv);reset(0);
 </script>
 </body>
