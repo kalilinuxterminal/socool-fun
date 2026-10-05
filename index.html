@@ -27,39 +27,50 @@
     animation:floor 4s linear infinite}
   @keyframes floor{to{background-position:0 90px}}
   .grid-bg{position:fixed;inset:0;z-index:0;opacity:.13;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 16%,#000 18%,transparent 62%)}
-  #splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#08080e;transition:opacity .5s,transform .5s,filter .5s;cursor:pointer;overflow:hidden}
-  #splash.hide{opacity:0;transform:scale(1.06);filter:blur(8px);pointer-events:none}
+  #splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:rgba(8,8,14,.94);cursor:pointer;overflow:hidden;transform-origin:50% 50%}
+  #splash.hide{pointer-events:none;animation:crt .45s cubic-bezier(.7,0,.9,.4) forwards}
+  @keyframes crt{0%{transform:scale(1,1);opacity:1;filter:blur(0) brightness(1)}
+    55%{transform:scale(1,.006);opacity:1;filter:blur(0) brightness(1.7)}
+    75%{transform:scale(1,.006);opacity:1}
+    100%{transform:scale(.002,.006);opacity:0;filter:blur(0) brightness(1.7)}}
   .sp-scan{position:absolute;left:0;right:0;top:0;height:2px;
     background:linear-gradient(90deg,transparent,var(--acc),transparent);opacity:0;
-    animation:scan 1.5s ease-in-out .2s forwards}
-  @keyframes scan{0%{top:0;opacity:0}15%{opacity:.7}100%{top:100%;opacity:0}}
-  .wordwrap{position:relative}
+    animation:scan 1.2s ease-in-out .1s forwards}
+  @keyframes scan{0%{top:0;opacity:0}15%{opacity:.8}100%{top:100%;opacity:0}}
+  .wordwrap{position:relative;animation:wordglow .8s ease 2.15s forwards}
+  @keyframes wordglow{to{filter:drop-shadow(0 0 22px var(--accT))}}
+  .sp-dot{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--acc);opacity:0;animation:dotin .55s ease .05s forwards}
+  @keyframes dotin{0%{opacity:0;transform:scale(.1)}45%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(30)}}
   .sp-ring{position:absolute;left:50%;top:50%;width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;
     background:conic-gradient(from 0deg,transparent 0 30%,var(--acc) 47%,transparent 62%);
     -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
     mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
-    animation:spin 1.5s linear infinite;opacity:.55}
+    animation:ringin .5s ease .3s both,spin 1.4s linear .3s infinite}
+  @keyframes ringin{from{opacity:0}to{opacity:.55}}
   @keyframes spin{to{transform:rotate(360deg)}}
+  .sp-ring2{position:absolute;left:50%;top:50%;width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;border:2px solid var(--acc);opacity:0;animation:shock .8s ease-out 2.35s forwards}
+  @keyframes shock{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(2.8)}}
   #splash .word{display:flex;perspective:600px;font-size:clamp(40px,9vw,84px);font-weight:900;letter-spacing:2px}
   #splash .word span{opacity:0;display:inline-block;transform-origin:50% 100%;
     animation:flip .55s cubic-bezier(.2,.7,.3,1.25) forwards}
   @keyframes flip{from{opacity:0;transform:translateY(30px) rotateX(95deg)}to{opacity:1;transform:none}}
-  #splash .word span:nth-child(1){animation-delay:.05s}
-  #splash .word span:nth-child(2){animation-delay:.1s}
-  #splash .word span:nth-child(3){animation-delay:.15s}
-  #splash .word span:nth-child(4){animation-delay:.2s}
-  #splash .word span:nth-child(5){animation-delay:.25s}
-  #splash .word span:nth-child(6){animation-delay:.3s}
-  #splash .word span:nth-child(7){animation-delay:.38s;color:var(--acc)}
-  #splash .word span:nth-child(8){animation-delay:.45s}
-  #splash .word span:nth-child(9){animation-delay:.5s}
-  #splash .word span:nth-child(10){animation-delay:.55s}
-  #splash .s-by{font-size:14px;letter-spacing:3px;color:#999;opacity:0;animation:rise .6s .8s forwards}
+  #splash .word span:nth-child(1){animation-delay:.45s}
+  #splash .word span:nth-child(2){animation-delay:.5s}
+  #splash .word span:nth-child(3){animation-delay:.55s}
+  #splash .word span:nth-child(4){animation-delay:.6s}
+  #splash .word span:nth-child(5){animation-delay:.65s}
+  #splash .word span:nth-child(6){animation-delay:.7s}
+  #splash .word span:nth-child(7){animation-delay:.78s;color:var(--acc)}
+  #splash .word span:nth-child(8){animation-delay:.85s}
+  #splash .word span:nth-child(9){animation-delay:.9s}
+  #splash .word span:nth-child(10){animation-delay:.95s}
+  #splash .s-by{font-size:14px;letter-spacing:3px;color:#999;opacity:0;animation:rise .6s 1.05s forwards}
   #splash .s-by b{color:#fff}
-  #splash .s-bar{width:min(280px,60vw);height:3px;border-radius:100px;background:rgba(255,255,255,.1);overflow:hidden;opacity:0;animation:rise .5s .6s forwards}
-  #splash .s-bar i{display:block;height:100%;width:0;background:var(--acc);animation:fill 1.9s .3s linear forwards}
+  .s-barrow{display:flex;align-items:center;gap:12px;opacity:0;animation:rise .5s .95s forwards}
+  .s-bar{width:min(240px,50vw);height:3px;border-radius:100px;background:rgba(255,255,255,.1);overflow:hidden}
+  .s-bar i{display:block;height:100%;width:0;background:var(--acc)}
+  #spcount{font-size:11px;letter-spacing:2px;color:#888;font-weight:700;min-width:34px}
   @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-  @keyframes fill{to{width:100%}}
   .wrap{position:relative;z-index:2}
   header{text-align:center;padding:56px 16px 8px}
   .eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:5px;color:var(--acc);
@@ -160,11 +171,13 @@
 <div id="splash">
   <div class="sp-scan"></div>
   <div class="wordwrap">
+    <div class="sp-dot"></div>
     <div class="sp-ring"></div>
+    <div class="sp-ring2"></div>
     <div class="word"><span>s</span><span>o</span><span>c</span><span>o</span><span>o</span><span>l</span><span>.</span><span>f</span><span>u</span><span>n</span></div>
   </div>
   <div class="s-by">made by <b>@euroeth</b> on ig</div>
-  <div class="s-bar"><i></i></div>
+  <div class="s-barrow"><div class="s-bar"><i id="spbar"></i></div><span id="spcount">0%</span></div>
 </div>
 <header>
   <div><span class="eyebrow">SOCOOL.FUN</span></div>
@@ -225,8 +238,13 @@
 <script defer src="vendor/firebase-firestore-compat.js"></script>
 <script>
 (function(){const s=document.getElementById('splash');if(!s)return;let gone=false;
-const go=()=>{if(gone)return;gone=true;s.classList.add('hide');setTimeout(()=>s.remove(),600)};
-setTimeout(go,2400);s.onclick=go})();
+const go=()=>{if(gone)return;gone=true;s.classList.add('hide');setTimeout(()=>s.remove(),500)};
+setTimeout(go,2950);s.onclick=go;
+const bar=document.getElementById('spbar'),num=document.getElementById('spcount');
+if(bar&&num)setTimeout(()=>{const t0=Date.now();
+  const iv=setInterval(()=>{const el=(Date.now()-t0)/1250;const p=Math.min(100,Math.round(el*100));
+    bar.style.width=p+'%';num.textContent=p+'%';
+    if(p>=100)clearInterval(iv)},33)},1050)})();
 (function(){try{const ok=['azure','pink','pinkblue'];
 const t=ok.includes(localStorage.sc_theme)?localStorage.sc_theme:'azure';
 document.body.dataset.theme=t;
