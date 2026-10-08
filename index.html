@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#070b0f" />
+    <meta name="description" content="The Wise Trader was built for traders who want more than hype, signals, or unrealistic promises. Our mission is to help individuals develop real trading discipline, structured decision-making, and long-term consistency in the futures markets." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The Wise Trader — Professional Futures Education" />
+    <meta property="og:description" content="The Wise Trader was built for traders who want more than hype, signals, or unrealistic promises. Our mission is to help individuals develop real trading discipline, structured decision-making, and long-term consistency in the futures markets." />
+    <meta property="og:image" content="https://thewisetrader.us/og-image.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>The Wise Trader — Professional Futures Education</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preload" href="styles.css" as="style" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header" id="top">
+      <div class="header-inner">
+        <a class="brand" href="#top" aria-label="The Wise Trader home">
+          <svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true">
+            <path d="M4.5 9.5 11 27l7-13 7 13 6.5-17.5" />
+            <path d="M11 8h14M15 30h6" />
+          </svg>
+          <span class="brand-name">THE WISE <span>TRADER</span></span>
+        </a>
+
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation">
+          <span></span><span></span>
+        </button>
+
+        <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
+          <a href="#about">About</a>
+          <a href="#education">Education</a>
+          <a href="#community">Community</a>
+          <a href="#disclaimer">Disclaimer</a>
+          <a class="nav-cta" href="https://whop.com/joined/the-wise-trader/products/market-analysis-79/" target="_blank" rel="noopener noreferrer">Join the community <span aria-hidden="true">↗</span></a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero section-shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot"></span> Professional futures education</p>
+          <h1 id="hero-title"><span class="line-mask"><span class="headline-line">Trade with a</span></span><span class="line-mask"><span class="headline-line accent-line">plan, not a mood.</span></span></h1>
+          <p class="hero-description">A professional space to build trading discipline, understand market structure, and make more deliberate decisions. Preparation over prediction. Process over hype.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://whop.com/joined/the-wise-trader/products/market-analysis-79/" target="_blank" rel="noopener noreferrer"><span>Join the community</span><span class="button-arrow" aria-hidden="true">↗</span></a>
+            <a class="button button-quiet" href="#education"><span>See the curriculum</span><span class="button-arrow" aria-hidden="true">↓</span></a>
+          </div>
+          <div class="hero-footnote"><span class="micro-rule"></span><span>Education first. Risk always.</span></div>
+        </div>
+
+        <div class="market-scene" role="img" aria-label="Illustrative futures market structure chart. This is not live market data." data-market-scene>
+          <div class="scene-topline">
+            <div><span class="scene-label">MARKET STUDY</span><span class="scene-instrument">ES <span>/</span> 5 MIN</span></div>
+            <span class="scene-live"><i></i> STRUCTURE, NOT SIGNALS</span>
+          </div>
+          <div class="chart-wrap">
+            <div class="chart-y-labels" aria-hidden="true"><span>5,252</span><span>5,248</span><span>5,244</span><span>5,240</span></div>
+            <div class="chart-plot">
+              <div class="chart-grid" aria-hidden="true"></div>
+              <svg class="chart-poster" viewBox="0 0 700 330" role="img" aria-label="An illustrative sequence of candles with a higher high, higher low, and liquidity sweep">
+                <g class="poster-candles" fill="none" stroke-width="1.5">
+                  <path d="M38 197v38m0-28h11v17H38zM89 173v54m0-39h11v24H89zM140 191v42m0-31h11v18h-11zM191 148v60m0-47h11v27h-11zM242 160v48m0-36h11v20h-11zM293 125v61m0-47h11v27h-11zM344 143v41m0-31h11v17h-11zM395 106v60m0-48h11v26h-11zM446 116v45m0-34h11v19h-11zM497 85v58m0-44h11v26h-11zM548 95v44m0-32h11v18h-11zM599 66v59m0-44h11v25h-11z" />
+                </g>
+                <path class="poster-liquidity" d="M15 167H685" />
+                <path class="poster-structure" d="M29 211 97 196 151 214 209 164 263 181 311 139 361 155 416 120 465 137 520 94 571 110 631 73" />
+                <circle class="poster-node" cx="209" cy="164" r="3"/><circle class="poster-node" cx="311" cy="139" r="3"/><circle class="poster-node" cx="416" cy="120" r="3"/><circle class="poster-node" cx="631" cy="73" r="3"/>
+                <path class="poster-sweep" d="M520 94v-37h36" />
+                <text class="chart-tag" x="552" y="48">LIQUIDITY SWEEP</text>
+                <text class="chart-tag chart-tag-muted" x="320" y="153">HIGHER LOW</text>
+                <text class="chart-tag chart-tag-muted" x="636" y="68">HH</text>
+              </svg>
+              <canvas class="market-canvas" aria-hidden="true"></canvas>
+              <span class="price-marker"><i></i><span data-price>5,248.25</span></span>
+              <span class="axis-time axis-time-start">09:30</span>
+              <span class="axis-time axis-time-mid">10:15</span>
+              <span class="axis-time axis-time-end">11:00</span>
+            </div>
+          </div>
+          <div class="scene-bottomline"><span>ILLUSTRATIVE STRUCTURE <span class="scene-separator">/</span> NOT LIVE DATA</span><span class="scene-readout">PRICE ACTION <b>·</b> CONTEXT <b>·</b> PATIENCE</span></div>
+          <div class="scene-index" aria-hidden="true">01 — 03</div>
+        </div>
+        <div class="hero-side-note" aria-hidden="true">A CALMER WAY TO STUDY THE MARKETS <span>↓</span></div>
+      </section>
+
+      <section class="intro-section section-shell section-space" id="about" aria-labelledby="about-title">
+        <div class="section-heading" data-reveal>
+          <p class="section-kicker">01 / THE APPROACH</p>
+          <h2 id="about-title">A steadier framework<br />for uncertain markets.</h2>
+        </div>
+        <div class="intro-copy" data-reveal>
+          <p class="intro-lead">The Wise Trader was built for traders who want more than hype, signals, or unrealistic promises.</p>
+          <p>Our mission is to help individuals develop real trading discipline, structured decision-making, and long-term consistency in the futures markets. Through professional market education, live analysis, risk management concepts, and a focused community, we put preparation, patience, emotional control, and execution at the center.</p>
+          <a class="text-link" href="#principles">Our principles <span aria-hidden="true">↓</span></a>
+        </div>
+      </section>
+
+      <section class="principles-section section-shell section-space" id="principles" aria-labelledby="principles-title">
+        <div class="section-heading section-heading-row" data-reveal>
+          <div><p class="section-kicker">A PROCESS, NOT A PROMISE</p><h2 id="principles-title">What guides the work.</h2></div>
+          <p class="section-aside">No shortcuts. No alerts. Just a more considered way to learn.</p>
+        </div>
+        <div class="principle-grid">
+          <article class="principle-card" data-reveal><span class="card-number">01</span><div class="principle-mark mark-structure" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>Read the structure</h3><p>Study how price behaves in context before deciding what a market might mean.</p><span class="card-foot">OBSERVE BEFORE ACTING</span></article>
+          <article class="principle-card" data-reveal><span class="card-number">02</span><div class="principle-mark mark-risk" aria-hidden="true"><i></i><i></i><i></i></div><h3>Define the risk</h3><p>Make risk awareness part of the plan, not an afterthought once a position is open.</p><span class="card-foot">SIZE THE LOSS FIRST</span></article>
+          <article class="principle-card" data-reveal><span class="card-number">03</span><div class="principle-mark mark-review" aria-hidden="true"><i></i><i></i><i></i></div><h3>Review the process</h3><p>Use reflection and emotional discipline to build more deliberate habits over time.</p><span class="card-foot">LEARN FROM THE PROCESS</span></article>
+        </div>
+      </section>
+
+      <section class="education-section section-space" id="education" aria-labelledby="education-title">
+        <div class="section-shell">
+          <div class="section-heading section-heading-row" data-reveal>
+            <div><p class="section-kicker">02 / THE CURRICULUM</p><h2 id="education-title">Learn to see more clearly.</h2></div>
+            <p class="section-aside">Three foundations for a more structured relationship with the futures markets.</p>
+          </div>
+          <div class="curriculum-list">
+            <article class="curriculum-card" data-reveal>
+              <div class="curriculum-meta"><span>01</span><span>MARKET STRUCTURE</span></div>
+              <div class="curriculum-content"><div><h3>Understand the path<br />price is taking.</h3><p>Learn to identify trends, liquidity zones, support and resistance, and broader market behavior through disciplined observation.</p><span class="outcome-label">A clearer read on context</span></div>
+                <div class="diagram diagram-structure" aria-label="Illustrative higher-high and higher-low structure diagram">
+                  <svg viewBox="0 0 440 180" role="img" aria-label="A price path forms higher highs and higher lows before a liquidity sweep">
+                    <path class="diagram-guide" d="M0 145H440M0 93H440M0 41H440" />
+                    <path class="diagram-liquidity" d="M8 74H431" /><text x="337" y="67">LIQUIDITY</text>
+                    <path class="diagram-path" d="M14 141 80 99 118 121 178 74 218 98 281 52 321 82 379 32 402 8" />
+                    <path class="diagram-sweep" d="M379 32V12H406" />
+                    <circle cx="80" cy="99" r="4"/><circle cx="118" cy="121" r="4"/><circle cx="178" cy="74" r="4"/><circle cx="218" cy="98" r="4"/><circle cx="281" cy="52" r="4"/><circle cx="321" cy="82" r="4"/><circle cx="379" cy="32" r="4"/>
+                    <text class="diagram-label" x="70" y="88">HH</text><text class="diagram-label" x="204" y="90">HL</text><text class="diagram-label" x="270" y="41">HH</text><text class="diagram-label" x="374" y="26">SWEEP</text>
+                  </svg>
+                  <span class="diagram-caption">ILLUSTRATIVE PRICE PATH</span>
+                </div>
+              </div>
+            </article>
+            <article class="curriculum-card" data-reveal>
+              <div class="curriculum-meta"><span>02</span><span>RISK MANAGEMENT</span></div>
+              <div class="curriculum-content"><div><h3>Size the loss<br />before the trade.</h3><p>Explore position sizing, trade management, emotional control, and structured decision-making to understand exposure.</p><span class="outcome-label">Risk considered in advance</span></div>
+                <div class="risk-visual" aria-label="Abstract position sizing visual showing account, risk, and stop distance as relative bars">
+                  <div class="risk-row"><span>ACCOUNT</span><div class="risk-track"><i style="--fill: 82%"></i></div><b>A</b></div>
+                  <div class="risk-row"><span>RISK</span><div class="risk-track"><i style="--fill: 28%"></i></div><b>B</b></div>
+                  <div class="risk-row"><span>STOP DISTANCE</span><div class="risk-track"><i style="--fill: 54%"></i></div><b>C</b></div>
+                  <div class="risk-equation"><span>A</span><i>÷</i><span>B</span><i>→</i><span>C</span><i>→</i><span class="risk-result">POSITION SIZE</span></div>
+                  <span class="diagram-caption">CONCEPTUAL MODEL · NOT ADVICE</span>
+                </div>
+              </div>
+            </article>
+            <article class="curriculum-card" data-reveal>
+              <div class="curriculum-meta"><span>03</span><span>TRADING PSYCHOLOGY</span></div>
+              <div class="curriculum-content"><div><h3>Keep your process<br />in the driver's seat.</h3><p>Build patience, confidence, and emotional discipline while learning to notice habits that can affect decision-making.</p><span class="outcome-label">More intentional decisions</span></div>
+                <div class="state-machine" aria-label="A learning cycle between plan, impulse, and review">
+                  <div class="state-line"><i></i></div>
+                  <div class="state-node is-current"><span>01</span><b>PLAN</b><small>Prepare</small></div>
+                  <div class="state-node"><span>02</span><b>IMPULSE</b><small>Notice</small></div>
+                  <div class="state-node"><span>03</span><b>REVIEW</b><small>Reflect</small></div>
+                  <span class="diagram-caption">NOTICE THE MOMENT. RETURN TO THE PROCESS.</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="audience-section section-shell section-space" id="who-its-for" aria-labelledby="audience-title">
+        <div class="section-heading section-heading-row" data-reveal>
+          <div><p class="section-kicker">03 / WHO IT'S FOR</p><h2 id="audience-title">Wherever you are<br />in the learning curve.</h2></div>
+          <p class="section-aside">A focused environment for people committed to learning, reflection, and steady development.</p>
+        </div>
+        <div class="audience-grid">
+          <article class="audience-card" data-reveal><span class="audience-index">A / STARTING POINT</span><h3>Beginner traders</h3><p>Build a foundation in market structure, trading discipline, risk management, and professional execution.</p><span class="audience-end">Start with the essentials <span>↗</span></span></article>
+          <article class="audience-card" data-reveal><span class="audience-index">B / BUILDING PRACTICE</span><h3>Developing traders</h3><p>Bring more structure to analysis, trade planning, emotional control, and day-to-day decision-making.</p><span class="audience-end">Strengthen your process <span>↗</span></span></article>
+          <article class="audience-card" data-reveal><span class="audience-index">C / LONG-TERM VIEW</span><h3>Committed learners</h3><p>Focus on continuous improvement and sustainable habits instead of shortcuts or unrealistic expectations.</p><span class="audience-end">Keep learning over time <span>↗</span></span></article>
+        </div>
+      </section>
+
+      <section class="community-section section-space" id="community" aria-labelledby="community-title">
+        <div class="section-shell community-layout">
+          <div class="community-copy" data-reveal><p class="section-kicker">04 / LEARN IN GOOD COMPANY</p><h2 id="community-title">A room for thoughtful<br />market conversations.</h2><p>Join a focused community built around professional education, live analysis, accountability, and a shared respect for risk.</p><a class="button button-primary" href="https://whop.com/joined/the-wise-trader/products/market-analysis-79/" target="_blank" rel="noopener noreferrer"><span>Join the community</span><span class="button-arrow" aria-hidden="true">↗</span></a></div>
+          <div class="community-panel" data-reveal>
+            <div class="panel-heading"><span>THE DESK / COMMUNITY</span><span>OPEN DISCUSSION</span></div>
+            <div class="desk-avatars" aria-label="Illustrative initials, not member profiles"><span>W</span><span>T</span><span>↗</span><span class="avatar-dash">+</span></div>
+            <p class="panel-caption">A shared space for questions, observation, and thoughtful review.</p>
+            <div class="community-divider"></div>
+            <div class="session-row"><span class="session-pulse"></span><div><b>LIVE MARKET ANALYSIS</b><small>Educational session · no trade alerts</small></div><span class="session-status">LIVE</span></div>
+            <div class="session-note"><span class="session-line"></span><span>Structure first. Decisions remain your own.</span></div>
+            <span class="community-disclosure">ILLUSTRATIVE COMMUNITY VISUAL · NO MEMBER COUNTS SHOWN</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="how-section section-shell section-space" aria-labelledby="how-title">
+        <div class="section-heading section-heading-row" data-reveal><div><p class="section-kicker">05 / HOW IT WORKS</p><h2 id="how-title">A simple rhythm for learning.</h2></div><p class="section-aside">Education is a practice. The community is a place to build it.</p></div>
+        <div class="steps-grid">
+          <article class="step" data-reveal><span>01</span><div class="step-icon" aria-hidden="true">↗</div><h3>Join</h3><p>Enter the community and get oriented to the learning environment.</p></article>
+          <article class="step" data-reveal><span>02</span><div class="step-icon step-icon-framework" aria-hidden="true"><i></i><i></i><i></i></div><h3>Learn the framework</h3><p>Explore market structure, risk management, and trading psychology.</p></article>
+          <article class="step" data-reveal><span>03</span><div class="step-icon step-icon-review" aria-hidden="true">↺</div><h3>Review with the community</h3><p>Discuss observations and reflect on process in an educational setting.</p></article>
+        </div>
+      </section>
+
+      <section class="faq-section section-shell section-space" aria-labelledby="faq-title">
+        <div class="section-heading section-heading-row" data-reveal><div><p class="section-kicker">A FEW GOOD QUESTIONS</p><h2 id="faq-title">Clarity before you join.</h2></div><p class="section-aside">What this community is — and what it isn't.</p></div>
+        <div class="faq-list" data-reveal>
+          <details><summary>Is this an education community or a signal service?<span aria-hidden="true">+</span></summary><p>The Wise Trader is an educational trading community. Content is focused on learning, market analysis, and general trading concepts. It is not an alert service, and no one makes trading decisions for you.</p></details>
+          <details><summary>What should I know about futures risk?<span aria-hidden="true">+</span></summary><p>Futures trading involves substantial risk and may result in the loss of capital. Educational materials cannot remove that risk or predict your results. Consider your own circumstances and seek independent professional advice when appropriate.</p></details>
+          <details><summary>What is not included?<span aria-hidden="true">+</span></summary><p>The community does not provide personalized financial advice, guaranteed outcomes, or instructions to copy another person's trades. No results, income, or level of success are promised.</p></details>
+        </div>
+      </section>
+
+      <section class="disclaimer-section section-space" id="disclaimer" aria-labelledby="disclaimer-title">
+        <div class="section-shell disclaimer-inner">
+          <div class="disclaimer-heading" data-reveal><p class="section-kicker">IMPORTANT INFORMATION</p><h2 id="disclaimer-title">Educational<br />disclaimer.</h2><span class="disclaimer-mark" aria-hidden="true">!</span></div>
+          <div class="disclaimer-copy" data-reveal>
+            <p><strong>The Wise Trader is an educational trading community created for learning purposes only. We do not provide financial, investment, legal, or tax advice, and nothing on this website, Discord community, social media platforms, or educational materials should be interpreted as a recommendation to buy, sell, or trade any financial instrument.</strong></p>
+            <p>All content shared through The Wise Trader is intended solely for educational and informational purposes related to market structure, trading psychology, risk management, and general trading concepts.</p>
+            <p>Trading futures, options, cryptocurrencies, forex, and other financial markets involves substantial risk and may result in the loss of capital. Past performance does not guarantee future results, and individual trading outcomes will vary significantly based on experience, discipline, market conditions, and personal risk management.</p>
+            <p>By participating in this community, users acknowledge full responsibility for their own trading decisions and financial actions.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="final-cta section-shell" aria-label="Join The Wise Trader">
+        <div class="final-cta-inner" data-reveal><div><p class="section-kicker">PROFESSIONAL FUTURES EDUCATION</p><h2>Build a process<br />you can return to.</h2><p>Discipline. Structure. Risk awareness.</p></div><a class="button button-primary" href="https://whop.com/joined/the-wise-trader/products/market-analysis-79/" target="_blank" rel="noopener noreferrer"><span>Join the community</span><span class="button-arrow" aria-hidden="true">↗</span></a><span class="final-index">WT / 2026</span></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner section-shell"><a class="brand footer-brand" href="#top"><svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true"><path d="M4.5 9.5 11 27l7-13 7 13 6.5-17.5"/><path d="M11 8h14M15 30h6"/></svg><span class="brand-name">THE WISE <span>TRADER</span></span></a><p>© 2026 The Wise Trader<span>Educational purposes only.</span></p><a class="back-top" href="#top">BACK TO TOP <span aria-hidden="true">↑</span></a></div>
+    </footer>
+  </body>
+</html>

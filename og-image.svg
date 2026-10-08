@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1218"/><stop offset="1" stop-color="#05080c"/></linearGradient>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse"><path d="M56 0H0v56" fill="none" stroke="#b4c8dc" stroke-opacity=".075"/></pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/><rect width="1200" height="630" fill="url(#grid)"/>
+  <path d="M760 390 830 350 875 368 940 292 1000 315 1060 235 1120 257" fill="none" stroke="#9bc9bd" stroke-opacity=".55" stroke-width="2"/>
+  <path d="M740 316h405" fill="none" stroke="#7ee0c6" stroke-opacity=".28" stroke-dasharray="5 8"/>
+  <g fill="none" stroke="#7ee0c6" stroke-width="2"><path d="m66 76 18 46 16-34 16 34 18-46M84 72h32M94 128h12"/></g>
+  <text x="160" y="91" fill="#e8edf0" font-family="Arial,sans-serif" font-size="19" letter-spacing="5">THE WISE TRADER</text>
+  <text x="66" y="285" fill="#e8edf0" font-family="Arial,sans-serif" font-size="77" letter-spacing="-4">Trade with a plan,</text>
+  <text x="66" y="372" fill="#7ee0c6" font-family="Arial,sans-serif" font-size="77" letter-spacing="-4">not a mood.</text>
+  <text x="69" y="435" fill="#9aa3ad" font-family="Arial,sans-serif" font-size="20">Professional futures education</text>
+  <text x="69" y="485" fill="#75828a" font-family="monospace" font-size="14" letter-spacing="2">DISCIPLINE · STRUCTURE · RISK AWARENESS</text>
+</svg>
