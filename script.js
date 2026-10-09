@@ -6,6 +6,13 @@
   syncHeader();
   window.addEventListener("scroll", syncHeader, { passive: true });
 
+  document.querySelector(".back-top")?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (window.location.hash === "#top") {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  });
+
   const faqItems = [...document.querySelectorAll(".faq-item")];
   let activeFaq = null;
   let transitioning = false;

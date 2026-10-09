@@ -42,7 +42,6 @@ button { font: inherit; }
 .header-inner { display: flex; width: 100%; height: 100%; align-items: center; padding-inline: var(--page-pad); }
 .brand { display: inline-flex; align-items: center; }
 .brand-mark { display: block; width: 22px; height: 22px; fill: none; stroke-width: 1.5; stroke-linecap: square; stroke-linejoin: miter; }
-.header-join { display: none; }
 
 /* Shared typography and controls */
 h2, h3, p { margin-top: 0; }
@@ -118,15 +117,13 @@ html.js [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
 .faq-answer p { margin: 0; padding: 0 0 13px; color: var(--body-copy); font-size: 16px; line-height: 1.4; }
 
 /* One final action and the legal notice */
-.close-section { padding-block: 20px; background: var(--void); }
-.close-inner { width: min(100% - (2 * var(--page-pad)), 420px); margin-inline: auto; }
 .disclaimer-section { background: var(--section); }
 .disclaimer-inner h2 { margin: 0 0 12px; color: var(--ivory); font: 500 32px/1.1 var(--serif); }
 .disclaimer-inner p { margin: 0 0 9px; color: var(--body-copy); font-size: 16px; line-height: 1.4; }
 .disclaimer-inner p:last-child { margin-bottom: 0; }
 .site-footer { border-top: 1px solid var(--line); background: var(--void); }
 .footer-inner { display: flex; min-height: 54px; align-items: center; justify-content: space-between; padding-inline: var(--page-pad); color: var(--body-copy); font-size: 12px; }
-.back-top { color: var(--gold-highlight); font: 500 14px var(--sans); }
+.back-top { padding: 6px 0; border: 0; color: var(--gold-highlight); background: transparent; cursor: pointer; font: 500 14px var(--sans); }
 
 @media (min-width: 760px) {
   :root { --page-pad: 28px; scroll-padding-top: 60px; }
@@ -145,16 +142,7 @@ html.js [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
   .who-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
   .who-item { grid-template-columns: 1fr; align-content: start; align-items: start; gap: 7px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
   .faq-list { margin-top: 16px; }
-  .close-section { padding-block: 25px; }
   .disclaimer-inner h2 { font-size: 38px; }
-}
-
-@media (min-width: 901px) {
-  .site-header { height: 70px; }
-  .header-inner { justify-content: space-between; }
-  .header-join { display: flex; width: 240px; flex-direction: column; align-items: stretch; }
-  .header-join .button { min-height: 40px; padding-inline: 16px; font-size: 10px; letter-spacing: .12em; }
-  .header-join .trial-note { margin-top: 4px; text-align: center; }
 }
 
 @media (max-width: 360px) {
