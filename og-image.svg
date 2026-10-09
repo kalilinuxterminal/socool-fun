@@ -6,7 +6,8 @@
   </defs>
   <rect width="1200" height="630" fill="#050505"/><rect width="1200" height="630" fill="url(#grid)"/>
   <path d="M690 510V380h34v-56h25v-54h23v-48h18v-40h8v-36h7v-40h4v-28h4v28h5v40h8v36h18v40h23v48h25v54h34v186H690Z" fill="#0c0a07" stroke="#8c7340" stroke-opacity=".46"/>
-  <path d="m70 140 34 100 34-67 34 67 35-106m-35 0h35v35" fill="none" stroke="url(#gold)" stroke-width="2.2"/>
+  <path d="M70 140 104 240 138 173" fill="none" stroke="url(#gold)" stroke-width="2.2"/>
+  <path d="m138 173 34 67 35-106m-35 0h35v35" fill="none" stroke="url(#gold)" stroke-width="2.2"/>
   <text x="274" y="206" fill="url(#gold)" font-family="Georgia,serif" font-size="72" letter-spacing="12">THE WISE TRADER</text>
   <text x="279" y="264" fill="#e8d5a3" font-family="monospace" font-size="16" letter-spacing="5">DISCIPLINE · STRATEGY · CONSISTENCY</text>
   <text x="279" y="309" fill="#b7b1a6" font-family="Arial,sans-serif" font-size="17" letter-spacing="4">A PROFESSIONAL TRADING COMMUNITY</text>

@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
   <defs><linearGradient id="gold" x1="8" y1="8" x2="38" y2="39" gradientUnits="userSpaceOnUse"><stop stop-color="#f3e6c4"/><stop offset=".5" stop-color="#c6a15b"/><stop offset="1" stop-color="#8a6a32"/></linearGradient></defs>
   <rect width="48" height="48" rx="5" fill="#050505"/>
-  <path d="m7 10 8 28 9-19 9 19 8-30M33 8h8v9" fill="none" stroke="url(#gold)" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M8 10 15 38 24 18" fill="none" stroke="url(#gold)" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="m24 18 8 20 9-30M34 8h7v9" fill="none" stroke="url(#gold)" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
 </svg>

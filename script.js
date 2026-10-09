@@ -14,7 +14,6 @@
     menuToggle?.setAttribute("aria-label", "Open navigation");
     navigation?.classList.remove("is-open");
   };
-
   menuToggle?.addEventListener("click", () => {
     const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
     menuToggle.setAttribute("aria-expanded", String(!isOpen));
@@ -23,8 +22,19 @@
   });
   navigation?.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
   window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeMenu();
+    if (event.key === "Escape" && menuToggle?.getAttribute("aria-expanded") === "true") {
+      closeMenu();
+      menuToggle.focus();
+    }
   });
+
+  const faqItems = [...document.querySelectorAll(".faq-list details")];
+  faqItems.forEach((item) => item.addEventListener("toggle", () => {
+    if (!item.open) return;
+    faqItems.forEach((other) => {
+      if (other !== item && other.open) other.open = false;
+    });
+  }));
 
   const revealItems = document.querySelectorAll("[data-reveal]");
   if (reduceMotion || !("IntersectionObserver" in window)) {
@@ -37,54 +47,32 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -28px 0px" });
+    }, { threshold: .12, rootMargin: "0px 0px -24px 0px" });
     revealItems.forEach((item) => revealObserver.observe(item));
   }
 
   if (hero && !reduceMotion && "IntersectionObserver" in window) {
     const heroObserver = new IntersectionObserver(([entry]) => {
       hero.classList.toggle("is-in-view", entry.isIntersecting);
-    }, { threshold: 0.02 });
+    }, { threshold: .02 });
     heroObserver.observe(hero);
-
-    const parallaxLayers = [...hero.querySelectorAll("[data-parallax]")];
-    const touchMode = window.matchMedia("(hover: none), (pointer: coarse)").matches;
-    const desktopLayout = window.matchMedia("(min-width: 760px)");
-    if (!touchMode && desktopLayout.matches && parallaxLayers.length) {
-      let queued = false;
-      window.addEventListener("pointermove", (event) => {
-        if (queued) return;
-        queued = true;
-        window.requestAnimationFrame(() => {
-          const x = (event.clientX / window.innerWidth - .5) * 20;
-          const y = (event.clientY / window.innerHeight - .5) * 20;
-          parallaxLayers.forEach((layer) => {
-            const factor = layer.dataset.parallax === "skyline" ? -.5 : layer.dataset.parallax === "phone" ? .45 : 1;
-            const axis = layer.dataset.parallax;
-            layer.style.setProperty(`--${axis}-x`, `${(x * factor).toFixed(1)}px`);
-            layer.style.setProperty(`--${axis}-y`, `${(y * factor).toFixed(1)}px`);
-          });
-          queued = false;
-        });
-      }, { passive: true });
-    }
   } else if (hero && !reduceMotion) {
     hero.classList.add("is-in-view");
   }
 
-  const livePulse = document.querySelector(".session-pulse");
-  if (livePulse && !reduceMotion && "IntersectionObserver" in window) {
-    const pulseObserver = new IntersectionObserver(([entry]) => {
-      livePulse.classList.toggle("is-active", entry.isIntersecting);
-    }, { threshold: 0.1 });
-    pulseObserver.observe(livePulse);
-  }
-
-  const activeState = document.querySelector(".state-node.is-current");
-  if (activeState && !reduceMotion && "IntersectionObserver" in window) {
-    const stateObserver = new IntersectionObserver(([entry]) => {
-      activeState.classList.toggle("is-active", entry.isIntersecting);
-    }, { threshold: 0.2 });
-    stateObserver.observe(activeState);
-  }
+  if (!hero || reduceMotion || window.matchMedia("(hover: none), (pointer: coarse)").matches || !window.matchMedia("(min-width: 760px)").matches) return;
+  const skyline = hero.querySelector('[data-parallax="skyline"]');
+  if (!skyline) return;
+  let queued = false;
+  window.addEventListener("pointermove", (event) => {
+    if (queued) return;
+    queued = true;
+    window.requestAnimationFrame(() => {
+      const x = (event.clientX / window.innerWidth - .5) * 20;
+      const y = (event.clientY / window.innerHeight - .5) * 20;
+      skyline.style.setProperty("--skyline-x", `${x.toFixed(1)}px`);
+      skyline.style.setProperty("--skyline-y", `${y.toFixed(1)}px`);
+      queued = false;
+    });
+  }, { passive: true });
 })();

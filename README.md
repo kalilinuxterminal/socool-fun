@@ -1,13 +1,13 @@
-# The Wise Trader — static redesign
+# The Wise Trader
 
-A dependency-free, responsive landing-page concept built as a clean static export. Open `index.html` directly or serve this folder with any static web server.
+Mobile-first static landing page for `socool.fun`. Open `index.html` directly or serve this folder with a static web server.
 
 ## Files
 
-- `index.html` — semantic page structure, original educational disclaimer, metadata, and Whop calls to action.
-- `styles.css` — mobile-first black-and-metallic-gold design system, diagrams, and reduced-motion styling.
-- `script.js` — scroll reveals, responsive navigation, and desktop-only pointer parallax that pauses with the hero offscreen.
-- `bull.svg`, `skyline.svg` — original bronze bull and night skyline illustrations.
-- `favicon.svg`, `og-image.svg` — matching W-arrow monogram assets.
+- `index.html` contains the page, Whop links, trial terms, and original educational disclaimer.
+- `styles.css` contains the black-and-gold design system, responsive layouts, and reduced-motion rules.
+- `script.js` handles the mobile menu, one-open FAQ, scroll reveals, and desktop skyline parallax.
+- `skyline.svg`, `favicon.svg`, and `og-image.svg` are original brand graphics.
+- `CNAME` sets the custom domain to `socool.fun` for GitHub Pages.
 
-The phone chart and diagrams are illustrative only; there are no market-data feeds, tracking scripts, third-party redirects, or performance claims.
+Join links point to the existing Whop product. No tracking scripts, market-data feeds, performance claims, or animal artwork are included.
