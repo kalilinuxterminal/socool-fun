@@ -4,7 +4,7 @@ Mobile-first static landing page for `socool.fun`. Open `index.html` directly or
 
 ## Files
 
-- `index.html` contains the sales page, the three Whop links, and the shortened educational disclaimer.
+- `index.html` contains the sales page, the Whop links, and the shortened educational disclaimer.
 - `styles.css` contains the black-and-gold system, mobile-first layout, and reduced-motion styles.
 - `script.js` handles one-open FAQ behavior, scroll reveals, and the sticky header.
 - `favicon.svg` is the W-arrow mark.
